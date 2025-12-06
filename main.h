@@ -14,7 +14,7 @@
 #include "timer_2.h"
 #include "lockers.h"
 #include "PCF8583.h"
-#include "EEPROM.h"
+//#include "EEPROM.h"
 #include "i2c.h"
 #include "termometer.h"
 

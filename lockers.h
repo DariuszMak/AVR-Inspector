@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include "delay_lib.h"
 #include "PCF8583.h"
-#include "EEPROM.h"
+//#include "EEPROM.h"
 #include "avr/eeprom.h"
 #include "stdlib.h"
 #include "main.h"
@@ -16,8 +16,6 @@
 #define AMOUNT_OF_LOCKERS 10//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
 #define INTERNAL_EEPROM_MAX_INDEX 1023//jeśli ustawi się tą zmienną na -1, to wylączy się tę pamięć z użytku
-
-#define EXTERNAL_EEPROM_MAX_INDEX 255//wartość ostatniej największej komórki zewnętrznej pamięci eeprom do wykorzystania
 
 #define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
 
@@ -162,8 +160,6 @@ void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapi
 uint8_t lockers_convert_address_to_index_of_frame(uint16_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
 
 uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
-
-uint8_t lockers_number_of_frames_exteral_EEPROM(void);
 
 uint8_t lockers_number_of_frames_internal_EEPROM(void);
 
