@@ -23,6 +23,53 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
+void set_time_by_uart(void)
+{
+    /*int8_t godz, min, sek, hsek;
+    int8_t dzien,dzien_tygodnia, miesiac, timer,rano_wieczor;
+    int16_t rok;*/
+
+    printf("Ustawienia czasu\n");
+
+    printf("Godziny\n");
+    godz = uart_getint();
+
+    printf("Minuty\n");
+    min = uart_getint();
+
+    printf("Sekundy\n");
+    sek = uart_getint();
+
+    printf("Setne sekund\n");
+    hsek = uart_getint();
+
+    printf("Dzien\n");
+    dzien = uart_getint();
+
+    printf("Miesiac\n");
+    miesiac = uart_getint();
+
+    printf("Rok\n");
+    rok = uart_getint();
+
+    printf("Dzien tygodnia\n");
+    dzien_tygodnia = uart_getint();
+
+    printf("Timer\n");
+    timer = uart_getint();
+
+    correction_of_time();//funkcja korygująca po pojednczym wywołaniu właściwe wartości formatu godziny z minutami, sekundami oraz częściami setnych
+
+    correction_of_date();//uwzględnianie dnia miesiąca względem roku
+
+    PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
+
+    printf("Zapisano!\n");
+
+    lockers_print_date_of_report();
+
+}
+
 double round_double(float number, uint8_t precision)
 {
     uint32_t ten = 1;
@@ -2115,6 +2162,7 @@ void sczytaj_komende( void )
 
                     if(temp_char == 'R') lockers_print_all_memory();
                     else if(temp_char == 'r') lockers_print_latest_data();
+                    else if(temp_char == 'u') set_time_by_uart();
                     if(temp_char != 0) refresh_screen = 1;
 
                     if(PCF8583_is_timer_flag_set() == 1)

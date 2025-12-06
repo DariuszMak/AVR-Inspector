@@ -106,6 +106,7 @@ uint16_t uart_getint(void)
         }
     }
     while(odebrany!='\r'); //jeœli odebraliœmy znak zakoñczenia liczby to wychodzimy z pêtli
+    uart_putc('\n');
     return liczba;//zwracamy odebran¹ liczbê
 }
 

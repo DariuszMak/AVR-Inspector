@@ -17,7 +17,6 @@
 #endif
 
 int8_t godz, min, sek, hsek;
-
 int8_t dzien,dzien_tygodnia, miesiac, timer,rano_wieczor;
 int16_t rok;
 

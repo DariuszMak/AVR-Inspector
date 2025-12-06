@@ -107,14 +107,14 @@ void lockers_init()
     z funkcją 'USART_Transmit' */
     static FILE mystdout = FDEV_SETUP_STREAM(uart_putc, NULL, _FDEV_SETUP_WRITE);
 
-    static FILE mystdin = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
+    //static FILE mystdin = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
 
     /* Przekierowuje standardowe wyjście do  'mystdout' */
     stdout = &mystdout;
 
     /* Przekierowuje standardowe wejście do  'mystdin' */
 
-    stdin = &mystdin;
+    //stdin = &mystdin;
 
     //lockers_find_latest_data();
 }

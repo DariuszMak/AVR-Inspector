@@ -8,6 +8,7 @@
 //#include "EEPROM.h"
 #include "avr/eeprom.h"
 #include "stdlib.h"
+#include "uart.h"
 #include "main.h"
 
 #define AMOUNT_OF_LOCKERS 10//liczba szafek - nie załatwia wszystkich problemów w kodzie
