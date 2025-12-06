@@ -21,6 +21,8 @@
 //-------------------------------------------------------------------------------------------------
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
 
+#define BUFFERING 1 // włączanie trybu buforowania danych na wyświetlaczu
+
 #define USE_LCD_Int 1
 #define USE_LCD_Hex 1
 #define USE_LCD_MoveRight 1
@@ -97,7 +99,7 @@
 #define HD44780_SHIFT_LEFT			0
 #define HD44780_SHIFT_RIGHT			4
 
-#define HD44780_FUNCTION_SET			0x20
+#define HD44780_FUNCTION_SET    		0x20
 #define HD44780_FONT5x7				0
 #define HD44780_FONT5x10			4
 #define HD44780_ONE_LINE			0
@@ -105,15 +107,17 @@
 #define HD44780_4_BIT				0
 #define HD44780_8_BIT				16
 
-#define HD44780_CGRAM_SET				0x40
+#define HD44780_CGRAM_SET	        	0x40
 
-#define HD44780_DDRAM_SET				0x80
+#define HD44780_DDRAM_SET		    	0x80
 
 //-------------------------------------------------------------------------------------------------
 //
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
+
+
 void delay_ms_var( uint16_t ); // czekaj określoną ilość milisekund
 void delay_us_var( uint16_t ); // czekaj określoną ilość mikrosekund
 void delay_ms_var_double( double ); // czekaj określoną ilość milisekund
@@ -124,6 +128,15 @@ void _LCD_OutNibble( unsigned char );
 unsigned char _LCD_InNibble( void );
 #endif
 void _LCD_Write( unsigned char );
+#if BUFFERING == 1
+void _LCD_JustWrite( unsigned char );
+void LCD_JustWriteCommand( unsigned char );
+void LCD_JustWriteData( unsigned char );
+unsigned char LCD_NotBusy( void );
+int LCDWriteToBuffer( unsigned char, unsigned char, char * );
+void LCDClearBuffer( void );
+int LCDUpdateTask( void );
+#endif
 #if USE_RW == 1
 unsigned char _LCD_Read( void );
 #endif

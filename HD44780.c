@@ -120,7 +120,7 @@ unsigned char _LCD_InNibble( void )
 //-------------------------------------------------------------------------------------------------
 void _LCD_Write( unsigned char dataToWrite )
 {
-#if USE_RW == 1
+#if ( USE_RW == 1 ) || ( BUFFERING == 1 )
 	LCD_DB4_DIR |= LCD_DB4;
 	LCD_DB5_DIR |= LCD_DB5;
 	LCD_DB6_DIR |= LCD_DB6;
@@ -134,12 +134,47 @@ void _LCD_Write( unsigned char dataToWrite )
 	LCD_E_PORT |= LCD_E;
 	_LCD_OutNibble( dataToWrite );
 	LCD_E_PORT &= ~LCD_E;
-#if USE_RW == 1
+#if ( USE_RW == 1 ) || ( BUFFERING == 1 )
 	while( LCD_ReadStatus() & 0x80 );
 #else
 	_delay_us( 50 );
 #endif
 }
+
+#if BUFFERING == 1
+//-------------------------------------------------------------------------------------------------
+// Bezwzględny zapis rozkazu
+//-------------------------------------------------------------------------------------------------
+void LCD_JustWriteCommand( unsigned char commandToWrite )
+{
+	LCD_RS_PORT &= ~LCD_RS;
+	_LCD_Write( commandToWrite );
+}
+//-------------------------------------------------------------------------------------------------
+// Bezwzględny zapis danych
+//-------------------------------------------------------------------------------------------------
+void LCD_JustWriteData( unsigned char dataToWrite )
+{
+	LCD_RS_PORT |= LCD_RS;
+	_LCD_Write( dataToWrite );
+}
+//-------------------------------------------------------------------------------------------------
+// Sprawdzenie zajętości sterownika
+//-------------------------------------------------------------------------------------------------
+unsigned char LCD_NotBusy( void )
+{
+	if( LCD_ReadStatus() != 0x80 )
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+#endif
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja odczytu bajtu z wyœwietacza (bez rozró¿nienia instrukcja/dane).

@@ -29,6 +29,85 @@ int main( void )
 
 //definicje funkcji
 
+#if BUFFERING == 1
+
+// Wywoływane funkcje zewnętrzne :
+//		LCD_NotBusy - zwraca 0 jeśli wyświetlacz jest zajęty, w przeciwnym razie zwraca 1
+//		LCD_JustWriteCommand - zapisuje rozkaz do sterownika wyświetlacza (bezzwłocznie)
+//		LCD_JustWriteData	 - zapisuje dane do sterownika wyświetlacza (bezzwłocznie)
+//=================================================================================================
+#define 	  LCD_LINES				2
+#define 	  LCD_CHARSPERLINE		40
+
+	unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];
+	unsigned char LCDNeedUpdate[LCD_LINES];
+	signed 	 char LCDCharIndex[LCD_LINES];
+	unsigned char LCDLineIndex;
+	unsigned char LCDLineAddress[4] = {0x00, 0x40, 0x14, 0x54};
+
+//=================================================================================================
+//
+//=================================================================================================
+	int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
+	{
+		int cnt = 0;
+		while( *str != 0 )
+		{
+			LCDBuffer[y][x + cnt] = *str;
+			str++;
+			cnt++;
+		}
+		LCDNeedUpdate[y] = 1;
+		return cnt;
+	}
+//=================================================================================================
+//
+//=================================================================================================
+	void LCDClearBuffer( void )
+	{
+		int i, j;
+		for( j = 0; j < LCD_LINES; j++ )
+		{
+			LCDCharIndex[j] = -1;
+			for( i = 0; i < LCD_CHARSPERLINE; i++ )
+			{
+				LCDBuffer[j][i] = 32;
+			}
+		}
+	}
+//=================================================================================================
+// Należy wywoływać cykliczne w pętli głównej
+//=================================================================================================
+	void LCDUpdateTask( void )
+	{
+		if( LCDNeedUpdate[LCDLineIndex] )
+		{
+			if( LCD_NotBusy() )
+			{
+				if( LCDCharIndex[LCDLineIndex] == -1 )
+				{
+					LCD_JustWriteCommand( 0x80 | LCDLineAddress[LCDLineIndex] );
+					LCDCharIndex[LCDLineIndex]++;
+					return;
+				}
+				LCD_JustWriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );
+				if( LCDCharIndex[LCDLineIndex] == ( LCD_CHARSPERLINE - 1 ) )
+				{
+					LCDCharIndex[LCDLineIndex] 		= -1;
+					LCDNeedUpdate[LCDLineIndex] 	= 0;
+				}
+			}
+			return;
+		}
+		LCDLineIndex++;
+		if( LCDLineIndex == LCD_LINES )
+			LCDLineIndex = 0;
+	}
+
+
+
+#endif
+
 
 	void buzzer( void )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę
 	{
@@ -56,6 +135,11 @@ int main( void )
 			LCD_WriteText( "Wybierz:" );
 			LCD_GoTo( 0, 1 );
 			LCD_WriteText( "1 - 3" );
+
+			LCDClearBuffer();
+			LCDWriteToBuffer( 0, 0, "napis" );
+			LCDWriteToBuffer( 18, 1, "drugi" );
+
 			break;
 		case 1:
 			LCD_EraseAll();
@@ -120,7 +204,7 @@ int main( void )
 
 				while( 1 )
 				{
-					char * j =  ( char* ) malloc( rozmiar * sizeof * j * 2);
+					char * j =  ( char* ) malloc( rozmiar * sizeof * j * 2 );
 
 					LCD_Home();
 
@@ -132,7 +216,7 @@ int main( void )
 
 					LCD_GoTo( 0, 1 );
 
-					for( t = rozmiar; t < 2*rozmiar; t++ )
+					for( t = rozmiar; t < 2 * rozmiar; t++ )
 					{
 						j[t] = LCD_ReadData();
 						_delay_ms( 1 );
@@ -148,7 +232,7 @@ int main( void )
 
 					LCD_GoTo( 0, 1 );
 
-					for( t = rozmiar; t < 2*rozmiar; t++ )
+					for( t = rozmiar; t < 2 * rozmiar; t++ )
 					{
 						LCD_WriteData( j[t] );
 					}
@@ -450,6 +534,7 @@ int main( void )
 		}
 	}
 
+
 //Koniec definicji metod
 
 //Inicjalizacja
@@ -469,6 +554,7 @@ int main( void )
 
 	while( 1 )
 	{
+		LCDUpdateTask();
 		zczytaj_komende();
 	}
 
