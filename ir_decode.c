@@ -9,33 +9,33 @@ volatile uint8_t Ir_key_press_flag;
 volatile uint8_t rc5cnt;
 
 void pilot_off(void)
-    {
+{
 
-        TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-    }
+    TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
+}
 
 void pilot_on(void)
 {
 #if TIMER1_PRESCALER == 1
-        TCCR1B |= ( 1 << CS10 );
+    TCCR1B |= ( 1 << CS10 );
 #endif // TIMER1_PRESCALER
 
 #if TIMER1_PRESCALER == 8
-        TCCR1B |= ( 1 << CS11 );
+    TCCR1B |= ( 1 << CS11 );
 #endif // TIMER1_PRESCALER
 
 #if TIMER1_PRESCALER == 64
-        TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
+    TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
 #endif // TIMER1_PRESCALER
 
 #if TIMER1_PRESCALER == 256
-        TCCR1B |= ( 1 << CS12 );
+    TCCR1B |= ( 1 << CS12 );
 #endif // TIMER1_PRESCALER
 
 #if TIMER1_PRESCALER == 1024
-        TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
+    TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
 #endif // TIMER1_PRESCALER
-    }
+}
 
 void ir_init()
 {
@@ -100,12 +100,12 @@ ISR( TIMER1_CAPT_vect )
 
                     if( IrPulseCount > 12 )
                     {
-                        if ( Ir_key_press_flag == 0 )
-                        {
-                            command = IrData & 0b0000000000111111;
-                            address = ( IrData & 0b0000011111000000 ) >> 6;
-                            toggle_bit = ( IrData & 0b0000100000000000 ) >> 11;
-                        }
+                        //if ( Ir_key_press_flag == 0 )
+                        //{
+                        command = IrData & 0b0000000000111111;
+                        address = ( IrData & 0b0000011111000000 ) >> 6;
+                        toggle_bit = ( IrData & 0b0000100000000000 ) >> 11;
+                        //}
                         frame_status = FRAME_RESTART;
                         Ir_key_press_flag = 1;
 
@@ -130,4 +130,11 @@ int stop_button()//przycisk fizycznie umieszczony na płytce
         temp = 1;
     }
     return temp;
+}
+
+void reset_ir(void)//funkcja resetująca zmienne od pilota
+{
+    Ir_key_press_flag = 0;
+    command = 0xff;
+    address = 0xff;
 }

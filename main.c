@@ -29,7 +29,11 @@ void backlight(int8_t state)
 {
     if(state == 0) backlight_of_lcd = 0;
     else if(state == 1) backlight_of_lcd = -1;
-    else if(state == 2) backlight_of_lcd = 40;
+    else if(state == 2)
+    {
+        buzzer_time(10);
+        backlight_of_lcd = 100;
+    }
 }
 
 
@@ -105,6 +109,8 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         buzzer_time(5);
     }
     delay_ms_var_double( 500 );
+    LCD_PageUpScreen();
+    LCD_Clear();
     refresh_screen = 1;
 }
 
@@ -708,8 +714,6 @@ void czynnosc0( int com, int tog )
         }
     }
 
-
-
     if( com == 32 )
     {
         switch_menu += zwiekszanie;
@@ -1108,12 +1112,11 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         if( tog == 0)
         {
             if( backlight_of_lcd == -1 ) backlight(0);
-            else backlight(1);
+            else backlight(2);
         }
         if( tog == 1)
         {
-            buzzer_time(10);
-            backlight(2);
+            backlight(1);
         }
 
     }
@@ -1227,9 +1230,7 @@ void zczytaj_komende( void )
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
             toggle_action();
             pilot( command, t );//wywołanie funkcji pilot
-            Ir_key_press_flag = 0;
-            command = 0xff;
-            address = 0xff;
+            reset_ir();
         }
     }
 }
@@ -1278,7 +1279,10 @@ int main( void )
     pilot_on();
     pilot_state = 1;
 
+    backlight(1);
+
     sei();//włącza przerwania
+
     zczytaj_komende();
     switch_menu = 2;
     pilot( 59, 0 );//przejście do podprogramu nr 3
