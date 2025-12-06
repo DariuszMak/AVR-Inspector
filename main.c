@@ -68,6 +68,7 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
         LCD_Int( zwiekszanie );
     }
     delay_ms_var_double( 500 );
+    pilot_reset();
     refresh_screen = 1;
 }
 
@@ -112,6 +113,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         LCD_Clear();
 
     }
+    pilot_reset();
     refresh_screen = 1;
 }
 
@@ -234,6 +236,7 @@ void setting_information(uint8_t case_of_time, int8_t step)
         }
     }
     delay_ms_var(400);
+    pilot_reset();
     refresh_screen = 1;
 }
 
@@ -1170,11 +1173,13 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             if(pilot_state == 1)
             {
                 pilot_state = 0;
+                pilot_off();
                 if ( backlight_of_lcd != 0 ) backlight(2);
             }
             else if(pilot_state == 0)
             {
                 pilot_state = 1;
+                pilot_on();
                 backlight(1);
             }
         }
@@ -1187,11 +1192,11 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
 void pilot( int com, int tog )//
 {
-    if(pilot_state == 1) pilot_off();
+//    if(pilot_state == 1) pilot_off();
 
     czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
-    if(pilot_state == 1) pilot_on();
+    // if(pilot_state == 1) pilot_on();
 }
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
@@ -1277,8 +1282,10 @@ void zczytaj_komende( void )
         {
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
             toggle_action();
+
             pilot( command, t );//wywołanie funkcji pilot
-            reset_ir();
+            pilot_reset();
+
         }
     }
 }

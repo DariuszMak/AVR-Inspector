@@ -51,6 +51,7 @@ void pilot_off(void);
 
 int stop_button();//funkcja zwraca "1" gdy przycisk jest naciśnięty (nie sprawdza drgań styków)
 
-void reset_ir(void);//funkcja resetująca zmienne od pilota
+void pilot_reset(void);
+
 
 #endif // IR_DECODE_H_
