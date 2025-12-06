@@ -3,6 +3,8 @@
 
 #include <avr/io.h>
 #include "delay_lib.h"
+#include "PCF8583.h"
+#include "EEPROM.h"
 #include "stdlib.h"
 
 #define AMOUNT_OF_LOCKERS 2//liczba szafek - nie załatwia wszystkich problemów w kodzie
@@ -20,12 +22,15 @@
 void lockers_init();
 
 char states_table[AMOUNT_OF_LOCKERS];
+char save_info_table[AMOUNT_OF_LOCKERS];
 
 int locker_1_button(void);//przycisk fizycznie umieszczony na płytce
 int locker_2_button(void);//przycisk fizycznie umieszczony na płytce
 
 int lockers_state_of_single_button( int );
 
-void lockers_check_events();
+void lockers_check_events(void);
+
+void lockers_save_events(void);
 
 #endif // LOCKERS_H_

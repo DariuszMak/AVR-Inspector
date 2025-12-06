@@ -17,7 +17,7 @@ void lockers_init()
 
 }
 
-int lockers_state_of_single_button( int index )
+int lockers_state_of_single_button( int index )//zwraca stan danego przycisku względem numeru indeksu
 {
     if(index == 0) return locker_1_button();
     else if(index == 1) return locker_2_button();
@@ -26,29 +26,30 @@ int lockers_state_of_single_button( int index )
 
 void lockers_check_events()
 {
-    char * save_info_table = (char*) malloc(AMOUNT_OF_LOCKERS * sizeof (char));
-    int i = 0;
-    int action = 0;
-    char state = 0;
-    for(; i < AMOUNT_OF_LOCKERS; ++i)
+    int i = 0;//zmienna pmocnicza w pętlach
+    int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
+    char state = 0;//stan przycisku z danej chwili
+    for(; i < AMOUNT_OF_LOCKERS; ++i)//sprawdzanie stanów przycisków i odpowiednie wypełnianie tablicy
     {
-        save_info_table[i] = 0;
-        state = (char)lockers_state_of_single_button(i);
-        if( state != states_table[i])
+        state = (char)lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
+        if( state != states_table[i] )//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
         {
-            action = 1;
+            action = 1;//akcja będzie podjęta
             if (state) save_info_table[i] = 2;//szafka zamknięta
             else save_info_table[i] = 1;//szafka otwarta
-        }
-
+        }else save_info_table[i] = 0;//nie zapisuj żadnej informacji dla tej szufladki
     }
-    if(action);
-    free(save_info_table);
+
+    if(action) lockers_check_events();
 
     for(; i < AMOUNT_OF_LOCKERS; ++i)
     {
         states_table[i] = (char)lockers_state_of_single_button(i);
     }
+}
+
+void lockers_save_events(void)
+{
 
 }
 
