@@ -203,7 +203,9 @@ void LCD_GoTo( unsigned char x, unsigned char y )
 void LCD_Clear( void )
 {
     LCD_WriteCommand( HD44780_CLEAR );
+#if USE_RW == 0
     _delay_ms( 2 );
+#endif // USE_RW
     LCD_set_appropiate_position(LCD_position);
 }
 //-------------------------------------------------------------------------------------------------
@@ -214,7 +216,9 @@ void LCD_Clear( void )
 void LCD_Home( void )
 {
     LCD_WriteCommand( HD44780_HOME );
+#if USE_RW == 0
     _delay_ms( 2 );
+#endif // USE_RW
     LCD_position = 0;
 }
 //-------------------------------------------------------------------------------------------------
@@ -335,7 +339,7 @@ void LCD_MoveRight ( unsigned int freq, unsigned int step, unsigned int way )
         if ( way )
         {
             LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT );
-                    LCD_position_decrease();
+            LCD_position_decrease();
         }
         else LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_RIGHT );
         if ( freq ) delay_ms_var( freq );

@@ -2151,6 +2151,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     if ( com == 38 )
     {
 //        refresh_screen = 0;
+        LCD_Home();
         LCD_Clear();
         LCD_WriteText( "Na poczatek" );
         LCD_GoTo( 0, 1 );
