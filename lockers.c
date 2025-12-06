@@ -42,9 +42,14 @@ uint8_t USART_Recieve_without_waiting(void)
     else return 0;
 }
 
-
 void lockers_init()
 {
+    if(lockers_head() > lockers_number_of_frames() || lockers_tail() > lockers_number_of_frames())
+    {
+        PCF8583_write_word(PCF8583_TAIL, 0);
+        lockers_queue_empty();
+        buzzer_time(1000);
+    }
 
     LOCKER_1_BUTTON_DIR  &= ~LOCKER_1_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_1_BUTTON_PORT |= LOCKER_1_BUTTON_IN;//podciągnięcie przycisku tranzystorami
@@ -137,7 +142,7 @@ void lockers_check_events()
         else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
         states_table[i] = state;
     }
-    if(action) lockers_save_events();
+    if(action) lockers_queue_enque();
 }
 
 
@@ -160,11 +165,6 @@ uint8_t lockers_convert_address_to_index_of_frame(uint16_t add)
 {
     return (add / SIZE_OF_FRAME);
 }
-
-/*uint16_t lockers_convert_index_of_frame_to_address(uint8_t index)
-{
-    return SIZE_OF_FRAME * index;
-}*/
 
 void lockers_queue_read(uint8_t index)
 {
@@ -384,7 +384,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 
 }
 
-void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
+void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
     uint8_t i = 0;
