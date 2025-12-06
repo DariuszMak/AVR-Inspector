@@ -12,12 +12,15 @@
 /**
     Inicjalizacja TWI
 */
-static void i2cInit(void)
+void i2cSetBitrate(uint16_t bitrateKHz)
 {
-#if defined(TWPS0)
-  TWSR = 0;
-#endif
-  TWBR = (F_CPU / 100000UL - 16)/2;
+    uint8_t bitrate_div;
+
+    bitrate_div = ((F_CPU/1000l)/bitrateKHz);
+    if(bitrate_div >= 16)
+        bitrate_div = (bitrate_div-16)/2;
+
+    TWBR = bitrate_div;
 }
 /**
     Procedura transmisji sygnału START

@@ -4,10 +4,9 @@
 #ifndef __PCF8583_H__
 #define __PCF8583_H__
 
-/* użyte biblioteki */
 #include "i2c.h"//sprzętowa obsługa magistrali TWI (I2C)
 
-#define PCF8583_A0 1
+#define PCF8583_A0 1//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
 
 
 #ifndef PCF8583_A0
@@ -37,7 +36,7 @@ static volatile uint8_t PCF8583_alarm;
 --------------------------------------------------------------------------------------------------*/
 static uint8_t bcd2bin(uint8_t bcd)
 {
-    return (10*(bcd>>4) + (bcd&0x0f));
+    return ( 10 * ( bcd >> 4 ) + ( bcd & 0x0f ) );
 }
 /**-------------------------------------------------------------------------------------------------
 
@@ -63,7 +62,7 @@ static uint8_t bin2bcd(uint8_t bin)
 static uint8_t PCF8583_read(uint8_t address)
 {
     uint8_t a;
-    a = (PCF8583_A0 << 1) | 0xa0;
+    a = (PCF8583_A0 << 1) | 0xA0;
     i2cStart();
     i2cWrite(a);
     i2cWrite(address);
@@ -83,7 +82,7 @@ static uint8_t PCF8583_read(uint8_t address)
 static void PCF8583_write(uint8_t address,uint8_t data)
 {
     i2cStart();
-    i2cWrite((PCF8583_A0 << 1) | 0xa0);
+    i2cWrite((PCF8583_A0 << 1) | 0xA0);
     i2cWrite(address);
     i2cWrite(data);
     i2cStop();
@@ -123,19 +122,19 @@ static uint8_t PCF8583_get_status(void)
 
 
 /**
- Inicjalizuje układu
+ Inicjalizuje układ
 */
 static void PCF8583_init(void)
 {
     PCF8583_status=0;
     PCF8583_alarm=0;
     PCF8583_write(0, 0);
-    PCF8583_write(4, PCF8583_read(4) & 0x3f);
+    PCF8583_write(4, PCF8583_read(4) & 0x3F);
     PCF8583_write(8, 0x90);
 }
 
 /**
- Zatrzymuje układu
+ Zatrzymuje układ
 */
 static void PCF8583_stop(void)
 {
@@ -145,23 +144,23 @@ static void PCF8583_stop(void)
 }
 
 /**
- Startuje układu
+ Startuje układ
 */
 static void PCF8583_start(void)
 {
     PCF8583_get_status();
-    PCF8583_status &= 0x7f;
+    PCF8583_status &= ~0x80;
     PCF8583_write(0, PCF8583_status);
 }
 
 /**
- Odwiesza układu
+ Odwiesza układ
 */
 static void PCF8583_hold_off(void)
 {
-  PCF8583_get_status();
-  PCF8583_status &= 0xbf;
-  PCF8583_write(0, PCF8583_status);
+    PCF8583_get_status();
+    PCF8583_status &= ~0x40;
+    PCF8583_write(0, PCF8583_status);
 }
 
 /**
@@ -169,9 +168,9 @@ static void PCF8583_hold_off(void)
 */
 static void PCF8583_hold_on(void)
 {
-  PCF8583_get_status();
-  PCF8583_status |= 0x40;
-  PCF8583_write(0, PCF8583_status);
+    PCF8583_get_status();
+    PCF8583_status |= 0x40;
+    PCF8583_write(0, PCF8583_status);
 }
 
 
@@ -181,7 +180,7 @@ static void PCF8583_hold_on(void)
 static void PCF8583_alarm_off(void)
 {
     PCF8583_get_status();
-    PCF8583_status &= 0xfb;
+    PCF8583_status &= ~0x04;
     PCF8583_write(0, PCF8583_status);
 }
 
@@ -190,9 +189,9 @@ static void PCF8583_alarm_off(void)
 */
 static void PCF8583_alarm_on(void)
 {
-  PCF8583_get_status();
-  PCF8583_status |= 0x04;
-  PCF8583_write(0, PCF8583_status);
+    PCF8583_get_status();
+    PCF8583_status |= 0x04;
+    PCF8583_write(0, PCF8583_status);
 }
 
 
@@ -203,8 +202,8 @@ static void PCF8583_alarm_on(void)
 */
 static void PCF8583_write_word(uint8_t address,uint16_t data)
 {
-  PCF8583_write(address, (uint8_t)(data & 0xff));
-  PCF8583_write(++address, (uint8_t)(data >> 8));
+    PCF8583_write(address, (uint8_t)(data & 0xFF));
+    PCF8583_write(++address, (uint8_t)(data >> 8));
 }
 
 
@@ -280,13 +279,13 @@ static void PCF8583_get_date(uint8_t *day,uint8_t *month,uint16_t *year)
     uint16_t y1;
     PCF8583_hold_on();
     dy = PCF8583_read(5);
-    *month = bcd2bin(PCF8583_read(6) & 0x1f);
+    *month = bcd2bin(PCF8583_read(6) & 0x1F);
     PCF8583_hold_off();
-    *day = bcd2bin(dy & 0x3f);
+    *day = bcd2bin(dy & 0x3F);
     dy >>= 6;
     y1 = PCF8583_read(16) | ( (uint16_t)PCF8583_read(17) << 8);
     if ( ( (uint8_t) y1 & 3 ) != dy )
-            PCF8583_write_word(16, ++y1);
+        PCF8583_write_word(16, ++y1);
     *year = y1;
 }
 
@@ -314,10 +313,10 @@ static void PCF8583_set_date(uint8_t day,uint8_t month,uint16_t year)
 */
 static void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec)
 {
-  *hsec=PCF8583_read_bcd(0x9);
-  *sec=PCF8583_read_bcd(0xa);
-  *min=PCF8583_read_bcd(0xb);
-  *hour=PCF8583_read_bcd(0xc);
+    *hsec=PCF8583_read_bcd(0x9);
+    *sec=PCF8583_read_bcd(0xA);
+    *min=PCF8583_read_bcd(0xB);
+    *hour=PCF8583_read_bcd(0xC);
 }
 
 /**
@@ -329,10 +328,10 @@ static void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, ui
 */
 static void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
 {
-  PCF8583_write_bcd(0x9, hsec);
-  PCF8583_write_bcd(0xa, sec);
-  PCF8583_write_bcd(0xb, min);
-  PCF8583_write_bcd(0xc, hour);
+    PCF8583_write_bcd(0x9, hsec);
+    PCF8583_write_bcd(0xA, sec);
+    PCF8583_write_bcd(0xB, min);
+    PCF8583_write_bcd(0xC, hour);
 }
 
 /**
@@ -342,8 +341,8 @@ static void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8
 */
 static void PCF8583_get_alarm_date(uint8_t *day, uint8_t *month)
 {
-  *day = bcd2bin( PCF8583_read(0xd) & 0x3f );
-  *month = bcd2bin( PCF8583_read(0xe) & 0x1f );
+    *day = bcd2bin( PCF8583_read(0xD) & 0x3F );
+    *month = bcd2bin( PCF8583_read(0xE) & 0x1F );
 }
 
 /**
@@ -353,8 +352,8 @@ static void PCF8583_get_alarm_date(uint8_t *day, uint8_t *month)
 */
 static void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
 {
-  PCF8583_write_date( 0xd, day, 0 );
-  PCF8583_write_bcd( 0xe, month );
+    PCF8583_write_date( 0xD, day, 0 );
+    PCF8583_write_bcd( 0xE, month );
 }
 
 /*@}*/

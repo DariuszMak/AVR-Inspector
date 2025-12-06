@@ -713,8 +713,8 @@ uint16_t rok;
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     inverter_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-    i2cInit();
-     PCF8583_init();
+    i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
+     PCF8583_init();//inicjlalizacja wyświetlacza
     PCF8583_set_time( 19, 17, 1, 0 );
     PCF8583_set_date( 6, 2, 2012 );
 
