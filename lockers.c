@@ -17,15 +17,21 @@ void USART_init(uint16_t myubrr)
 
 
 /* Wysyła znak do portu szeregowego */
-uint8_t USART_Transmit(uint8_t c, FILE *stream)
+void USART_Transmit(uint8_t c, FILE *stream)
 {
+    if (c == '\n') {
+        USART_Transmit('\r', stream);
+    }
     while(!(UCSRA & (1<<UDRE)));
     UDR = c;
-
-    return 0;
 }
 
-
+/* Odbiera znak z portu szeregowego */
+uint8_t USART_Recieve(FILE *stream)
+{
+    while(!(UCSRA & (1<<RXC)));
+    return UDR;
+}
 
 void lockers_init()
 {
@@ -64,11 +70,17 @@ void lockers_init()
     z funkcją 'USART_Transmit' */
     static FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
 
+    static FILE mystdin = FDEV_SETUP_STREAM(NULL, USART_Recieve, _FDEV_SETUP_READ);
+
     /* Inicjalizuje  port szeregowy AVRa */
     USART_init(MYUBRR);
 
     /* Przekierowuje standardowe wyjście do  'mystdout' */
     stdout = &mystdout;
+
+    /* Przekierowuje standardowe wejście do  'mystdin' */
+
+    stdin = &mystdin;
 
     //lockers_find_latest_data();
 }
@@ -198,7 +210,7 @@ void lockers_print_entire_frame(void)
         if(t == 1) printf("OTWARCIE");
         else if(t == 2) printf("ZAMKNIECIE");
     }
-    printf("\n\r");
+    printf("\n");
 }
 
 void lockers_print_all_memory(void)

@@ -1290,6 +1290,14 @@ int main( void )
 
     //główna pętla programu
 
+    char input;
+
+    while(1) {
+        puts("Hello world!");
+        input = getchar();
+        printf("You wrote %c\n", input);
+    }
+
     while( 1 )
     {
         zczytaj_komende();

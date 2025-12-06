@@ -81,7 +81,9 @@ uint8_t state_temp;
 void USART_init(uint16_t myubrr);
 
 /* Wysyła znak do portu szeregowego */
-uint8_t USART_Transmit(uint8_t c, FILE *stream);
+void USART_Transmit(uint8_t c, FILE *stream);
+
+uint8_t USART_Recieve(FILE *stream);
 
 void lockers_init();//inicjalizacja wejść
 
