@@ -5,6 +5,6 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
-void pwm_led_init ( void );
+void random_generator_init ( void );
 
 #endif // _RANDOM_GENERATOR_H_

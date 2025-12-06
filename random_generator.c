@@ -2,7 +2,7 @@
 
 volatile uint8_t pwm1, pwm2;
 
-void pwm_led_init ( void )
+void random_generator_init ( void )
 {
 	TCCR2 |= ( 1 << WGM21 );// tryb CTC
 	TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024

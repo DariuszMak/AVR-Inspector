@@ -117,7 +117,7 @@ ISR( TIMER1_CAPT_vect )
 int stop_button()//przycisk fizycznie umieszczony na płytce
 {
     int temp = 0;
-    if(!(PINB & 0x10))
+    if(!(PINB & ( 1 << 4 )))
     {
         temp = 1;
     }

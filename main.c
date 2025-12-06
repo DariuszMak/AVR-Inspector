@@ -20,14 +20,16 @@ int main( void )
 {
 
     const int liczbaPodprogramow = 3;
-
+    //UWAGA!!! PONIŻSZE CHARAKTERYZACJE ZMIENNYCH SĄ BARDZO ISTOTNE W CELU POPRAWNEGO ICH UŻYWANIA W PROGRAMIE
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
-    int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję na wyświetlaczu
-    int s;//inna (dodatowa zmienna)
-    int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
+    int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
+    int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
+    int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+
+
     int u; //inna (dodatkowa) zmienna pomocnicza
     int w; //inna (dodatkowa) zmienna pomocnicza
-    int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+    int s;//inna (dodatowa zmienna)
     int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
@@ -42,7 +44,7 @@ int main( void )
         PORTD &= ~( 1 << PD7 );
     }
 
-    void buzzer_time( double time )
+    void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
     {
         PORTD |= ( 1 << PD7 );
         _delay_ms( time );
@@ -99,14 +101,19 @@ int main( void )
 
             char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
 
-            for(s = 0; s < rozmiar; ++s)
-            {
-                if(s == pozycja) tablicaTemp[s] = '1';
-                else tablicaTemp[s] = '0';
-            }
+
 
             if( u > 0 || u == -1 )
             {
+                for(s = 0; s < rozmiar; ++s)
+                {
+                    if(s == pozycja) tablicaTemp[s] = '1';
+                    else tablicaTemp[s] = '0';
+                }
+
+                LCD_GoTo(4,0);
+                LCD_Int((int) (t * 100 / 249));
+                LCD_WriteText("%");
                 for(s = 0; s < rozmiar; ++s)
                 {
                     if(tablicaTemp[s] == '1')
@@ -118,10 +125,10 @@ int main( void )
                     }
                     else
                     {
-                        if (s == 0) cy1 = 10;
-                        if (s == 1) cy2 = 10;
-                        if (s == 2) cy3 = 10;
-                        if (s == 3) cy4 = 10;
+                        if (s == 0 || cyfry == 0) cy1 = 10;
+                        if (s == 1 || cyfry == 0) cy2 = 10;
+                        if (s == 2 || cyfry == 0) cy3 = 10;
+                        if (s == 3 || cyfry == 0) cy4 = 10;
                     }
                 }
                 if ( u == -1 )
@@ -387,15 +394,20 @@ int main( void )
             {
             case 100:
             case 41:
+
                 t = 1;
+                u = 1;
 
                 do
                 {
-                    buzzer_time(0.4);
+                    buzzer_time(0.2);
+                    wysw ( *men );
                     ++t;
                     _delay_ms(750/t+10);
                 }
                 while (stop_button() && t != 250);
+
+                _delay_ms(200);
 
                 while ( t != 1 )
                 {
@@ -403,15 +415,16 @@ int main( void )
 
                     for(w = 1; w <= u; ++w)
                     {
-                        _delay_ms((1+2000/t)/(7-w));
+                        _delay_ms((1+2500/t)/(7-w));
                         pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                         cyfry = w;
                         wysw ( *men );
-                        buzzer();
+                        buzzer_time(0.5);
                     }
                     --t;
                 }
-                if( w < 7 )_delay_ms((1+2000/t)/(7-w));
+                t++;
+                if( w < 7 )_delay_ms((1+2500/t)/(7-w));
                 u = -1;
                 wysw( *men );
                 //cy1 = 8;
@@ -567,6 +580,7 @@ int main( void )
                     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
                     rozmiar = 4;
                     u = -1;//wymuszenie wykonania animacji
+                    t = 0;
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 
@@ -652,7 +666,7 @@ int main( void )
 
 
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
-
+    random_generator_init();//włączenie losowaniacyfr
     //pwm_led_init();//inicjaliacja diod pwm
     LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
