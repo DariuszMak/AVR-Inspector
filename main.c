@@ -539,7 +539,6 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-
     if (u < -1) u = -1;
     check_step_value(c, u);
     if(u == -1)

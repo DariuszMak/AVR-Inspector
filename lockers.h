@@ -13,7 +13,7 @@
 #include "stdlib.h"
 #include "main.h"
 
-#define AMOUNT_OF_LOCKERS 2//liczba szafek - nie załatwia wszystkich problemów w kodzie
+#define AMOUNT_OF_LOCKERS 10//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
 #define INTERNAL_EEPROM_MAX_INDEX 1023//jeśli ustawi się tą zmienną na -1, to wylączy się tę pamięć z użytku
 
@@ -32,6 +32,49 @@
 #define LOCKER_2_BUTTON_PORT PORTD
 #define LOCKER_2_BUTTON_PIN PIND
 #define LOCKER_2_BUTTON_IN (1 << PD3)
+
+#define LOCKER_3_BUTTON_DIR DDRD
+#define LOCKER_3_BUTTON_PORT	PORTD
+#define LOCKER_3_BUTTON_PIN PIND
+#define LOCKER_3_BUTTON_IN (1 << PD5)
+
+#define LOCKER_4_BUTTON_DIR DDRD
+#define LOCKER_4_BUTTON_PORT	PORTD
+#define LOCKER_4_BUTTON_PIN PIND
+#define LOCKER_4_BUTTON_IN (1 << PD4)
+
+#define LOCKER_5_BUTTON_DIR DDRC
+#define LOCKER_5_BUTTON_PORT	PORTC
+#define LOCKER_5_BUTTON_PIN PINC
+#define LOCKER_5_BUTTON_IN (1 << PC2)
+
+#define LOCKER_6_BUTTON_DIR DDRC
+#define LOCKER_6_BUTTON_PORT	PORTC
+#define LOCKER_6_BUTTON_PIN PINC
+#define LOCKER_6_BUTTON_IN (1 << PC3)
+
+#define LOCKER_7_BUTTON_DIR DDRC
+#define LOCKER_7_BUTTON_PORT	PORTC
+#define LOCKER_7_BUTTON_PIN PINC
+#define LOCKER_7_BUTTON_IN (1 << PC4)
+
+#define LOCKER_8_BUTTON_DIR DDRC
+#define LOCKER_8_BUTTON_PORT	PORTC
+#define LOCKER_8_BUTTON_PIN PINC
+#define LOCKER_8_BUTTON_IN (1 << PC5)
+
+#define LOCKER_9_BUTTON_DIR DDRC
+#define LOCKER_9_BUTTON_PORT	PORTC
+#define LOCKER_9_BUTTON_PIN PINC
+#define LOCKER_9_BUTTON_IN (1 << PC6)
+
+#define LOCKER_10_BUTTON_DIR DDRC
+#define LOCKER_10_BUTTON_PORT PORTC
+#define LOCKER_10_BUTTON_PIN PINC
+#define LOCKER_10_BUTTON_IN (1 << PC7)
+
+uint8_t state_temp;
+
 
 
 /* Inicjuje port szeregowy AVRa */
@@ -66,6 +109,14 @@ uint8_t save_info_table[AMOUNT_OF_LOCKERS];//tablica pomocna do jednokrotnego za
 
 uint8_t locker_1_button(void);//przycisk fizycznie umieszczony na płytce
 uint8_t locker_2_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_3_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_4_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_5_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_6_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_7_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_8_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_9_button(void);//przycisk fizycznie umieszczony na płytce
+uint8_t locker_10_button(void);//przycisk fizycznie umieszczony na płytce
 
 uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan poszczególnych wejść do szafek (zwraca 0 albo 1)
 

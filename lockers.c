@@ -36,6 +36,30 @@ void lockers_init()
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
+    LOCKER_3_BUTTON_DIR  &= ~LOCKER_3_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_3_BUTTON_PORT |= LOCKER_3_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_4_BUTTON_DIR  &= ~LOCKER_4_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_4_BUTTON_PORT |= LOCKER_4_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_5_BUTTON_DIR  &= ~LOCKER_5_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_5_BUTTON_PORT |= LOCKER_5_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_6_BUTTON_DIR  &= ~LOCKER_6_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_6_BUTTON_PORT |= LOCKER_6_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_7_BUTTON_DIR  &= ~LOCKER_7_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_7_BUTTON_PORT |= LOCKER_7_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_8_BUTTON_DIR  &= ~LOCKER_8_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_8_BUTTON_PORT |= LOCKER_8_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_9_BUTTON_DIR  &= ~LOCKER_9_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_9_BUTTON_PORT |= LOCKER_9_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
+    LOCKER_10_BUTTON_DIR  &= ~LOCKER_10_BUTTON_IN;//inicjowanie przycisku jako wejście
+    LOCKER_10_BUTTON_PORT |= LOCKER_10_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+
     /* Tworzy strumienia danych o nazwie 'mystdout' połączony
     z funkcją 'USART_Transmit' */
     static FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
@@ -63,6 +87,14 @@ uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przy
 {
     if(index == 0) return locker_1_button();
     else if(index == 1) return locker_2_button();
+    else if(index == 2) return locker_3_button();
+    else if(index == 3) return locker_4_button();
+    else if(index == 4) return locker_5_button();
+    else if(index == 5) return locker_6_button();
+    else if(index == 6) return locker_7_button();
+    else if(index == 7) return locker_8_button();
+    else if(index == 8) return locker_9_button();
+    else if(index == 9) return locker_10_button();
     return -1;//bląd
 }
 
@@ -297,24 +329,103 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
 uint8_t locker_1_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    int temp = 0;
+    state_temp = 0;
     if(!( LOCKER_1_BUTTON_PIN & LOCKER_1_BUTTON_IN ))
     {
-        temp = 1;
+        state_temp = 1;
     }
-    return temp;
+    return state_temp;
 }
 
 uint8_t locker_2_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    int temp = 0;
+    state_temp = 0;
     if(!( LOCKER_2_BUTTON_PIN & LOCKER_2_BUTTON_IN ))
     {
-        temp = 1;
+        state_temp = 1;
     }
-    return temp;
+    return state_temp;
 }
 
+uint8_t locker_3_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_3_BUTTON_PIN & LOCKER_3_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_4_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_4_BUTTON_PIN & LOCKER_4_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_5_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_5_BUTTON_PIN & LOCKER_5_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_6_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_6_BUTTON_PIN & LOCKER_6_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_7_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_7_BUTTON_PIN & LOCKER_7_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_8_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_8_BUTTON_PIN & LOCKER_8_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_9_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_9_BUTTON_PIN & LOCKER_9_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
+
+uint8_t locker_10_button(void)//przycisk fizycznie umieszczony na płytce
+{
+    state_temp = 0;
+    if(!( LOCKER_10_BUTTON_PIN & LOCKER_10_BUTTON_IN ))
+    {
+        state_temp = 1;
+    }
+    return state_temp;
+}
 
 void lockers_clear_all_memory(void)
 {
