@@ -14,20 +14,22 @@
 
 int main( void )
 {
-
+// PORTD7 jako wyjście do buzzera
 //##############################################################################
 
 	DDRD |= ( 1 << PD7 );
 
 //##############################################################################
 
-	int t;
-	int rozmiar = 6;
-	int	cyfry = 0;
-	int zwiekszanie = 0;
+	int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
+	int rozmiar = 6; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
+	int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+	int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 	int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
-	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu, czy nie
+	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu, czy nie (dosyć zagmatwany mechanizm)
 
+
+//funkcje
 //##############################################################################
 
 	void buzzer( void )
@@ -37,26 +39,25 @@ int main( void )
 		PORTD &= ~( 1 << PD7 );
 	}
 
-	void wybor( int number )
+	void wybor( int number ) // funkcja wyświetlająca na początku wchodenia w dany podprogram numeru podprogramu
 	{
 		LCD_Clear();
-		//LCD_WriteText( "Glowne menu" );
-
 		LCD_WriteText( "Program: " );
 		LCD_Int( number );
 		_delay_ms( 500 );
 		LCD_Clear();
 	}
-	void wysw( int way, int com )
+
+	void wysw( int men, int com ) // funkcja wyświetlająca dla każdego z podprogramów,
 	{
-		switch ( way )
+		switch ( men )
 		{
 		case 0:
 			LCD_EraseAll();
 			LCD_GoTo( 0, 0 );
-			LCD_WriteText( "Wybierz:");
+			LCD_WriteText( "Wybierz:" );
 			LCD_GoTo( 0, 1 );
-			LCD_WriteText("1 - 3");
+			LCD_WriteText( "1 - 3" );
 			break;
 		case 1:
 			LCD_EraseAll();
@@ -80,18 +81,19 @@ int main( void )
 			LCD_EraseAll();
 			LCD_GoTo( 0, 0 );
 			LCD_WriteText( "PWM dla diod" );
-
 			break;
 		}
 	}
 
+// najważniejsza i najbardziej skomplikowana funkcja
+//##############################################################################
 	void pilot( int *men , int com )
 	{
-		if( !start ) start = 2;
+		if( !start ) start = 2;//start przyjmuje wartość inną od 0 albo 1
 		buzzer();
-		switch( *men )
+		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
-//#######################################################################
+//##############################################################################
 		case 0:
 			switch ( com )
 			{
@@ -184,13 +186,13 @@ int main( void )
 			}
 			wysw( *men, com );
 			break;
-//#######################################################################
+//##############################################################################
 		case 1:
 
 			wysw( *men, com );
 
 			break;
-//#######################################################################
+//##############################################################################
 		case 2:
 
 			switch( com )
@@ -239,19 +241,25 @@ int main( void )
 			}
 			wysw( *men, com );
 			break;
-//#######################################################################
+//##############################################################################
 		case 3:
 			wysw( *men, com );
 			break;
 		}
-//komendy dla wszystkich
-//#######################################################################
+//komendy dla wszystkich podprogramów
+//##############################################################################
 		switch ( com )
 		{
 		case 38:
+			LCD_Clear();
+			LCD_WriteText( "Kalibracja" );
+			LCD_GoTo( 0, 1 );
+			LCD_WriteText( "ekranu..." );
+			_delay_ms( 250 );
 			LCD_PageUpScreen();
 			LCD_PageDownScreen();
 			LCD_Clear();
+			wysw( *men, com );
 			break;
 		case 34:
 			LCD_ShiftRightScreen();
@@ -270,50 +278,47 @@ int main( void )
 			*men = 0;
 			start = 1;
 			break;
-
 		}
 
 		if( menu == 0 )
 		{
-
+//ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
+//##############################################################################
 			if ( start == 1 )
 			{
+				TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
 				wybor( *men );
 				start = 0;
 				pilot( &menu, 59 );
 
 			}
 
-
-
-
-
-			if( com > 0 && com <= 9 )
+			if( com > 0 && com <= 3 )
 			{
 				*men = com;
-
+				start = 0;
 				wybor( *men );
 
-
-
-
-				start = 0;
-				switch( *men )
+				switch( *men )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
 				{
 				case 1:
-					pilot( &menu, 0 );
+					wysw( *men, com );
 					break;
 
 				case 2:
+					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
+					pilot( &menu, 55 ); // ta komenda działa tak, jaby się wcisnęło przycisk na pilocie RC5
+					pilot( &menu, 16 );
+					pilot( &menu, 54 );
+					pilot( &menu, 16 );
+					pilot( &menu, 50 );
+					pilot( &menu, 16 );
 					pilot( &menu, 52 );
 					pilot( &menu, 16 );
-					pilot( &menu, 55 );
-					pilot( &menu, 17 );
-					pilot( &menu, 50 );
 					break;
 
 				case 3:
-					pilot( &menu, 0 );
+					wysw( *men, com );
 					break;
 				}
 
@@ -321,8 +326,7 @@ int main( void )
 		}
 	}
 
-
-	int zczytaj_komende( void )
+	int zczytaj_komende( void ) // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkacy, nie będzie można odzczytać innego przysisku
 	{
 		if( Ir_key_press_flag )
 		{
@@ -340,20 +344,16 @@ int main( void )
 
 
 
-
-
 //##############################################################################
 
 	LCD_Initalize();
 	ir_init();
 	d_led_init();
 	sei();
-	Ir_key_press_flag = 1;
+	pilot( &menu, 0 );
 	while( 1 )
 	{
 		zczytaj_komende();
-
-
 	}
 
 
