@@ -7,7 +7,7 @@
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
 int8_t switch_menu = 0;//zmienna służąca do wchodzenia do poszczególnych podprogramów
-const int liczbaPodprogramow = 5;
+const int liczbaPodprogramow = 6;
 uint8_t refresh_screen = 0;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
@@ -341,6 +341,30 @@ uint8_t end_of_settings(uint8_t case_of_time)
     else return 0;
 }
 
+void show_setting_alarm_case(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Ustaw alarm");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Ustaw timer");
+    }
+}
+
+void show_timer_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Timer wylaczony");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Timer wlaczony");
+    }
+}
+
 void show_alarm_options(uint8_t index)
 {
     if(index == 0)
@@ -393,7 +417,7 @@ void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca wzg
     if(dzien_tygodnia < 0) dzien_tygodnia = 6;
     else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
 
-     if(timer < 0) timer = 99;
+    if(timer < 0) timer = 99;
     else if(dzien_tygodnia > 99) dzien_tygodnia = 0;
 
 }
@@ -444,7 +468,27 @@ void show_list_case(index)
     }
     else if (menu == 5)
     {
-        show_alarm_options(index);
+        if(u == -2)
+        {
+            show_setting_alarm_case(index);
+        }
+        else
+        {
+            if(e == 0)
+            {
+                if(u == -1)
+                {
+                    show_alarm_options(index);
+                }
+            }
+            else if(e == 1)
+            {
+                if(u == -1)
+                {
+                    show_timer_options(index);
+                }
+            }
+        }
     }
 }
 
@@ -596,54 +640,74 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if (u < -1) u = -1;
-    check_step_value(c, u);
-    if(u == -1)
+    if (u < -2) u = -2;
+    check_step_value(c, u);//zrobic
+    LCD_EraseAll();
+    if(u == -2)
     {
-        LCD_EraseAll();
-        if(c < -1) c = 3;
-        else if(c > 3) c = -1;
-        show_list(c, 3);
+        if(e < -1) c = 1;
+        else if(e > 1) e = -1;
+        show_list(e, 1);
     }
     else
     {
-        LCD_EraseAll();
-        if(u == end_of_settings(c) || c == 0 || c == -1)
+        if(e == 0)
         {
-            start = 1;
-            w = 1;
-            if(c != -1)
+            if(u == -1)
             {
-                PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,c);
-                if(c == 0)
+                if(d < -1) d = 1;
+                else if(d > 1) d = -1;
+                show_list(d, 1);
+            }
+        }
+        else if( e == 1)
+        {
+            if(u == -1)
+            {
+                if(c < -1) c = 3;
+                else if(c > 3) c = -1;
+                show_list(c, 3);
+            }
+            else
+            {
+                if(u == end_of_settings(c) || c == 0 || c == -1)
                 {
-                    PCF8583_alarm_flag_off();
+                    start = 1;
+                    w = 1;
+                    if(c != -1)
+                    {
+                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,c);
+                        if(c == 0)
+                        {
+                            PCF8583_alarm_flag_off();
+                        }
+                    }
+                }
+
+                if( s != 0 )
+                {
+                    set_appropriate_values_of_time(c, u, s);
+
+                    s = 0;
+                }
+
+                correction_of_time();
+
+                correction_of_date(c);
+
+                moveStep = 0;
+                show_alarm_format(c);
+
+                if( w == 1 )
+                {
+                    if(c == 0)//specjalny warunek do poprawnego wyświetlenia ustawienia alarmu
+                    {
+                        c = 5;
+                    }
+                    setting_information(c, u);
+                    w = 0;
                 }
             }
-        }
-
-        if( s != 0 )
-        {
-            set_appropriate_values_of_time(c, u, s);
-
-            s = 0;
-        }
-
-        correction_of_time();
-
-        correction_of_date(c);
-
-        moveStep = 0;
-        show_alarm_format(c);
-
-        if( w == 1 )
-        {
-            if(c == 0)//specjalny warunek do poprawnego wyświetlenia ustawienia alarmu
-            {
-                c = 5;
-            }
-            setting_information(c, u);
-            w = 0;
         }
     }
 }
@@ -742,10 +806,12 @@ void czynnosc0( int com, int tog )
         {
             PCF8583_get_wall_alarm();
             //czynnosc( men, 50, tog );
-            u = -1;
+            u = -2;//przechodzenie przez poziomy w prawo w lewo
             w = 1;//wymuszenie wyświetlenia komunikatu
-            s = 0;
-            c = PCF8583_recognise_type_of_alarm();
+            s = 0;//
+            e = 0;//zmienna odpowiedzialna za wybór ustawiania albo alarmu alarmu albo alarmu timera
+            d = PCF8583_recognise_type_of_timer_alarm();
+            c = PCF8583_recognise_type_of_alarm();//zmienna odpowiedzialna za typ alarmu
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
         }
         else if ( menu == 6 )

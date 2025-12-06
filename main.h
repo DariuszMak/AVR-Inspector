@@ -50,9 +50,10 @@ int8_t u; //inna (dodatkowa) zmienna pomocnicza
 int8_t w; //inna (dodatkowa) zmienna pomocnicza
 int8_t s;//inna (dodatowa zmienna)
 int16_t c;//inna (dodatowa zmienna)
+int8_t d;//inna (dodatkowa zmienna pmocnicza)
+int8_t e;//inna (dodatkowa zmienna)
 
 uint8_t refresh_screen;
-
 
 
 int main( void );
@@ -80,6 +81,8 @@ void show_time_format(void);
 void show_timer_alarm_format(void);
 
 void show_alarm_format(uint8_t case_of_format);
+
+void show_setting_alarm_case(uint8_t index);
 
 void show_alarm_options(uint8_t index);
 
