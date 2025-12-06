@@ -343,7 +343,6 @@ void set_appropriate_values_of_time()
 
 void check_step_value(void)
 {
-
     if((u == -2 || u == -1) && zwiekszanie > 1) wysw_skok(1);
     if(e == 0)
     {
@@ -450,7 +449,7 @@ void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca wzg
     else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
 
     if(timer < 0) timer = 99;
-    else if(dzien_tygodnia > 99) dzien_tygodnia = 0;
+    else if(timer > 99) timer = 0;
 
 }
 
@@ -673,6 +672,11 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if (u < -2) u = -2;
+    if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
+    {
+        if( u == -1 && e < 0) u -= 1;
+        else if( u == 0 && (c < 0 || d < 0)) u -= 1;
+    }
     check_step_value();//zrobic
     LCD_EraseAll();
     if( s != 0 )
