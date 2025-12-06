@@ -12,7 +12,7 @@ void lockers_safety_bit_off(void)
 
 uint8_t lockers_is_safety_bit(void)
 {
-    //return 0;//usunąć, gdy będzie PCF8563
+    return 0;//usunąć, gdy będzie PCF8563
     if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
     else return 1;
 }
@@ -278,11 +278,11 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
             lockers_print_entire_frame();
         }
     }
+        lockers_safety_bit_off();
 }
 
 void lockers_print_date_of_report()
 {
-    lockers_safety_bit_off();
     PCF8583_get_wall_time();
     printf("%02d:%02d:%02d %02d:%02d:%d\n", godz, min, sek, dzien, miesiac, rok);
 }

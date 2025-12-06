@@ -638,9 +638,9 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
     if(start_program == 3)
     {
         LCD_EraseAll();
-        LCD_WriteText("Sprawdz");
+        LCD_WriteText("Sprawdz przech-");
         LCD_GoTo(0, 1);
-        LCD_WriteText("przechwytywanie USB");
+        LCD_WriteText("wytywanie USB");
     }
     else
     {
@@ -962,19 +962,7 @@ void czynnosc2( int com, int tog )
     {
         PCF8583_alarm_flag_off();
     }
-    if ( com == 100 )
-    {
-        if(pilot_state == 1)
-        {
-            pilot_state = 0;
-            if ( backlight_of_lcd != 0 ) backlight(2);
-        }
-        else if(pilot_state == 0)
-        {
-            pilot_state = 1;
-            backlight(1);
-        }
-    }
+
     refresh_screen = 1;
 }
 
@@ -1115,66 +1103,80 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         {
             czynnosc6(com, tog);
         }*/
-    }
+
 //komendy wspólne dla wszystkich podprogramów
 
-    if ( com == 38 )
-    {
-        refresh_screen = 0;
-        LCD_Clear();
-        LCD_WriteText( "Na poczatek" );
-        LCD_GoTo( 0, 1 );
-        LCD_WriteText( "ekranu..." );
-        delay_ms_var_double( 250 );
-        LCD_PageUpScreen();
-        LCD_PageDownScreen();
-        refresh_screen = 1;
-    }
-    if( com == 15 )
-    {
-        if( tog == 0)
+        if ( com == 38 )
         {
-            if( backlight_of_lcd != 0 ) backlight(0);
-            else backlight(2);
+            refresh_screen = 0;
+            LCD_Clear();
+            LCD_WriteText( "Na poczatek" );
+            LCD_GoTo( 0, 1 );
+            LCD_WriteText( "ekranu..." );
+            delay_ms_var_double( 250 );
+            LCD_PageUpScreen();
+            LCD_PageDownScreen();
+            refresh_screen = 1;
         }
-        if( tog == 1)
+        if( com == 15 )
         {
-            backlight(1);
-        }
+            if( tog == 0)
+            {
+                if( backlight_of_lcd != 0 ) backlight(0);
+                else backlight(2);
+            }
+            if( tog == 1)
+            {
+                backlight(1);
+            }
 
-    }
-    if ( com == 46 )
-    {
-        LCD_ShiftRightScreen();
-    }
-    if ( com == 34 )
-    {
-        LCD_ShiftLeftScreen();
-    }
-    if ( com == 36 )
-    {
-        LCD_PageUpScreen();
-    }
-    if ( com == 35 )
-    {
-        LCD_PageDownScreen();
-    }
-    if ( com == 44 )
-    {
-        step_increase();
-    }
-    if ( com == 45 )
-    {
-        step_decrease();
-    }
-    if ( com == 14 )
-    {
-        if( tog == 0)
-        {
         }
-        if( tog == 1)
+        if ( com == 46 )
         {
-            start = 1;//oznaka wyjścia z podprogramów
+            LCD_ShiftRightScreen();
+        }
+        if ( com == 34 )
+        {
+            LCD_ShiftLeftScreen();
+        }
+        if ( com == 36 )
+        {
+            LCD_PageUpScreen();
+        }
+        if ( com == 35 )
+        {
+            LCD_PageDownScreen();
+        }
+        if ( com == 44 )
+        {
+            step_increase();
+        }
+        if ( com == 45 )
+        {
+            step_decrease();
+        }
+        if ( com == 14 )
+        {
+            if( tog == 0)
+            {
+            }
+            if( tog == 1)
+            {
+                start = 1;//oznaka wyjścia z podprogramów
+            }
+        }
+        if ( com == 100 )
+        {
+            if(pilot_state == 1)
+            {
+                pilot_state = 0;
+                if ( backlight_of_lcd != 0 ) backlight(2);
+            }
+            else if(pilot_state == 0)
+            {
+                pilot_state = 1;
+                backlight(1);
+            }
         }
     }
 }

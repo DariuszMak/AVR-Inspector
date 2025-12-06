@@ -37,8 +37,8 @@ uint16_t zwiekszanie; // zmienna potrzebna do zmiany wartości liczby na wyświe
 uint8_t moveStep;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
-int8_t backlight_of_lcd;
-uint8_t start_program;
+int8_t backlight_of_lcd;//zmienna odpowiedzialna za podświetlenie ekranu LCD: 0 - ekran wyłączony, -1 - ekran włączony na stałe, wartość dodatnia będzie dekrementowana aż do wartości 0 przy każdorazowym odwiedzeniu fragmentu kodu wywoływanego przez timer
+uint8_t start_program;//zmienna odpowiedzialna za poszczególne etapy podczas włączania się projektu: 1 - program jest w stadium bez wyświetlania informacji o wchodzeniu do poszczególnych podprogramów, 3 - okres oczekiwania na jakikolwiek przycisk, 0 - stan, kiedy mogą zostać wysłane awaryjne raporty, 2 - normalny stan programu
 //zmienne zarezerwowane dla podprogramu nr 2:
 
 //zmienne spełniające określone funkcje
