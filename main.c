@@ -455,14 +455,13 @@ void cube_position(uint8_t case_of_effect)
     free(tablicaTemp);
 }
 
-
 void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     LCD_EraseAll();
     LCD_GoTo( 0, 0 );
     LCD_WriteText( "Wybierz:" );
     LCD_GoTo( 0, 1 );
-    LCD_WriteText( "1 - " );
+    LCD_WriteText( "0 - " );
     LCD_Int(liczbaPodprogramow);
 
     //LCDWriteToBuffer( 0, 0, "napis" );
@@ -491,8 +490,6 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 
     //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
-
-
 
 
     LCD_GoTo(0,0);
@@ -703,6 +700,12 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void czynnosc0( int com, int tog )
 {
+
+    refresh_screen = 1;
+}
+
+void czynnosc1( int com, int tog )
+{
     if ( com == 41 )
     {
         pilot_off();
@@ -904,13 +907,8 @@ void czynnosc0( int com, int tog )
         LCD_ScreenOn();
         pilot_on();
     }
-    refresh_screen = 1;
-}
-
-void czynnosc1( int com, int tog )
-{
     LCD_Displaying( com );
-    if ( com != 100 ) refresh_screen = 1;
+    wysw();
 }
 
 void czynnosc2( int com, int tog )
@@ -1299,12 +1297,16 @@ void pilot( int com, int tog )//
 
 void zczytaj_komende( void )
 {
-
-
     if( interr == 1 && menu == 3 )
     {
         interr = 0;
         cnt = 0;
+        wysw();
+    }
+
+    if(refresh_screen == 1 )
+    {
+        refresh_screen = 0;
         wysw();
     }
 
@@ -1325,17 +1327,14 @@ void zczytaj_komende( void )
         //refresh_screen = 1;// wyświetlenie ekranu
     }
 
-    if(refresh_screen == 1 )
-    {
-        refresh_screen = 0;
-        wysw();
-    }
-
     if ( stop_button())
     {
-        delay_ms_var_double(30);
-        if (stop_button()) pilot( 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
-        delay_ms_var_double(100);
+        delay_ms_var(30);
+        if (stop_button())
+        {
+            pilot( 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
+            delay_ms_var(100);
+        }
     }
 
     if( Ir_key_press_flag )
@@ -1343,17 +1342,7 @@ void zczytaj_komende( void )
         if( !address )
         {
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-            t = 0;//zmienna pomocnicza
-            if(toggle != 2)//jeśli zmiaenna "toggle" ma wartość inną niż na samym początku programu
-            {
-                if(toggle == toggle_bit)//jeśli stara zapamiętana wartość zmiennej "toggle" jest taka sama jak "toggle_bit", to oznacza to, że przycisk pilota zotał dłużej przytrzymany
-                {
-                    t = 1;//przypisanie jednynki - przycisk zostal dłużej przyciśnięty
-                }
-                toggle = toggle_bit;//przypiwanie obecnej wartości do zmiennej "toggle"
-            }
-            else toggle = toggle_bit;//przypisanie obecnej wartości do zmiennej "toggle"
-
+            toggle_action();
             pilot( command, t );//wywołanie funkcji pilot
             Ir_key_press_flag = 0;
             command = 0xff;
@@ -1362,6 +1351,19 @@ void zczytaj_komende( void )
     }
 }
 
+void toggle_action(void)
+{
+    t = 0;//zmienna pomocnicza
+    if(toggle != 2)//jeśli zmiaenna "toggle" ma wartość inną niż na samym początku programu
+    {
+        if(toggle == toggle_bit)//jeśli stara zapamiętana wartość zmiennej "toggle" jest taka sama jak "toggle_bit", to oznacza to, że przycisk pilota zotał dłużej przytrzymany
+        {
+            t = 1;//przypisanie jednynki - przycisk zostal dłużej przyciśnięty
+        }
+        toggle = toggle_bit;//przypiwanie obecnej wartości do zmiennej "toggle"
+    }
+    else toggle = toggle_bit;//przypisanie obecnej wartości do zmiennej "toggle"
+}
 
 //Koniec definicji metod
 

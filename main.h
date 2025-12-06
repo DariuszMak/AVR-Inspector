@@ -127,6 +127,8 @@ void czynnosc6( int com, int tog );
 
 void pilot( int com, int tog );//
 
+void toggle_action(void);
+
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
 
 void zczytaj_komende( void );
