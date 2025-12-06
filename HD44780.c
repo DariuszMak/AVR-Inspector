@@ -1,6 +1,4 @@
 #include "HD44780.h"
-#include <stdlib.h>
-#include <avr/interrupt.h>
 //-------------------------------------------------------------------------------------------------
 // Wyświetlacz alfanumeryczny ze sterownikiem HD44780
 // Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci

@@ -343,6 +343,9 @@ int main( void )
                     ++t;
                     _delay_ms(500/t+15);
                 }
+                rozmiar = 4;
+                char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
+
 
                 while (t != 0)
                 {
@@ -350,12 +353,8 @@ int main( void )
 
                     for(w = 1; w <= u; ++w)
                     {
-
-
                         _delay_ms((2+1500/t)/(7-w));
-                        rozmiar = 4;
                         s = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
-                        char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
                         for(cyfry = 0; cyfry < rozmiar; ++cyfry)
                         {
                             if(cyfry == s) tablicaTemp[cyfry] = 1;
@@ -379,7 +378,6 @@ int main( void )
                                 if (cyfry == 3) cy4 = 10;
                             }
                         }
-                        free(tablicaTemp);
                         cyfry = w;
                         wysw ( *men );
                         buzzer();
@@ -389,24 +387,30 @@ int main( void )
                 _delay_ms((2+1500/t)/(7-w));
                 wysw( *men );
                 //cy1 = 8;
-                buzzer();
-                _delay_ms(750);
+                for(t = 0; t < rozmiar; ++t)
+                {
+                    if(!tablicaTemp[t])
+                    {
+                        if ( t == 0 ) cy1 = 11;
+                        if ( t == 1 ) cy2 = 11;
+                        if ( t == 2 ) cy3 = 11;
+                        if ( t == 3 ) cy4 = 11;
+                    }
+                    buzzer();
+                    _delay_ms(100);
+                }
+                free(tablicaTemp);
                 break;
             case 59:
-                cy1 = 9;
-                cy2 = 0;
-                cy3 = 0;
-                cy4 = 0;
+                d_led_Int ( 9000 );
                 _delay_ms( 1000 );
-                cy1 = 5;
-                cy2 = 6;
-                cy3 = 7;
-                cy4 = 8;
+                d_led_Int ( 8765 );
                 _delay_ms( 1000 );
-                cy1 = 1;
-                cy2 = 2;
-                cy3 = 3;
-                cy4 = 4;
+                d_led_Int ( 4321 );
+                _delay_ms( 1000 );
+                d_led_Int ( -123 );
+                _delay_ms( 1000 );
+                d_led_Int ( -1000 );
                 _delay_ms( 1000 );
                 break;
             case 55:
@@ -545,6 +549,11 @@ int main( void )
 
                 case 2:
                     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
+                    cyfry = 0;
+                    cy1 = 11;
+                    cy2 = 11;
+                    cy3 = 11;
+                    cy4 = 11;
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 

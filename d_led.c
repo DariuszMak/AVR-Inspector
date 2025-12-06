@@ -9,7 +9,7 @@ volatile uint8_t cy2;
 volatile uint8_t cy3;
 volatile uint8_t cy4;
 
-const uint8_t cyfry[11] PROGMEM =
+const uint8_t cyfry[12] PROGMEM =
 {
     ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F ),//0
     ~( SEG_B | SEG_C ),//1
@@ -21,7 +21,8 @@ const uint8_t cyfry[11] PROGMEM =
     ~( SEG_A | SEG_B | SEG_C | SEG_F ),//7
     ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G ),//8
     ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_F | SEG_G ),//9
-    ( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G | SEG_DP ) //puste pole
+    ( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G | SEG_DP ),//puste pole
+    ~( SEG_G )
 };
 
 void d_led_init( void )
