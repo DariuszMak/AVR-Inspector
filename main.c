@@ -2,6 +2,8 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
+
 #include "delay_lib.h"
 #include "HD44780.h"
 #include "ir_decode.h"
@@ -12,7 +14,6 @@
 #include "EEPROM.h"
 #include "i2c.h"
 #include "termometer.h"
-#include <stdlib.h>
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
 
@@ -730,7 +731,7 @@ int main( void )
 
     void zczytaj_komende( void )
     {
-        if ( stop_button() )
+        if ( stop_button())
         {
             _delay_ms(30);
             if (stop_button()) pilot( &menu, 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
@@ -775,7 +776,7 @@ int main( void )
     LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
-    inverter_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
+    lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
 
 

@@ -16,4 +16,7 @@
 
 void lockers_init();
 
+int locker_1_button(void);//przycisk fizycznie umieszczony na płytce
+int locker_2_button(void);//przycisk fizycznie umieszczony na płytce
+
 #endif // LOCKERS_H_
