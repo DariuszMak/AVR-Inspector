@@ -12,7 +12,7 @@ void lockers_safety_bit_off(void)
 
 uint8_t lockers_is_safety_bit(void)
 {
-    return 0;//usunąć, gdy będzie PCF8563
+    //return 0;//usunąć, gdy będzie PCF8563
     if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
     else return 1;
 }
@@ -454,7 +454,7 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 
             if( end_of_mem == 1)
             {
-                if(start_program == 1) buzzer_time(3000);
+                if(start_program == 3) buzzer_time(3000);
                 else
                 {
                     lockers_print_latest_data();

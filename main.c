@@ -635,7 +635,7 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if(start_program == 1)
+    if(start_program == 3)
     {
         LCD_EraseAll();
         LCD_WriteText("Sprawdz");
@@ -971,17 +971,8 @@ void czynnosc2( int com, int tog )
         }
         else if(pilot_state == 0)
         {
-            if(start_program != 1 )
-            {
-                pilot_state = 1;
-                backlight(1);
-            }
-            else
-            {
-                start_program = 0;
-                backlight(2);
-            }
-
+            pilot_state = 1;
+            backlight(1);
         }
     }
     refresh_screen = 1;
@@ -1088,35 +1079,43 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 {
     buzzer();
 
-    if( menu == 0)
+    if(start_program == 3 )
     {
-        czynnosc0(com, tog);
+        start_program = 0;
+        backlight(2);
     }
-    else if( menu == 1 )
+    else
     {
-        czynnosc1(com, tog);
-    }
-    else if( menu == 2 )
-    {
-        czynnosc2(com, tog);
-    }
-    else if( menu == 3 )
-    {
-        czynnosc3(com, tog);
-    }
-    else if( menu == 4 )
-    {
-        czynnosc4(com, tog);
-    }
-    else if( menu == 5 )
-    {
-        czynnosc5(com, tog);
-    }
-    /*else if( menu == 6 )
-    {
-        czynnosc6(com, tog);
-    }*/
 
+        if( menu == 0)
+        {
+            czynnosc0(com, tog);
+        }
+        else if( menu == 1 )
+        {
+            czynnosc1(com, tog);
+        }
+        else if( menu == 2 )
+        {
+            czynnosc2(com, tog);
+        }
+        else if( menu == 3 )
+        {
+            czynnosc3(com, tog);
+        }
+        else if( menu == 4 )
+        {
+            czynnosc4(com, tog);
+        }
+        else if( menu == 5 )
+        {
+            czynnosc5(com, tog);
+        }
+        /*else if( menu == 6 )
+        {
+            czynnosc6(com, tog);
+        }*/
+    }
 //komendy wspólne dla wszystkich podprogramów
 
     if ( com == 38 )
@@ -1202,7 +1201,7 @@ void zczytaj_komende( void )
         cnt = 0;
         interr = 0;
 
-        if(start_program == 1)
+        if(start_program == 3)
         {
             buzzer();
             backlight(2);
@@ -1344,6 +1343,8 @@ int main( void )
     zczytaj_komende();
     switch_menu = 2;
     pilot( 59, 0 );//przejście do podprogramu nr 3
+
+    start_program = 3;
 
 
     //PCF8583_write_word(254, 1256);
