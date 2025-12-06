@@ -68,11 +68,15 @@ void show_time_format(void);
 
 void show_alarm_format(uint8_t case_of_format);
 
+void show_alarm_options(uint8_t index);
+
 void correction_of_time(void);
 
 void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
 
 void show_frame( int8_t number);
+
+void show_list(uint16_t current_index, uint16_t max_index);
 
 void wysw( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 

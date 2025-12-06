@@ -163,6 +163,30 @@ void show_alarm_format(uint8_t case_of_format)
     }
 }
 
+void show_alarm_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Typ alarmu bez zmian");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Alarm wylaczony");
+    }
+    else if(index == 2)
+    {
+        LCD_WriteText("Alarm codzienny");
+    }
+    else if(index == 3)
+    {
+        LCD_WriteText("Alarm tygodniowy");
+    }
+    else if(index == 4)
+    {
+        LCD_WriteText("Alarm miesieczny");
+    }
+}
+
 void correction_of_time(void)
 {
     if(godz < 0) godz = 23;
@@ -231,6 +255,39 @@ void show_frame( int8_t number)
         t = frame.information / 100;
         if(t == 1) LCD_WriteText("OTWARCIE");
         else if(t == 2) LCD_WriteText("ZAMKNIECIE");
+    }
+}
+
+void show_list(uint16_t current_index, uint16_t max_index)
+{
+
+    if ( current_index != 0)
+    {
+        LCD_GoTo(0, 0);
+        if(menu == 3)
+        {
+            lockers_read_frame(current_index - 1);
+            show_frame(current_index);
+        }
+        else if (menu == 5)
+        {
+            show_alarm_options(current_index);
+        }
+    }
+
+    if(current_index != max_index)
+    {
+        LCD_GoTo(0, 1);
+        if(menu == 3)
+        {
+            lockers_read_frame(current_index);
+            show_frame(current_index + 1);
+        }
+        else if (menu == 5)
+        {
+            show_alarm_options(current_index);
+        }
+
     }
 }
 
@@ -440,22 +497,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         LCD_EraseAll();
         if(u < 0) u = lockers_number_of_frames();
         else if(u > lockers_number_of_frames()) u = 0;
-
-        if ( u != 0)//przypadek na końcu listy
-        {
-            lockers_read_frame(u-1);
-            LCD_GoTo(0, 0);
-            show_frame(u);
-        }
-
-        if(u != lockers_number_of_frames())//przypadek na początku listy
-        {
-            lockers_read_frame(u);
-            //LCD_EraseUp();
-            LCD_GoTo(0, 1);
-            show_frame(u + 1);
-        }
-
+        show_list(u, lockers_number_of_frames());
         break;
     }
 }
