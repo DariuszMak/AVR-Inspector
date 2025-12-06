@@ -11,7 +11,7 @@
 
 #define AMOUNT_OF_LOCKERS 2//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
-#define INTERNAL_EEPROM_MAX_INDEX 1023
+#define INTERNAL_EEPROM_MAX_INDEX 1023//jeśli ustawi się tą zmienną na -1, to wylączy się tę pamięć z użytku
 
 #define PCF8583_CELL 254
 
