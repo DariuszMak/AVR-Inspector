@@ -4,25 +4,6 @@
 
 
 #include "EEPROM.h"
-/**
- Czyta bajt z układu
- \param address adres komórki w układzie
- \return odczytany bajt
-*/
-uint8_t EEPROM_read(uint8_t address)
-{
-    uint8_t a;
-    a = EEPROM_ADDRESS;
-    i2cStart();
-    i2cWrite(a);
-    i2cWrite(address);
-    i2cStart();
-    i2cWrite(a | 1);
-    a = i2cRead(NOACK);
-    i2cStop();
-    return a;
-}
-
 
 /**
  Zapisuje bajt do układu
@@ -31,12 +12,45 @@ uint8_t EEPROM_read(uint8_t address)
 */
 void EEPROM_write(uint8_t address,uint8_t data)
 {
+     EEPROM_write_buf(address, 1, &data );
+}
+
+/**
+ Czyta bajt z układu
+ \param address adres komórki w układzie
+ \return odczytany bajt
+*/
+uint8_t EEPROM_read(uint8_t address)
+{
+    uint8_t temp;
+    EEPROM_read_buf( address, 1, &temp );
+    return temp;
+}
+
+void EEPROM_write_buf(uint8_t adr, uint8_t len, uint8_t *buf )
+{
     i2cStart();
     i2cWrite(EEPROM_ADDRESS);
-    i2cWrite(address);
-    i2cWrite(data);
+    i2cWrite(adr);
+    while (len--)
+    {
+        i2cWrite(*buf++);
+        delay_ms_var(5);
+    }
     i2cStop();
-    delay_ms_var(5);
+}
+
+void EEPROM_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
+{
+    uint8_t a;
+    a = EEPROM_ADDRESS;
+    i2cStart();
+    i2cWrite(a);
+    i2cWrite(adr);
+    i2cStart();
+    i2cWrite(a + 1);
+    while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
+    i2cStop();
 }
 
 /**

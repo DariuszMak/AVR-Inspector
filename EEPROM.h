@@ -10,18 +10,22 @@
 #define EEPROM_ADDRESS 0xAC
 
 /**
+ Zapisuje bajt do układu
+ \param address adres komórki w układzie
+ \param data bajt do wpisania
+*/
+void EEPROM_write(uint8_t address,uint8_t data);
+
+/**
  Czyta bajt z układu
  \param address adres komórki w układzie
  \return odczytany bajt
 */
 uint8_t EEPROM_read(uint8_t address);
 
-/**
- Zapisuje bajt do układu
- \param address adres komórki w układzie
- \param data bajt do wpisania
-*/
- void EEPROM_write(uint8_t address,uint8_t data);
+void EEPROM_write_buf(uint8_t adr, uint8_t len, uint8_t *buf );
+
+void EEPROM_read_buf(uint8_t adr, uint8_t len, uint8_t *buf);
 
 /**
  Zapisuje słowo do układu

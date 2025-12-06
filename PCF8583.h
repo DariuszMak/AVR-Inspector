@@ -41,8 +41,6 @@ struct time_frame
     uint8_t hours;
 };
 
-void PCF8583_write_buf( uint8_t adr, uint8_t len, uint8_t *buf );
-void PCF8583_read_buf( uint8_t adr, uint8_t len, uint8_t *buf);
 
 
 /**-------------------------------------------------------------------------------------------------
@@ -84,6 +82,10 @@ uint8_t PCF8583_read(uint8_t address);
  \param data bajt do wpisania
 */
 void PCF8583_write(uint8_t address,uint8_t data);
+
+void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf );
+
+void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf);
 
 
 /**

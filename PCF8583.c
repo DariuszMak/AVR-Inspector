@@ -36,6 +36,16 @@ uint8_t bin2bcd(uint8_t bin)
 }
 
 /**
+ Zapisuje bajt do układu
+ \param address adres komórki w układzie
+ \param data bajt do wpisania
+*/
+void PCF8583_write(uint8_t address,uint8_t data)
+{
+     PCF8583_write_buf(address, 1, &data );
+}
+
+/**
  Czyta bajt z układu
  \param address adres komórki w układzie
  \return odczytany bajt
@@ -68,18 +78,6 @@ void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
     while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
     i2cStop();
 }
-
-
-/**
- Zapisuje bajt do układu
- \param address adres komórki w układzie
- \param data bajt do wpisania
-*/
-void PCF8583_write(uint8_t address,uint8_t data)
-{
-     PCF8583_write_buf(address, 1, &data );
-}
-
 
 /**
  Czyta bajt z układu w formacie BCD
