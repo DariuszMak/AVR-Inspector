@@ -40,6 +40,8 @@ void lockers_find_latest_data(void);//funkcja zwracająca adres gotowy do zapisa
 
 int lockers_state_of_single_button( int );
 
+uint8_t lockers_index_of_current_frame(void);
+
 uint8_t lockers_number_of_frames(void);
 
 void lockers_check_events(void);

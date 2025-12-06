@@ -24,7 +24,7 @@ int main( void )
 
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
-    const int liczbaPodprogramow = 4;
+    const int liczbaPodprogramow = 6;
     uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
@@ -375,6 +375,14 @@ int main( void )
 
             moveStep = 0;
             show_time_format();
+            break;
+        case 5:
+            LCD_EraseAll();
+
+
+            break;
+        case 6:
+            LCD_EraseAll();
 
 
             break;
@@ -767,6 +775,23 @@ int main( void )
             wysw( *men );
             break;
 
+        case 5:
+            switch ( com )
+            {
+            case 59:
+                break;
+            }
+            wysw( *men );
+            break;
+
+        case 6:
+            switch ( com )
+            {
+            case 59:
+                break;
+            }
+            wysw( *men );
+            break;
         }
 
 
@@ -858,6 +883,16 @@ int main( void )
                     czynnosc( men, 52, tog );
                     //wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
+                case 5:
+                    //czynnosc( men, 50, tog );
+
+                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    break;
+                case 6:
+                    //czynnosc( men, 50, tog );
+
+                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    break;
                 }
             }
         }
@@ -927,7 +962,6 @@ int main( void )
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
 
-
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
@@ -944,8 +978,6 @@ int main( void )
 
     pilot_on();
     pilot_state = 1;
-
-
 
     //główna pętla programu
 

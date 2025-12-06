@@ -33,6 +33,11 @@ void lockers_beginning_actions(void)
     }
 }
 
+uint8_t lockers_index_of_current_frame(void)
+{
+    return (lockers_address_of_frame / SIZE_OF_FRAME);
+}
+
 int lockers_state_of_single_button( int index )//zwraca stan danego przycisku względem numeru indeksu
 {
     if(index == 0) return locker_1_button();
