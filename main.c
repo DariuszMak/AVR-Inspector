@@ -538,8 +538,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if(u == end_of_settings(0))
     {
-        PCF8583_set_time(godz,min,sek,hsek);
-        PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
+        PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok);
         refresh_screen = 0;
         LCD_Clear();
         w = 1;
@@ -1295,7 +1294,6 @@ void zczytaj_komende( void )
             toggle_action();
             pilot( command, t );//wywołanie funkcji pilot
             pilot_reset();
-
         }
     }
 }
@@ -1332,8 +1330,6 @@ int main( void )
 
     //PCF8583_write_word(PCF8583_HEAD, 3000);
 
-
-
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
     refreshing_interrupt_on();
@@ -1343,9 +1339,7 @@ int main( void )
 
     //PCF8583_alarm_monthly();
 
-
     //eeprom_write_word((uint16_t*)257,5);
-
 
     pilot_on();
     pilot_state = 1;
@@ -1367,7 +1361,6 @@ int main( void )
     pilot( 59, 0 );//przejście do podprogramu nr 3
 
     start_program = 3;
-
 
     //PCF8583_write_word(254, 1256);
 

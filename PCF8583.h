@@ -170,17 +170,6 @@ void PCF8583_write_word(uint8_t address,uint16_t data);
 uint16_t PCF8583_read_word(uint8_t address);
 
 
-void PCF8583_write_date(uint8_t address,uint8_t day,uint16_t year);
-
-/**
-Ustawia miesiąc i dzień tykgodnia
-\param address adres komórki w układzie
-\param day dzień
-\param month miesiąc
-*/
-void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_week);
-
-
 /**
  Czyta czas z układu
  \param hour godzina
@@ -197,16 +186,8 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec);
+void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t day_of_week, uint8_t month, int16_t year);
 
-
-/**
- Ustawia datę w układzie
- \param day dzień
- \param month miesiąc
- \param year rok
-*/
-void PCF8583_set_date(uint8_t day, uint8_t day_of_week, uint8_t month,uint16_t year);
 
 /**
  Czyta czas alarmu z układu
