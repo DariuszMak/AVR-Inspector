@@ -148,9 +148,11 @@ int main( void )
         show_day_of_week(dzien_tygodnia);
     }
 
-    void show_list_of_frames (uint8_t row)
+    void show_list_of_frames (uint8_t row, int8_t number)
     {
         LCD_GoTo( 0, row );
+        LCD_Int(number);
+        LCD_WriteText(". ");
         if(frame.hours < 10) LCD_Int(0);
         LCD_Int(frame.hours);
         LCD_WriteText(":");
@@ -168,6 +170,9 @@ int main( void )
         LCD_Int(frame.month);
         LCD_WriteText(":");
         LCD_Int(frame.year);
+
+        LCD_WriteText(" ");
+        LCD_Int(frame.information);
 
     }
 
@@ -411,18 +416,19 @@ int main( void )
             break;
         case 6:
             LCD_EraseAll();
+            if(u < 0) u = lockers_number_of_frames();
+            else if(u > lockers_number_of_frames()) u = 0;
             if(u == 0)
             {
                 lockers_read_frame(u);
-                show_list_of_frames(1);
+                show_list_of_frames(1, u);
                 LCD_EraseUp();
 
             }
             else if (u >= lockers_number_of_frames())
             {
-                u = lockers_number_of_frames();
                 lockers_read_frame(u-1);
-                show_list_of_frames(0);
+                show_list_of_frames(0, u - 1);
 
                 LCD_EraseDown();
 
@@ -430,9 +436,9 @@ int main( void )
             else
             {
                 lockers_read_frame(u);
-                show_list_of_frames(1);
+                show_list_of_frames(1, u);
                 lockers_read_frame(u - 1);
-                show_list_of_frames(0);
+                show_list_of_frames(0, u - 1);
             }
             break;
         }
@@ -839,10 +845,10 @@ int main( void )
             case 59:
                 break;
             case 32:
-                u += 1;
+                u -= 1;
                 break;
             case 33:
-                u -= 1;
+                u += 1;
                 break;
             }
 
