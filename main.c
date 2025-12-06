@@ -2094,18 +2094,34 @@ void sczytaj_komende( void )
                     double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
                     double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
 
-                    if( PCF8583_is_alarm_flag_set() == 1 || current_temp_temperature > maximum_temp_temperature)
+                    if( current_temp_temperature > maximum_temp_temperature)
                     {
-                        backlight(2);
-                        if(current_temp_temperature > maximum_temp_temperature)
+                        if(lockers_is_flag_bit(1) == 0)
                         {
                             buzzer_time(10);
-                            printf("\nZADANA TEMPERATURA PRZEKROCZONA!");
+                            backlight(2);
+                            printf("\nUWAGA!!! PRZEKROCZONO TEMPERATURE KRYTYCZNA!!!");
+                            lockers_print_temperature();
+                            lockers_flag_bit_on(1);
                         }
-                        else if(PCF8583_is_alarm_flag_set() == 1)
+                    }
+                    else
+                    {
+                        if(lockers_is_flag_bit(1) == 1)
                         {
                             buzzer();
+                            backlight(2);
+                            printf("\nTEMPERATURA USTABILIZOWANA!");
+                            lockers_print_temperature();
+                            lockers_flag_bit_off(1);
                         }
+                    }
+
+                    if( PCF8583_is_alarm_flag_set() == 1)
+                    {
+                        backlight(2);
+                        buzzer();
+                        if(lockers_is_flag_bit(1) == 1) printf("\nUWAGA!");
                         lockers_print_temperature();
                         PCF8583_alarm_flag_off();
                         //PCF8583_alarm_flag_off();
