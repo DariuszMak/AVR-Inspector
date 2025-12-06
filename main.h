@@ -50,7 +50,7 @@ int8_t u; //inna (dodatkowa) zmienna pomocnicza
 int8_t w; //inna (dodatkowa) zmienna pomocnicza
 int8_t s;//inna (dodatowa zmienna)
 int16_t c;//inna (dodatowa zmienna)
-int8_t d;//inna (dodatkowa zmienna pmocnicza)
+//int8_t d;//inna (dodatkowa zmienna pmocnicza)
 int8_t e;//inna (dodatkowa zmienna)
 
 uint8_t refresh_screen;
