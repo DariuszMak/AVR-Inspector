@@ -2430,8 +2430,8 @@ void sczytaj_komende( void )
                 else if(temp_char == 'q') pilot(14, 0);
                 else if(temp_char == 'Q') pilot(14, 1);
                 else if(temp_char == 'k') pilot(38, 0);
-                else if(temp_char == 'v') pilot(100, 0);
-                else if(temp_char == 'p') pilot(15, 0);
+                else if(temp_char == 'p') pilot(100, 0);
+                else if(temp_char == 'l') pilot(15, 0);
                 else if(temp_char == 'c') pilot(12, 0);
                 else if(temp_char == 'C') pilot(12, 1);
                 else if(temp_char == '[') pilot(46, 0);
@@ -2546,8 +2546,42 @@ void sczytaj_komende( void )
             if(menu != 4 && menu != 5)
             {
                 change_color_RGB();
-                ds18b20_temperature();
+                ds18b20_temperature();//odczytanie nowej wartości temperatury
                 //lockers_check_events();
+
+                //obróbka danych temperatury do dwóch zmiennych typu "double"
+                struct double_format double_format_temp_from_pcf;
+                i2c_read_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&double_format_temp_from_pcf);
+                double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
+                double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
+
+                static uint8_t beginning_report = 0;//pomocnicza zmienna statyczna 0, gdy jeszcze nie wykonano żadnego raportu, 1 - gdy wykonano już pierwszy raport, 2 - gdy w czasie oczekiwania na pierwszy raport nastąpiło przekrocznie temperatury krytycznej
+                uint8_t changing_temperature_state = 0;//zmienna pomocnicza przyjmująca wartość 1, gdy nastąpiła zmiana flagi odnośnie temperatury na przeciwną
+
+
+                if(current_temp_temperature > maximum_temp_temperature)
+                {
+                    if(lockers_is_flag_bit(1) == 0) changing_temperature_state = 1;
+                    lockers_flag_bit_on(1);
+                    if(beginning_report == 0) beginning_report = 2;
+                    //show_properties(1);
+                    //buzzer();
+                    //lockers_print_temperature();
+                }
+                else
+                {
+                    if(lockers_is_flag_bit(1) == 1) changing_temperature_state = 1;
+                    lockers_flag_bit_off(1);
+                    //show_properties(1);
+                    //buzzer_time(10);
+                    //lockers_print_temperature();
+                }
+
+                if(lockers_is_flag_bit(1) == 1)
+                {
+                    alert_colors_RGB();
+                    buzzer_time(50);
+                }
 
                 if(start_program == 2)
                 {
@@ -2566,40 +2600,23 @@ void sczytaj_komende( void )
                         PCF8583_timer_flag_off();
                     }
 
-                    struct double_format double_format_temp_from_pcf;
-                    i2c_read_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&double_format_temp_from_pcf);
-                    double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
-                    double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
-
-                    static uint8_t beginning_raport = 0;
-
-                    if( current_temp_temperature > maximum_temp_temperature)
-                    {
-                        if(lockers_is_flag_bit(1) == 0 || beginning_raport == 0)
-                        {
-                            lockers_flag_bit_on(1);
-                            show_properties(1);
-                            buzzer();
-                            lockers_print_temperature();
-                        }
-                    }
-                    else
+                    if(changing_temperature_state == 1 || beginning_report == 2)
                     {
                         if(lockers_is_flag_bit(1) == 1)
                         {
-                            lockers_flag_bit_off(1);
+                            //lockers_flag_bit_off(1);
                             show_properties(1);
                             buzzer_time(10);
-                            lockers_print_temperature();
                         }
-                    }
-
-                    beginning_raport = 1;
-
-                    if(lockers_is_flag_bit(1) == 1)
-                    {
-                        alert_colors_RGB();
-                        buzzer_time(50);
+                        else if(lockers_is_flag_bit(1) == 0)
+                        {
+                            //lockers_flag_bit_on(1);
+                            show_properties(1);
+                            buzzer();
+                        }
+                        beginning_report = 1;
+                        changing_temperature_state = 0;
+                        lockers_print_temperature();
                     }
 
                     if( PCF8583_is_alarm_flag_set() == 1)
