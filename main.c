@@ -130,23 +130,23 @@ int main( void )
             LCD_GoTo( 0, 0 );
             LCD_Int( cyfry );
 
-            char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
+            char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
 
-            if( u > 0 || u == -1 )
+            if( u > 0 || u == -1 )//jeśli losowanie trwa, lub właśnie się kończy
             {
-                for(s = 0; s < rozmiar; ++s)
+                for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
                 {
                     if(s == pozycja) tablicaTemp[s] = '1';
                     else tablicaTemp[s] = '0';
                 }
-                if(u > 0)
+                if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
                 {
                     LCD_GoTo(4,0);
                     LCD_Int((int) (t * 100 / 250));
                     LCD_WriteText("%");
                 }
 
-                for(s = 0; s < rozmiar; ++s)
+                for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
                 {
                     if(tablicaTemp[s] == '1')
                     {
@@ -163,7 +163,7 @@ int main( void )
                         if (s == 3 || cyfry == 0) cy4 = 10;
                     }
                 }
-                if ( u == -1 )
+                if ( u == -1 )//koniec animacji - wyświetlenie kresek poziomych
                 {
                     for(s = 0; s < rozmiar; ++s)
                     {
@@ -192,7 +192,7 @@ int main( void )
                 int moveStep=0;
                 if(t==0)
                 {
-                    //PCF8583_get_wall_time();
+                    PCF8583_get_wall_time();
                     moveStep=0;
                 }
                 else if (t==1)
@@ -467,6 +467,11 @@ int main( void )
                 while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
 
                 _delay_ms(200);
+                PCF8583_get_wall_time();
+                for(w = 0; w < hsek; ++w)
+                {
+                    rand();
+                }
 
                 while ( t != 1 )
                 {
@@ -767,7 +772,6 @@ int main( void )
 
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     random_generator_init();//włączenie losowaniacyfr
-    //pwm_led_init();//inicjaliacja diod pwm
     LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego

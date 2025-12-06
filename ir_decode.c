@@ -39,7 +39,7 @@ void ir_init()
     Ir_key_press_flag = 0;
 
     STOP_BUTTON_DIR  &= ~STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
-    STOP_BUTTON_PORT |= STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
+    STOP_BUTTON_PORT |= STOP_BUTTON_IN;//podciągnięcie przycisku stopu do tranzystora
 }
 
 ISR( TIMER1_CAPT_vect )

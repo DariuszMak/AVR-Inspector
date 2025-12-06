@@ -14,7 +14,7 @@ ISR( _VECTOR( 4 ) )
 {
 	static uint8_t cnt;
 
-	if(!cnt) PCF8583_get_wall_time();
+	if(!cnt) /* miejsce na jakąś fajną funkcję*/;
 
 	++cnt;
 }
