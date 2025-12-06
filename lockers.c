@@ -24,6 +24,7 @@ void USART_Transmit(uint8_t c, FILE *stream)
     }
     while(!(UCSRA & (1<<UDRE)));
     UDR = c;
+
 }
 
 /* Odbiera znak z portu szeregowego */
@@ -261,11 +262,12 @@ void lockers_print_all_memory(void)
 {
     //uint16_t temp = 0;
     lockers_print_amount_of_first_frames(lockers_number_of_frames());
-
 }
 
 void lockers_print_latest_data(void)
 {
+    PCF8583_get_wall_time();
+    printf("Raport. %02d:%02d:%02d %02d:%02d:%d\n", godz, min, sek, dzien, miesiac, rok);
     lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
     lockers_queue_empty();
 }
