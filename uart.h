@@ -23,10 +23,10 @@ void uart_init(uint16_t baud);
 void USART_Transmit(uint8_t c, FILE *stream);
 void uart_putc(char data);
 void uart_puts(char *string);
-void uart_putint(int number, uint8_t base);
+//void uart_putint(int number, uint8_t base);
 
 char uart_getc(void);
-void uart_gets(char * temporary_table, uint16_t size_of_table);
-uint16_t uart_getint(void);
+//void uart_gets(char * temporary_table, uint16_t size_of_table);
+//uint16_t uart_getint(void);
 
 #endif //UART_H

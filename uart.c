@@ -60,12 +60,12 @@ void uart_puts(char *string)
     while((c=*string++))uart_putc(c);
 }
 
-void uart_putint(int number, uint8_t base)
+/*void uart_putint(int number, uint8_t base)
 {
     char buffer[20];
     itoa(number,buffer,base);
     uart_puts(buffer);
-}
+}*/
 
 char uart_getc(void)
 {
@@ -74,7 +74,7 @@ char uart_getc(void)
     return UART_RX_BUF[uart_rx_t];
 }
 
-void uart_gets(char * temporary_table, uint16_t size_of_table)
+/*void uart_gets(char * temporary_table, uint16_t size_of_table)
 {
     //uart_putint(sizeof(temporary_table),10);
     uint16_t times = 0;
@@ -101,9 +101,9 @@ void uart_gets(char * temporary_table, uint16_t size_of_table)
     {
         temporary_table[times] = 0;
     }
-}
+}*/
 
-uint16_t uart_getint(void)
+/*uint16_t uart_getint(void)
 {
     char odebrany=0;
     uint16_t liczba=0;
@@ -123,7 +123,7 @@ uint16_t uart_getint(void)
     while(odebrany!='\r'); //jeœli odebraliœmy znak zakoñczenia liczby to wychodzimy z pêtli
     uart_putc('\n');
     return liczba;//zwracamy odebran¹ liczbê
-}
+}*/
 
 ISR(USART_RXC_vect)
 {

@@ -19,12 +19,16 @@ uint8_t lockers_is_flag_bit(uint8_t move)
 void lockers_init()
 {
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
-    if(PCF8583_read_word(PCF8583_HEAD) > temp || PCF8583_read_word(PCF8583_TAIL) > temp || PCF8583_read_word(PCF8583_HEAD) < INTERNAL_EEPROM_MIN_INDEX || PCF8583_read_word(PCF8583_TAIL) < INTERNAL_EEPROM_MIN_INDEX )
+    uint16_t tail_word = PCF8583_read_word(PCF8583_TAIL);
+    uint16_t head_word = PCF8583_read_word(PCF8583_HEAD);
+    if(head_word > temp || tail_word > temp || head_word < INTERNAL_EEPROM_MIN_INDEX || tail_word < INTERNAL_EEPROM_MIN_INDEX )
     {
         PCF8583_write_word(PCF8583_TAIL, lockers_convert_index_of_frame_to_address(0));
         lockers_queue_empty();
-        printf("BLEDNE WARTOSCI ADRESU KOLEJKI!!!\n");
+
+        show_properties(10);
         buzzer_time(1000);
+        LCD_Clear();
     }
 
     //lockers_queue_head = 0;
@@ -112,10 +116,10 @@ void lockers_check_events(void)
     if(action)
     {
         blue_colors_RGB();
-        lockers_queue_enque();
         show_properties(8);
         //refresh_screen = 1;
         buzzer_time(300);
+        lockers_queue_enque();
         change_color_RGB();
     }
 }
@@ -192,14 +196,14 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
     }
 }
 
-void lockers_print_date_of_report()
+void lockers_print_date_of_report(void)
 {
     all_colors_RGB();
     PCF8583_get_wall_time();
     printf("%04d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }
 
-void lockers_print_temperature()
+void lockers_print_temperature(void)
 {
     printf("\nTEMPERATURA");
     if(lockers_is_flag_bit(1) == 1) printf(" KRYTYCZNA");
@@ -328,9 +332,10 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
             {
                 if(start_program == 3)
                 {
+                    lockers_queue_dequeue();
+                    green_colors_RGB();
                     show_properties(9);
                     buzzer_time(2000);
-                    lockers_queue_dequeue();
                 }
                 else
                 {

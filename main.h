@@ -56,7 +56,7 @@ int16_t c;//inna (dodatowa zmienna)
 //int8_t d;//inna (dodatkowa zmienna pmocnicza)
 int8_t e;//inna (dodatkowa zmienna)
 
-uint8_t refresh_screen;
+uint8_t refresh_screen;//zmienna odpowiedzialna za odświeżenie wyświetlacza
 
 struct double_format
 {

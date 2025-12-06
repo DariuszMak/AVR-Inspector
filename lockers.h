@@ -104,7 +104,7 @@ void lockers_init();//inicjalizacja wejść
 
 void lockers_beginning_actions(void);//przypisanie wartości początkowych dla przycisków
 
-void lockers_print_date_of_report();
+void lockers_print_date_of_report(void);
 
 void lockers_print_entire_frame(void);
 
@@ -123,6 +123,8 @@ void lockers_queue_empty(void);
 uint8_t lockers_is_queue_empty(void);
 
 uint8_t lockers_queue_number_of_records(void);
+
+void lockers_save_frame(uint8_t index, uint8_t i);
 
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
 {

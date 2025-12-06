@@ -443,7 +443,32 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     LCD_Home();
     LCD_Clear();
 
-    if(number == 9)
+
+    if(number == 13)
+    {
+        LCD_WriteText("OCZEKIWANIE NA");
+        LCD_GoTo(0,1);
+        LCD_WriteText("RESTART");
+    }
+    else if(number == 12)
+    {
+        LCD_WriteText("STARSZE DANE");
+        LCD_GoTo(0,1);
+        LCD_WriteText("PRZEPADLY");
+    }
+    else if(number == 11)
+    {
+        LCD_WriteText("Przechwytywanie");
+        LCD_GoTo(0,1);
+        LCD_WriteText("potwierdzone");
+    }
+    else if(number == 10)
+    {
+        LCD_WriteText("BLAD");
+        LCD_GoTo(0,1);
+        LCD_WriteText("ADRESOW");
+    }
+    else if(number == 9)
     {
         LCD_WriteText("PRZEPELNIENIE");
         LCD_GoTo(0,1);
@@ -451,7 +476,7 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     }
     else if(number == 8)
     {
-        LCD_WriteText("SYGNAL");
+        LCD_WriteText("PIIIK!");
     }
     else
     {
@@ -531,10 +556,10 @@ void show_time_format(void)
     if(miesiac < 10) LCD_Int(0);
     LCD_Int(miesiac);
     LCD_WriteText(":");
-    uint8_t temp2_number_of_digits = number_of_digits(rok);
+    //uint8_t temp2_number_of_digits = number_of_digits(rok);
     //LCD_Int(temp_number_of_digits);
-    if(temp2_number_of_digits > 4) temp2_number_of_digits = 4;
-    for(t = 0; t < 4 - temp2_number_of_digits; ++t)
+    //if(temp2_number_of_digits > 4) temp2_number_of_digits = 4;
+    for(t = 0; t < 4 - number_of_digits(rok); ++t)
     {
         LCD_WriteText("_");
     }
@@ -834,7 +859,8 @@ uint8_t end_of_settings(void)
     if(menu == 5 || menu == 6)
     {
         if(u < -1) return u;
-    }else if(u < 0) return u;
+    }
+    else if(u < 0) return u;
 
     if(menu == 4)
     {
@@ -1181,7 +1207,6 @@ void show_list_case(index)
     }
 }
 
-
 void show_list(int16_t current_index, int16_t max_index)
 {
     if(max_index == -1)
@@ -1282,7 +1307,6 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_Double(299.901,3);
     LCD_Double(200.324,3);*/
 
-
     //LCD_Int( pwm1 );
     //LCD_Int( pwm2 );
     //OCR0 = pwm1;//zmienna przepełnienia Timera 0
@@ -1332,7 +1356,6 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     moveStep = 0;
     show_time_format();
-
 }
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -2221,9 +2244,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         {
             lockers_flag_bit_off(3);
             blue_colors_RGB();
-            buzzer_time(500);
             pilot_off();
             backlight(0);
+            show_properties(3);
+            buzzer_time(500);
             //printf("\nPilot OFF\n");
         }
         else
@@ -2232,9 +2256,9 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             green_colors_RGB();
             pilot_on();
             backlight(2);
+            show_properties(3);
             //printf("\nPilot ON\n");
         }
-        show_properties(3);
     }
 }
 
@@ -2264,7 +2288,7 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
-        if(lockers_is_flag_bit(2) == 1) send_all_screen();
+        if(lockers_is_flag_bit(2) == 1 && start_program != 1) send_all_screen();
         //printf("%d\n",LCD_position);
         //printf("%d\n",LCD_position);
     }
@@ -2310,7 +2334,7 @@ void sczytaj_komende( void )
                     lockers_flag_bit_off(0);
                     backlight(1);
                     temp = 1;
-                    printf("\nOczekiwanie na restart.\n");
+                    show_properties(13);
                 }
             }
             else
@@ -2330,12 +2354,13 @@ void sczytaj_komende( void )
 
         if(start_program == 0)
         {
-            printf("\nPrzechwytywanie USB potwierdzone... ");
             lockers_print_date_of_report();
+            show_properties(11);
 
             if(lockers_is_queue_full() == 1 )
             {
-                printf("UWAGA!!! STARSZE DANE PRZEPADLY!!!\n");
+                LCD_Clear();
+                show_properties(12);
                 lockers_print_latest_data();
             }
             start_program = 2;
@@ -2577,6 +2602,7 @@ int main( void )
     PCF8583_timer_flag_off();
 
     PCF8583_24h_format();
+    //PCF8583_write_word(PCF8583_TAIL, 1500);
 
     RGB_init();
 
@@ -2586,15 +2612,16 @@ int main( void )
     timer_2_init();//włączenie losowaniacyfr
     refreshing_interrupt_on();
     ir_init();//inicjalizacja odbioru sygnału z pilota
-
-    lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-
-    uart_init(57600);//inicjalizacja uart'u
-
     if(lockers_is_flag_bit(3) == 1) pilot_on();
     else pilot_off();
 
+    uart_init(57600);//inicjalizacja uart'u
+
     sei();//włącza przerwania
+
+    lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
+
+
 
     /*    for(t = 1; t < 4; ++t)
     {
