@@ -72,6 +72,7 @@ void delay_us_var_double( double __us )
 // Funkcja wystawiaj¹ca półbajt na magistralę danych
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_8_BIT_MODE == 0
 void _LCD_OutNibble( unsigned char nibbleToWrite )
 {
 
@@ -116,6 +117,7 @@ unsigned char _LCD_InNibble( void )
 	return tmp;
 }
 #endif
+#endif // USE_8_BIT_MODE
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu bajtu do wyświetacza (bez rozróżnienia instrukcja/dane).
@@ -124,18 +126,33 @@ unsigned char _LCD_InNibble( void )
 void _LCD_Write( unsigned char dataToWrite )
 {
 #if USE_RW == 1
+    #if USE_8_BIT_MODE == 0
 	LCD_DB4_DIR |= LCD_DB4;
 	LCD_DB5_DIR |= LCD_DB5;
 	LCD_DB6_DIR |= LCD_DB6;
 	LCD_DB7_DIR |= LCD_DB7;
 	LCD_RW_PORT &= ~LCD_RW;
-#endif
+	#endif // USE_8_BIT_MODE
+	#if USE_8_BIT_MODE == 1
+	LCD_DATA_DIR = 0xFF;
+	#endif // USE_8_BIT_MODE
+#endif // USE_RW
+    #if USE_8_BIT_MODE == 0
 	LCD_E_PORT |= LCD_E;
 	_LCD_OutNibble( dataToWrite >> 4 );
 	LCD_E_PORT &= ~LCD_E;
 	LCD_E_PORT |= LCD_E;
 	_LCD_OutNibble( dataToWrite );
 	LCD_E_PORT &= ~LCD_E;
+	#endif // USE_8_BIT_MODE
+	#if USE_8_BIT_MODE == 1
+	#if USE_RW == 1
+	LCD_RW_PORT &= ~LCD_RW;
+	#endif // USE_RW
+LCD_E_PORT |= LCD_E;
+LCD_DATA_PORT = dataToWrite;
+LCD_E_PORT &= ~LCD_E;
+	#endif // USE_8_BIT_MODE
 #if USE_RW == 1
 	while( LCD_ReadStatus() & HD44780_DDRAM_SET );
 #else
@@ -152,22 +169,35 @@ void _LCD_Write( unsigned char dataToWrite )
 unsigned char _LCD_Read( void )
 {
 	unsigned char tmp = 0;
+	#if USE_8_BIT_MODE == 0
 	LCD_DB4_DIR &= ~LCD_DB4;
 	LCD_DB5_DIR &= ~LCD_DB5;
 	LCD_DB6_DIR &= ~LCD_DB6;
 	LCD_DB7_DIR &= ~LCD_DB7;
+	#endif // USE_8_BIT_MODE
+	#if USE_8_BIT_MODE == 1
+	LCD_DATA_DIR = 0x00;
+	#endif // USE_8_BIT_MODE
 
 	LCD_RW_PORT |= LCD_RW;
 	LCD_E_PORT |= LCD_E;
+
+	#if USE_8_BIT_MODE == 0
 	tmp |= ( _LCD_InNibble() << 4 );
 	LCD_E_PORT &= ~LCD_E;
 	LCD_E_PORT |= LCD_E;
 	tmp |= _LCD_InNibble();
+	#endif // USE_8_BIT_MODE
+	#if USE_8_BIT_MODE == 1
+	asm("nop");
+    tmp = LCD_DATA_PIN;
+	#endif // USE_8_BIT_MODE
+
 	LCD_E_PORT &= ~LCD_E;
 	_delay_us( 50 );
 	return tmp;
 }
-#endif
+#endif // USE_RW
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu rozkazu do wyœwietlacza
@@ -264,12 +294,19 @@ void LCD_Home( void )
 void LCD_Initalize( void )
 {
 	unsigned char i;
+	#if USE_8_BIT_MODE == 0
 	LCD_DB4_DIR |= LCD_DB4; // Konfiguracja kierunku pracy wyprowadzeñ
 	LCD_DB5_DIR |= LCD_DB5; //
 	LCD_DB6_DIR |= LCD_DB6; //
 	LCD_DB7_DIR |= LCD_DB7; //
 	LCD_E_DIR 	|= LCD_E;   //
 	LCD_RS_DIR 	|= LCD_RS;  //
+	#endif // USE_8_BIT_MODE
+#if USE_8_BIT_MODE == 1
+LCD_DATA_DIR = 0xFF;
+LCD_E_DIR 	|= LCD_E;   //
+LCD_RS_DIR 	|= LCD_RS;  //
+#endif // USE_8_BIT_MODE
 #if USE_RW == 1
 	LCD_RW_DIR 	|= LCD_RW;  //
 #endif
@@ -282,17 +319,32 @@ void LCD_Initalize( void )
 	for( i = 0; i < 3; ++i ) // trzykrotne powtórzenie bloku instrukcji
 	{
 		LCD_E_PORT |= LCD_E; //  E = 1
+		#if USE_8_BIT_MODE == 0
 		_LCD_OutNibble( 0x03 ); // tryb 8-bitowy
+		#endif // USE_8_BIT_MODE
+		#if USE_8_BIT_MODE == 1
+		#if USE_RW == 1
+		  LCD_E_PORT |= LCD_E;
+		  #endif // USE_RW
+            LCD_DATA_PORT = 0x3F;
+		#endif // USE_8_BIT_MODE
 		LCD_E_PORT &= ~LCD_E; // E = 0
 		_delay_ms( 5 ); // czekaj 5ms
 	}
 
+    #if USE_8_BIT_MODE == 0
 	LCD_E_PORT |= LCD_E; // E = 1
 	_LCD_OutNibble( 0x02 ); // tryb 4-bitowy
 	LCD_E_PORT &= ~LCD_E; // E = 0
+    #endif // USE_8_BIT_MODE
 
 	_delay_ms( 1 ); // czekaj 1ms
+	#if USE_8_BIT_MODE == 0
 	LCD_WriteCommand( HD44780_FUNCTION_SET | HD44780_FONT5x7 | HD44780_TWO_LINE | HD44780_4_BIT ); // interfejs 4-bity, 2-linie, znak 5x7
+	#endif // USE_8_BIT_MODE
+	#if USE_8_BIT_MODE == 1
+	LCD_WriteCommand(HD44780_FUNCTION_SET | HD44780_FONT5x7 | HD44780_TWO_LINE | HD44780_8_BIT); // interfejs 4-bity, 2-linie, znak 5x7
+	#endif // USE_8_BIT_MODE
 	LCD_WriteCommand( HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_OFF ); // wy³¹czenie wyswietlacza
 	LCD_WriteCommand( HD44780_CLEAR ); // czyszczenie zawartosæi pamieci DDRAM
 #if USE_RW == 0
