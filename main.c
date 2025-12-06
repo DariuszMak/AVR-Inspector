@@ -236,8 +236,8 @@ int main( void )
             LCD_WriteText(":");
             if(miesiac < 10) LCD_Int(0);
             LCD_Int(miesiac);
-                        LCD_WriteText(" ");
-                                    LCD_Int(PCF8583_recognise_type_of_alarm());
+            LCD_WriteText(" ");
+            LCD_Int(PCF8583_recognise_type_of_alarm());
 
 
 
@@ -753,6 +753,12 @@ int main( void )
 
     void zczytaj_komende( void )
     {
+        if( interr && (menu == 3))
+        {
+            wysw(menu);
+            interr = 0;
+            cnt = 0;
+        }
         if ( stop_button())
         {
             delay_ms_var_double(30);
@@ -800,8 +806,6 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-
-
 
     sei();//włącza przerwania
 
