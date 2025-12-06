@@ -19,9 +19,9 @@
 
 #define EXTERNAL_EEPROM_MAX_INDEX 255//wartość ostatniej największej komórki zewnętrznej pamięci eeprom do wykorzystania
 
-#define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
+//#define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
 
-#define PCF8583_HEAD 252//komórka głowy
+//#define PCF8583_HEAD 252//komórka głowy
 
 #define PCF8583_SAFETY_CELL 251
 
@@ -79,7 +79,9 @@
 
 uint8_t state_temp;
 
+uint16_t lockers_queue_tail;
 
+uint16_t lockers_queue_head;
 
 void lockers_safety_bit_on(void);
 
