@@ -27,8 +27,8 @@ int main( void )
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 //zmienne zarezerwowane dla podprogramu nr 2:
-int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
-int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+    int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
+    int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 //zmienne spełniające określone funkcje
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
     int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
@@ -153,7 +153,6 @@ int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
             }
 
             free(tablicaTemp);
-
 
             break;
         case 3:
@@ -394,30 +393,30 @@ int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
         case 2:
             switch( com )
             {
-            case 100:
-            case 41:
+            case 100://reakcja na naciśnięcie przycisku "stop"
+            case 41://reakcja na naciśnięcie przyciku z pilota RC5
 
-                t = 1;
-                u = 1;
+                t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
+                u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
 
                 do
                 {
                     buzzer_time(0.2);
                     ++t;
                     wysw ( *men );
-                    _delay_ms(750/t+10);
+                    _delay_ms(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
                 }
-                while (stop_button() && t != 250);
+                while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
 
                 _delay_ms(200);
 
                 while ( t != 1 )
                 {
-                    u=rand()%6 + 1;
+                    u=rand()%6 + 1;//wylosowanie liczby oczek na kostce
 
-                    for(w = 1; w <= u; ++w)
+                    for(w = 1; w <= u; ++w)//przekulnięcia kostki w danej próbie
                     {
-                        _delay_ms((1+2500/t)/(7-w));
+                        _delay_ms((1+2500/t)/(7-w));//specjalny interwał zwalniający
                         pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                         cyfry = w;
                         wysw ( *men );
@@ -425,9 +424,9 @@ int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
                     }
                     --t;
                 }
-                t++;
-                if( w < 7 )_delay_ms((1+2500/t)/(7-w));
-                u = -1;
+                t++;//przywrócenie efektu z ostatniej tury
+                if( w < 7 )_delay_ms((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
+                u = -1;//tryb wyświetlania
                 wysw( *men );
                 //cy1 = 8;
 

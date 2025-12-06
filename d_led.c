@@ -35,7 +35,7 @@ void d_led_init( void )
 
     TCCR0 |= ( 1 << WGM01 ); // tryb CTC timera 0
     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // preskaler 1024
-    OCR0 = 78; //78 specjalna zmienna - rejestr przepe�nienia (maksymalna warto�� = 255)
+    OCR0 = 78; //78 specjalna zmienna - rejestr przepe³nienia (maksymalna wartoœæ = 255)
     TIMSK |= ( 1 << OCIE0 ); // zezwolenie na przerwania COMPARE MATCH
 }
 
@@ -54,7 +54,7 @@ ISR( TIMER0_COMP_vect )
 
 void d_led_Int ( int dana )
 {
-    if ( dana >= 10000 || dana <= -1000 ) dana = 0;
+    if ( dana >= 10000 || dana <= -1000 ) dana = 0;//zakres ziennych do wyświetlania
     int dana_temp = abs( dana );
 
     int d = 1;
@@ -65,11 +65,13 @@ void d_led_Int ( int dana )
         g *= 10;
     }
 
+    //w zmiennej g jest wielkość danej liczby
+
     int f;
     int h;
     g = 10;
 
-    for( f = 0; f < d; ++f)
+    for( f = 0; f < d; ++f)//wyłuskiwanie poszczególnych cyfr od najmniej znaczącej
     {
         h = dana_temp % g;
         if( f == 1 ) h -= cy4;
@@ -85,7 +87,7 @@ void d_led_Int ( int dana )
         g *= 10;
     }
 
-    for ( f = d; f < 5; ++f)
+    for ( f = d; f < 5; ++f)//uzupełnianie o puste pola, gdzie już nie ma cyfr liczby
     {
         if(f == 1 )
         {
@@ -97,11 +99,10 @@ void d_led_Int ( int dana )
         if(f == 3 ) cy1 = 10;
     }
 
-    if(dana < 0)
+    if(dana < 0)//dopisnie znaku "minus"
     {
-        if ( d == 3 ) cy1 = 11;
-        if ( d == 2 ) cy2 = 11;
         if ( d == 1 ) cy3 = 11;
+        if ( d == 2 ) cy2 = 11;
+        if ( d == 3 ) cy1 = 11;
     }
 }
-
