@@ -447,8 +447,13 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     LCD_Home();
     LCD_Clear();
 
-
-    if(number == 17)
+    if(number == 18)
+    {
+        LCD_WriteText("TEST");
+        LCD_GoTo(0,1);
+        LCD_WriteText("WYSWIETLACZA...");
+    }
+    else if(number == 17)
     {
         LCD_WriteText("CZYSZCZENIE");
     }
@@ -565,7 +570,7 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             }
         }
     }
-    if( !(number == 8 || number == 4 || number == 3 || number == 17) || lockers_is_flag_bit(2) == 1) send_all_screen();
+    if( !(number == 8 || number == 4 || number == 3 || number == 17 || number == 18) || lockers_is_flag_bit(2) == 1) send_all_screen();
 
     delay_ms_var_double( 500 );
     //pilot_reset();
@@ -1922,6 +1927,7 @@ void czynnosc1( int com, int tog )
     */
     if ( com == 12 )
     {
+        show_properties(18);
         pilot_off();
 //        refresh_screen = 0;
         LCD_Clear();
