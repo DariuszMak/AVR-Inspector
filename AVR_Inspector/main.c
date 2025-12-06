@@ -1214,7 +1214,7 @@ void show_frame( int16_t number )
     }
 }
 
-void show_list_case(index)
+void show_list_case(int16_t index)
 {
     if(menu == 3)
     {
@@ -2740,7 +2740,7 @@ int main( void )
     LCD_Initalize();//inicjalizacja wyświetlacza
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
-    PCF8583_init();//inicjlalizacja wyświetlacza
+    PCF8583_init();//inicjlalizacja zegara RTC
 
     PCF8583_alarm_flag_off();
     PCF8583_timer_flag_off();
