@@ -7,7 +7,7 @@
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
 int8_t switch_menu = 0;//zmienna służąca do wchodzenia do poszczególnych podprogramów
-const int liczbaPodprogramow = 6;
+const int liczbaPodprogramow = 5;
 uint8_t refresh_screen = 0;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
@@ -32,7 +32,7 @@ void backlight(int8_t state)
     else if(state == 2)
     {
         buzzer_time(10);
-        backlight_of_lcd = 100;
+        backlight_of_lcd = 50;
     }
 }
 
@@ -102,8 +102,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         else if(number == 3) LCD_WriteText("DANE - EEPROM");
         else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
         else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
-        else if(number == 6) LCD_WriteText("");
-
+        //else if(number == 6) LCD_WriteText("");
 
         for ( t = 0; t < 5; ++t )
         {
@@ -983,7 +982,7 @@ void czynnosc3( int com, int tog )
             LCD_Clear();
             LCD_WriteText("Czyszczenie...");
             lockers_clear_all_memory();
-            c = 0;
+            //c = 0;
         }
     }
     if( com == 41 )
@@ -997,10 +996,6 @@ void czynnosc3( int com, int tog )
     if ( com == 33 )
     {
         c += zwiekszanie;
-    }
-    if ( com == 59 )
-    {
-        c = 0;
     }
 
     refresh_screen = 1;
@@ -1063,11 +1058,11 @@ void czynnosc5( int com, int tog )
     refresh_screen = 1;
 }
 
-void czynnosc6( int com, int tog )
+/*void czynnosc6( int com, int tog )
 {
 
     refresh_screen = 1;
-}
+}*/
 
 
 
@@ -1100,10 +1095,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     {
         czynnosc5(com, tog);
     }
-    else if( menu == 6 )
+    /*else if( menu == 6 )
     {
         czynnosc6(com, tog);
-    }
+    }*/
 
 //komendy wspólne dla wszystkich podprogramów
 
@@ -1207,9 +1202,8 @@ void zczytaj_komende( void )
                 PCF8583_alarm_flag_off();
             }
         }
-        else
 
-            if(backlight_of_lcd > 0) --backlight_of_lcd;
+        if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
         else LCD_BacklightOn();
     }
@@ -1305,8 +1299,6 @@ int main( void )
 
     start_program = 1;
 
-    sei();//włącza przerwania
-
     LCD_WriteText("AVR INSPECTOR");
     delay_ms_var(1500);
     LCD_GoTo(8,1);
@@ -1324,6 +1316,7 @@ int main( void )
 
     //główna pętla programu
     start_program = 0;
+    sei();//włącza przerwania
 
 
     while( 1 )

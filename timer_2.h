@@ -1,5 +1,5 @@
-#ifndef _RANDOM_GENERATOR_H_
-#define _RANDOM_GENERATOR_H_
+#ifndef _TIMER_2_H_
+#define _TIMER_2_H_
 
 #include <avr/io.h>
 #include <avr/interrupt.h>

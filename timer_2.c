@@ -1,4 +1,4 @@
-#include "random_generator.h"
+#include "timer_2.h"
 
 volatile uint8_t pwm1, pwm2;
 
@@ -23,6 +23,6 @@ TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera 
 
 ISR( _VECTOR( 4 ) )
 {
-    if( cnt == 10 ) interr = 1;
+    if( cnt == 20 ) interr = 1;
     ++cnt;
 }

@@ -394,6 +394,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
+    PCF8583_get_wall_time();
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
@@ -401,7 +402,6 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
         {
             buzzer();
             delay_ms_var(5);
-            PCF8583_get_wall_time();
             if(lockers_tail() == lockers_number_of_frames() - 1)
             {
                 if(lockers_head() == 0)
