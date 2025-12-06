@@ -28,6 +28,11 @@
 #define MAX_HALF_BIT ir_micro_s(889 + TOLERANCE)
 #define MAX_BIT ir_micro_s ((889+889) + TOLERANCE)
 
+#define FRAME_RESTART 0
+#define FRAME_OK 1
+#define FRAME_END 2
+#define FRAME_ERROR 3
+
 //#define PORT(x) XPORT(x)
 //#define XPORT(x) (PORT##x)
 //

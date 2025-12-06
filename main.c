@@ -431,7 +431,6 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         delay_ms_var_double( 500 );
         LCD_PageUpScreen();
         LCD_Clear();
-
     }
     pilot_reset();
     refresh_screen = 1;
@@ -774,6 +773,8 @@ void check_step_value(void)
 
 uint8_t end_of_settings(void)
 {
+    if(u < 0) return u;
+
     if(menu == 4)
     {
         return 9;
@@ -1238,8 +1239,14 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if (u < 0) u = 0;
-    check_step_value();
+    if(w == 1)
+    {
+        w = 0;
+        if (u < 0) u = 0;
+        check_step_value();
+        if(u != end_of_settings()) setting_information();
+    }
+
     if( s != 0 )
     {
         set_appropriate_values_of_time();
@@ -1269,22 +1276,23 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if (u < -2) u = -2;
-    check_step_value();
+    if(w == 1)
+    {
+        w = 0;
+        if (u < -2) u = -2;
+        check_step_value();
+
+        if( (u == -1 && e < 0) || (u == 0 && c < 0))
+        {
+            u -= 1;
+        }
+        else if( u >= -1 && u != end_of_settings() ) setting_information();
+    }
 
     if( s != 0 )
     {
         set_appropriate_values_of_time();
         s = 0;
-    }
-
-    if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
-    {
-        if( (u == -1 && e < 0) || (u == 0 && c < 0))
-        {
-            u -= 1;
-            w = 0;
-        }
     }
 
     LCD_EraseAll();
@@ -1378,21 +1386,24 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if (u < -2) u = -2;
-    check_step_value();//zrobic
+    if(w == 1)
+    {
+        w = 0;
+
+        if (u < -2) u = -2;
+        check_step_value();
+
+        if( (u == -1 && e < 0) || (u == 0 && c < 0) )
+        {
+            u -= 1;
+        }
+        else if( u >= -1 && u != end_of_settings() ) setting_information();
+    }
+
     if( s != 0 )
     {
         set_appropriate_values_of_time();
         s = 0;
-    }
-
-    if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
-    {
-        if( (u == -1 && e < 0) || (u == 0 && c < 0) )
-        {
-            u -= 1;
-            w = 0;
-        }
     }
 
     LCD_EraseAll();
@@ -1466,7 +1477,6 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 if(c == 0) PCF8583_timer_interrupt_off();
                 else if(c == 1) PCF8583_timer_interrupt_on();
             }
-
             setting_information();
         }
     }
@@ -1474,12 +1484,17 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if (u < 0) u = 0;
-    check_step_value();
+    if(w == 1)
+    {
+        w = 0;
+        if (u < 0) u = 0;
+        check_step_value();
+        if(u != end_of_settings()) setting_information();
+    }
+
     if( s != 0 )
     {
         set_appropriate_values_of_time();
-
         s = 0;
     }
     LCD_EraseAll();
@@ -1499,12 +1514,6 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         moveStep = 0;
 
         show_double(maximum_temperature,2);
-    }
-
-    if( w == 1 )
-    {
-        setting_information();
-        w = 0;
     }
 }
 
@@ -1856,6 +1865,7 @@ void czynnosc1( int com, int tog )
         pilot_on();
     }
     if( com >= 0 && com <=  5 ) LCD_Displaying( com );
+    refresh_screen = 1;
 }
 
 void czynnosc2( int com, int tog )
@@ -1914,13 +1924,11 @@ void czynnosc4( int com, int tog )
     {
         ++u;
         w = 1;
-        if(u != end_of_settings()) setting_information();
     }
     if ( com == 17 )
     {
         --u;
         w = 1;
-        if(u != end_of_settings()) setting_information();
     }
     if ( com == 32 )
     {
@@ -1934,6 +1942,7 @@ void czynnosc4( int com, int tog )
     {
         u = end_of_settings();
     }
+
     refresh_screen = 1;
 }
 
@@ -1943,13 +1952,11 @@ void czynnosc5( int com, int tog )
     {
         ++u;
         w = 1;
-        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 17 )
     {
         --u;
         w = 1;
-        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 32 )
     {
@@ -1963,6 +1970,7 @@ void czynnosc5( int com, int tog )
     {
         u = end_of_settings();
     }
+
     refresh_screen = 1;
 }
 
@@ -1972,13 +1980,11 @@ void czynnosc6( int com, int tog )
     {
         ++u;
         w = 1;
-        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 17 )
     {
         --u;
         w = 1;
-        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 32 )
     {
@@ -1992,6 +1998,7 @@ void czynnosc6( int com, int tog )
     {
         u = end_of_settings();
     }
+
     refresh_screen = 1;
 }
 
@@ -2019,6 +2026,7 @@ void czynnosc7( int com, int tog )
     {
         u = end_of_settings();
     }
+
     refresh_screen = 1;
 }
 
@@ -2141,7 +2149,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             backlight(2);
         }
     }
-    if(menu == 1) wysw();
 }
 
 // funkcja obsługująca menu dwupoziomowe
@@ -2172,7 +2179,6 @@ void sczytaj_komende( void )
         wysw();
         if(lockers_is_flag_bit(2) == 1) send_all_screen();
         //printf("%d\n",LCD_position);
-
         //printf("%d\n",LCD_position);
     }
 
@@ -2354,7 +2360,7 @@ void sczytaj_komende( void )
         if(start_program == 3 && temp_char != 0)
         {
             if(temp_char == 'r') reset_variable = 1;
-            else pilot(0, 0);
+            else pilot(-1, 0);
         }
 
         if(lockers_is_flag_bit(2) == 1)
@@ -2377,13 +2383,31 @@ void sczytaj_komende( void )
             else if(temp_char == '!') pilot(41, 0);
             else if(temp_char == '<') pilot(45, 0);
             else if(temp_char == '>') pilot(44, 0);
-            else if(temp_char == 't') lockers_flag_bit_off(2);
+            else if(temp_char == '0') pilot(0, 0);
+            else if(temp_char == '1') pilot(1, 0);
+            else if(temp_char == '2') pilot(2, 0);
+            else if(temp_char == '3') pilot(3, 0);
+            else if(temp_char == '4') pilot(4, 0);
+            else if(temp_char == '5') pilot(5, 0);
+            else if(temp_char == '6') pilot(6, 0);
+            else if(temp_char == '7') pilot(7, 0);
+            else if(temp_char == '8') pilot(8, 0);
+            else if(temp_char == '9') pilot(9, 0);
+            else if(temp_char == 't')
+            {
+                lockers_flag_bit_off(2);
+                printf("\nTRYB RC5\n");
+            }
             //else if(temp_char == 'R') lockers_print_all_memory();
             //else if(temp_char == 'r') lockers_print_latest_data();
         }
         else
         {
-            if(temp_char == 'T') lockers_flag_bit_on(2);
+            if(temp_char == 'T')
+            {
+                lockers_flag_bit_on(2);
+                printf("\nTRYB HYBRYDOWY\n");
+            }
         }
 
     }

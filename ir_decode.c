@@ -55,12 +55,6 @@ void ir_init()
 
 ISR( TIMER1_CAPT_vect )
 {
-
-#define FRAME_RESTART 0
-#define FRAME_OK 1
-#define FRAME_END 2
-#define FRAME_ERROR 3
-
     static uint16_t LastCapture;
     uint16_t PulseWidth;
     static uint8_t IrPulseCount;
@@ -126,7 +120,7 @@ void pilot_reset(void)
 {
     //Ir_key_press_flag = 0;
     //uint8_t command_temp = command;
-    command = 0xff;
+    //command = 0xff;
     address = 0xff;
 }
 
