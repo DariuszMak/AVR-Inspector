@@ -64,17 +64,17 @@ int main( void );
 
 uint8_t number_of_digits(uint32_t);//funkcja zwracjąca ilość cyfr dla danej liczby
 
-void show_double(double, uint8_t);//funkcja wyświetlająca format temperatury
+void show_double(double, uint8_t);//funkcja wyświetlająca format (rozbity na dwie części), przjmuje liczbę i miejsca po przecinku
 
-int8_t put_double_format(double, uint8_t);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
+int8_t put_double_format(double, uint8_t);// umieszcza w strukturze odpowiednie wartośći liczby double rozpitej na dwie części (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
 
-void change_color_RGB(void);
+void change_color_RGB(void);//pojedynczy krok w wyświetlaniu diodami
 
-void all_colors_RGB(void);
+void all_colors_RGB(void);//wyświetlenie wszystkich diod jednocześnie na raz
 
-void no_colors_RGB(void);
+void no_colors_RGB(void);//wyłączenie wszystich diod
 
-void backlight(int8_t);
+void backlight(int8_t);//funkcja ustawiająca podświetlenie (0 - wyłączenie podświetlenia, 1 - podświetlenie ciągłe, 2 - podświetlenie na określony czas)
 
 void buzzer(void);//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 
@@ -82,23 +82,25 @@ void buzzer_time( double time );//funkcja odpowiedzialna za sygnał dźwiękowy 
 
 void wysw_skok( uint16_t number ); // funkcja wyświetlająca numer kroku o danej wartości
 
-void step_increase(void);
+void step_increase(void);//zwiekszenie zmiennej "zwiększanie o jeden"
 
-void step_decrease(void);
+void step_decrease(void);//zmniejszanie zmiennej "zwiększanie o jeden"
 
-void wybor( int number ); // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
+void wybor( int number ); //funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 
-void show_day_of_week( uint8_t day);
+void show_day_of_week( uint8_t day );//wyświetlanie dnia tygodnia w krótkiej postaci
 
-void show_time_only_format(void);
+void show_time_only_format(void);//format godziny z minutami, sekundami i setnymi sekund
 
-void show_time_format(void);
+void show_time_format(void);//format dni, miesięcy, lat, oraz dni tygodnia
 
-void show_timer_alarm_format(void);
+void show_timer_alarm_format(void);//format wyświetlania timera (tylko jeden element)
 
-void show_alarm_format(uint8_t case_of_format);
+void show_alarm_format(uint8_t case_of_format);//format wyświetlania alarmu w zależności od ustawionego typu alarmu
 
-void show_setting_alarm_case(uint8_t index);
+//skłądowe menu wyboru dla różnych podprogramów
+
+void show_setting_alarm_case(uint8_t index);//składowe do menu wyboru - ustawianie typu alarmu
 
 void show_alarm_flag_options(uint8_t index);
 
@@ -116,21 +118,23 @@ void show_setting_flags_case(uint8_t index);
 
 void show_alarm_options(uint8_t index);
 
-void correction_of_time(void);
+//koniec funkcji składowych do menu wyboru dla różnych podrogramów
+
+void correction_of_time(void);//funkcja korygująca po pojednczym wywołaniu właściwe wartości formatu godziny z minutami, sekundami oraz częściami setnych
 
 void correction_of_date(void);//uwzględnianie dnia miesiąca względem roku
 
-void setting_information(void);
+void setting_information(void);//funkcja z komunikatami podczas przechodzenia do następnej sekcji ustawień lub podczas zakończenia ustawiania wartości
 
-void set_appropriate_values_of_time(void);
+void set_appropriate_values_of_time(void);//funkcja do ustawiania odpowiednich wartości zmiennych dla ustawiania godziny i alarmu
 
-void check_step_value(void);
+void check_step_value(void);//sprawdzenie wielkości kroku do zwiększania - wspólny dla wszystkich podprogramów
 
-uint8_t end_of_settings(void);
+uint8_t end_of_settings(void);//funkcja zwracająca informacje o ilośći edytowanych pól
 
-void show_frame( int16_t number);
+void show_frame( int16_t number);//funkcja pokazująca pojedynczą ramkę danych
 
-void show_list(int16_t current_index, int16_t max_index);
+void show_list(int16_t current_index, int16_t max_index);//funkcja wyświetlająca menu z różnymi polami w zależnośći od położenia
 
 void wysw( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
