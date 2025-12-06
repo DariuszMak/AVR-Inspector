@@ -546,6 +546,7 @@ void setting_information()
         {
             if(u == end_of_settings())
             {
+                LCD_Home();
                 LCD_WriteText("ZAPISANO");
                 /*if(e == 0)
                 {
@@ -574,6 +575,7 @@ void setting_information()
             {
                 if(u == end_of_settings())
                 {
+                    LCD_Home();
                     if(c == 0)
                     {
                         if(menu == 7)LCD_WriteText("ZAPISANO TEMP.");
@@ -624,6 +626,7 @@ void setting_information()
             {
                 if(u == end_of_settings())
                 {
+                    LCD_Home();
                     if(c == 0) LCD_WriteText("ALARM TIM. WYL.");
                     else if(c == 1) LCD_WriteText("ALARM TIM. WL.");
                 }
@@ -634,9 +637,10 @@ void setting_information()
             }
         }
     }
+    send_all_screen();
     delay_ms_var(400);
     pilot_reset();
-    refresh_screen = 1;
+    //refresh_screen = 1;
 }
 
 void set_appropriate_values_of_time()
@@ -1248,8 +1252,8 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
         refresh_screen = 0;
-        LCD_Clear();
         w = 1;
+        setting_information();
         start = 1;
     }
     else
@@ -1260,12 +1264,6 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         moveStep = 0;
         show_time_format();
-    }
-
-    if( w == 1 )
-    {
-        setting_information();
-        w = 0;
     }
 }
 
@@ -1290,7 +1288,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     LCD_EraseAll();
-
 
     if(u == -2)
     {
@@ -1322,6 +1319,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
                     PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
                     PCF8583_set_type_of_alarm(c);
+                    setting_information();
 
                     if(c == 0)
                     {
@@ -1355,6 +1353,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     w = 1;
 
                     PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
+
                     if(c == 0)
                     {
                         PCF8583_timer_alarm_off();
@@ -1362,9 +1361,9 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     }
                     else if(c == 1)
                     {
-
                         PCF8583_timer_alarm_on();
                     }
+                    setting_information();
                 }
                 else
                 {
@@ -1374,12 +1373,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 }
             }
         }
-    }
-
-    if( w == 1  && u >= -1)
-    {
-        setting_information();
-        w = 0;
     }
 }
 
@@ -1473,13 +1466,9 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 if(c == 0) PCF8583_timer_interrupt_off();
                 else if(c == 1) PCF8583_timer_interrupt_on();
             }
-        }
-    }
 
-    if( w == 1  && u >= -1)
-    {
-        setting_information();
-        w = 0;
+            setting_information();
+        }
     }
 }
 
@@ -1499,9 +1488,9 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         i2c_write_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&maximum_temperature);
         refresh_screen = 0;
-        LCD_Clear();
         w = 1;
         start = 1;
+        setting_information();
     }
     else
     {
@@ -1573,7 +1562,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             wysw7();
         }
     }
-    if(lockers_is_flag_bit(2) == 1) send_all_screen();
 }
 
 void czynnosc0( int com, int tog )
@@ -1925,12 +1913,14 @@ void czynnosc4( int com, int tog )
     if ( com == 16 )
     {
         ++u;
-        w = 1;//wymuszenie wyświetlenia komunikatu
+        w = 1;
+        if(u != end_of_settings()) setting_information();
     }
     if ( com == 17 )
     {
         --u;
-        w = 1;//wymuszenie wyświetlenia komunikatu
+        w = 1;
+        if(u != end_of_settings()) setting_information();
     }
     if ( com == 32 )
     {
@@ -1952,12 +1942,14 @@ void czynnosc5( int com, int tog )
     if ( com == 16 )
     {
         ++u;
-        w = 1;//wymuszenie wyświetlenia komunikatu
+        w = 1;
+        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 17 )
     {
         --u;
-        w = 1;//wymuszenie wyświetlenia komunikatu
+        w = 1;
+        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 32 )
     {
@@ -1979,12 +1971,14 @@ void czynnosc6( int com, int tog )
     if ( com == 16 )
     {
         ++u;
-        w = 1;//wymuszenie wyświetlenia komunikatu
+        w = 1;
+        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 17 )
     {
         --u;
-        w = 1;//wymuszenie wyświetlenia komunikatu
+        w = 1;
+        if( u >= -1 && u != end_of_settings() ) setting_information();
     }
     if ( com == 32 )
     {
@@ -2176,6 +2170,7 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
+        if(lockers_is_flag_bit(2) == 1) send_all_screen();
         //printf("%d\n",LCD_position);
 
         //printf("%d\n",LCD_position);
@@ -2323,7 +2318,7 @@ void sczytaj_komende( void )
         LCD_ScreenOn();
         u = menu;
         menu = 0;
-        switch_menu = 0;
+        switch_menu = menu;
         zwiekszanie = 1;
 //        checking_lockers_state = 0;
 //        refreshing_interrupt_off();
