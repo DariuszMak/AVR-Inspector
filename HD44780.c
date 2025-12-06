@@ -1,3 +1,4 @@
+#include "HD44780.h"
 //-------------------------------------------------------------------------------------------------
 // Wyœwietlacz alfanumeryczny ze sterownikiem HD44780
 // Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci
@@ -7,8 +8,62 @@
 // Kompilator : avr-gcc
 // Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
+void delay_ms_var(uint16_t count)
+{
+  while(count--)
+  {
+    _delay_ms(1);
 
-#include "HD44780.h"
+  }
+}
+
+void delay_us_var(uint16_t count)
+{
+  while(count--)
+  {
+    _delay_us(1);
+
+  }
+}
+
+void delay_ms_var_double(double __ms)
+{
+	uint16_t __ticks;
+	double __tmp = ((F_CPU) / 4e3) * __ms;
+	if (__tmp < 1.0)
+		__ticks = 1;
+	else if (__tmp > 65535)
+	{
+		//	__ticks = requested delay in 1/10 ms
+		__ticks = (uint16_t) (__ms * 10.0);
+		while(__ticks)
+		{
+			// wait 1/10 ms
+			_delay_loop_2(((F_CPU) / 4e3) / 10);
+			__ticks --;
+		}
+		return;
+	}
+	else
+		__ticks = (uint16_t)__tmp;
+	_delay_loop_2(__ticks);
+}
+
+void delay_us_var_double(double __us)
+{
+	uint8_t __ticks;
+	double __tmp = ((F_CPU) / 3e6) * __us;
+	if (__tmp < 1.0)
+		__ticks = 1;
+	else if (__tmp > 255)
+	{
+		delay_ms_var_double(__us / 1000.0);
+		return;
+	}
+	else
+		__ticks = (uint8_t)__tmp;
+	_delay_loop_1(__ticks);
+}
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wystawiaj¹ca pó³bajt na magistralê danych
@@ -247,6 +302,7 @@ void LCD_Initalize(void)
 
 const int czterdziesci = 40;
 
+
 //-------------------------------------------------------------------------------------------------
 //
 // Efekt przesuniêcia zawartoœci o okreœlonej czêstotliwoœci kroku oraz liczbie kroków
@@ -259,7 +315,7 @@ void LCD_MoveRight (unsigned int freq, unsigned int step, unsigned int way)
     {
         if (way)LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT);
         else LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_RIGHT);
-        if (freq) _delay_ms(freq);
+        if (freq) delay_ms_var(freq);
     }
 }
 //-------------------------------------------------------------------------------------------------
@@ -274,7 +330,7 @@ void LCD_MoveLeft (unsigned int freq, unsigned int step, unsigned int way)
     {
         if (way)LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT);
         else LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_LEFT);
-        if (freq) _delay_ms(freq);
+        if (freq) delay_ms_var(freq);
     }
 }
 //-------------------------------------------------------------------------------------------------

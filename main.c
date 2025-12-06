@@ -3,15 +3,16 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "HD44780.h"
+#define _delay_ms delay_ms_var_double
+#define _delay_us delay_ms_var_double
+
 void pisz(void);
 
 //##############################################################################
 int main(void)
 {
-
     int t, rozmiar=6;
     char i[rozmiar];
-    LCD_Initalize();   //inicjalizacja LCD
     void pisz(void)
     {
         for(t=0; t<rozmiar; t++)
@@ -21,11 +22,10 @@ int main(void)
         }
     }
 
+    LCD_Initalize();
 
     while(1)
     {
-
-
         LCD_GoTo(9, 1);
         LCD_WriteText("Witaj!");
         _delay_ms(500);
@@ -33,7 +33,6 @@ int main(void)
         LCD_WriteText("(D)Arek");
         _delay_ms(500);
         LCD_ShiftRightScreen();
-
         _delay_ms(700);
 
         LCD_ScreenOff();
@@ -94,11 +93,8 @@ int main(void)
         _delay_ms(500);
 
         LCD_Clear();
-
     }
-
-
-
+    return 0;
 }
 
 

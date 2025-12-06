@@ -105,6 +105,11 @@
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
+void delay_ms_var(uint16_t); // czekaj określoną ilość milisekund
+void delay_us_var(uint16_t); // czekaj określoną ilość mikrosekund
+void delay_ms_var_double(double);
+void delay_us_var_double(double);
+
 void _LCD_OutNibble(unsigned char);
 #if USE_RW == 1
 unsigned char _LCD_InNibble(void);
