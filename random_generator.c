@@ -1,4 +1,4 @@
-#include "pwm_led.h"
+#include "random_generator.h"
 
 volatile uint8_t pwm1, pwm2;
 
