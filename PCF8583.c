@@ -104,7 +104,7 @@ void PCF8583_init(void)
     PCF8583_write(0, 0);
     PCF8583_write(0, PCF8583_read(0) | 0x04);//komórki do alarmu dozwolone
     PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
-    PCF8583_mask_off();
+    PCF8583_mask_off();//maskowanie dni i roku wyłączone
     PCF8583_write(4, PCF8583_read(4) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
     PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
 }
@@ -157,41 +157,6 @@ void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
     PCF8583_write(0, PCF8583_read(0) | 0x08);
 }
 
-
-/**
- Wyłącza alarm
-*/
-void PCF8583_alarm_off(void)
-{
-    PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
-}
-
-/**
- Załącza alarm codzienny
-*/
-void PCF8583_alarm_every_day(void)
-{
-    PCF8583_write(8, PCF8583_read(8) | 0b00010000);//alarm codzienny
-    PCF8583_write(8, PCF8583_read(8) & ~0b00100000);//alarm codzienny
-
-}
-
-/**
- Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
-*/
-void PCF8583_alarm_weekly(void)
-{
-    PCF8583_write(8, PCF8583_read(8) & ~0b00010000);//alarm codzienny
-    PCF8583_write(8, PCF8583_read(8) | 0b00100000);//alarm codzienny
-}
-
-/**
- Załącza alarm dla dni w miesiącu
-*/
-void PCF8583_alarm_monthly(void)
-{
-    PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
-}
 
 /**
  Wyłacza wskaźnik alarmu
@@ -268,6 +233,7 @@ void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
     PCF8583_write_bcd(4,hour);
     PCF8583_start();
 }
+
 /**
  Czyta datę z układu
  \param day dzień
@@ -323,8 +289,6 @@ void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *
     *hour=PCF8583_read_bcd(0xC);
 }
 
-
-
 /**
  Czyta datê alarmu z układu
  \param day dzień
@@ -332,8 +296,11 @@ void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *
 */
 void PCF8583_get_alarm_date(uint8_t *day, uint8_t *month)
 {
-    *day = bcd2bin( PCF8583_read(0xD) & 0x3F );
-    *month = bcd2bin( PCF8583_read(0xE) & 0x1F );
+    *day = PCF8583_read_bcd(0xD);
+    if(PCF8583_recognise_type_of_alarm() == 2)
+    {
+        *month = PCF8583_read(0xe);
+    }else *month = PCF8583_read_bcd(0xE);
 }
 
 /**
@@ -347,9 +314,48 @@ void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
     PCF8583_write_bcd( 0xE, month );
 }
 
+uint8_t PCF8583_recognise_type_of_alarm(void)
+{
+    return ((PCF8583_read(8) & 0x30) >> 4);
+}
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
+
+
+/**
+ Wyłącza alarm
+*/
+void PCF8583_alarm_off(void)
+{
+    PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
+}
+
+/**
+ Załącza alarm codzienny
+*/
+void PCF8583_alarm_every_day(void)
+{
+    PCF8583_write(8, PCF8583_read(8) | 0b00010000);//alarm codzienny
+    PCF8583_write(8, PCF8583_read(8) & ~0b00100000);//alarm codzienny
+}
+
+/**
+ Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
+*/
+void PCF8583_alarm_weekly(void)
+{
+    PCF8583_write(8, PCF8583_read(8) & ~0b00010000);//alarm codzienny
+    PCF8583_write(8, PCF8583_read(8) | 0b00100000);//alarm codzienny
+}
+
+/**
+ Załącza alarm dla dni w miesiącu
+*/
+void PCF8583_alarm_monthly(void)
+{
+    PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
+}
 
 /**
  Ustawia czas alarmu w układzie
@@ -366,13 +372,11 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     PCF8583_write_bcd(0xC, hour);
 }
 
-
 void PCF8583_set_weekly_alarm(uint8_t days_of_week, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
 {
     PCF8583_set_alarm_time( hour,  min,  sec,  hsec);
     PCF8583_write(0xE, days_of_week);
 }
-
 
 void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
 {
@@ -380,7 +384,7 @@ void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t
     PCF8583_set_alarm_date(day, month);
 }
 
-void PCF8583_get_wall_alarm(void)
+void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
 {
     PCF8583_get_alarm_time( &godz, &min, &sek, &hsek );//należy pamiętać, że w trybie alarmu dziennego w zmiennej miesac przechowywane są dni tygodnia, w których będzie aktywny alarm
     PCF8583_get_alarm_date( &dzien, &miesiac );

@@ -213,14 +213,33 @@ int main( void )
             LCD_WriteText(":");
             LCD_Double(ds18b20_temperature(),2);
 
-            hsek = EEPROM_read(10);
-            sek = EEPROM_read(11);
-            min = EEPROM_read(12);
-            godz = EEPROM_read(13);
-            dzien = EEPROM_read(14);
-            miesiac = EEPROM_read(15);
-            rok = EEPROM_read_word(16);
+            PCF8583_get_wall_alarm();
             moveStep=24;
+
+            LCD_GoTo( 0 + moveStep, 0 );
+            if(godz < 10) LCD_Int(0);
+            LCD_Int(godz);
+            LCD_WriteText(":");
+            if(min < 10) LCD_Int(0);
+            LCD_Int(min);
+            LCD_WriteText(":");
+            if(sek < 10) LCD_Int(0);
+            LCD_Int(sek);
+            LCD_WriteText(":");
+            if(hsek < 10) LCD_Int(0);
+            LCD_Int(hsek);
+            LCD_WriteText(":");
+            LCD_Int(dzien_tygodnia);
+            LCD_GoTo( 0 + moveStep, 1 );
+            if(dzien < 10) LCD_Int(0);
+            LCD_Int(dzien);
+            LCD_WriteText(":");
+            if(miesiac < 10) LCD_Int(0);
+            LCD_Int(miesiac);
+                        LCD_WriteText(" ");
+                                    LCD_Int(PCF8583_recognise_type_of_alarm());
+
+
 
 
             //LCD_Int( pwm1 );
@@ -558,15 +577,17 @@ int main( void )
                 EEPROM_write(14, 0);
                 EEPROM_write(15, 0);
                 EEPROM_write_word(16, 0);
+                EEPROM_write(18,0);
                 break;
             case 2:
                 EEPROM_write(10, 1);
                 EEPROM_write(11, 2);
-                EEPROM_write(12, 8);
-                EEPROM_write(13, 4);
+                EEPROM_write(12, 0);
+                EEPROM_write(13, 0);
                 EEPROM_write(14, 5);
                 EEPROM_write(15, 6);
                 EEPROM_write_word(16, 1234);
+                EEPROM_write(18,0b00010000);
                 break;
             case 55:
                 wysw_skok( 1000 );
@@ -578,7 +599,7 @@ int main( void )
                 break;
             case 50:
                 wysw_skok( 10 );
-                //PCF8583_alarm_weekly();
+                PCF8583_alarm_weekly();
                 break;
             case 52:
                 wysw_skok( 1 );
@@ -588,9 +609,19 @@ int main( void )
                 break;
 
             case 41:
-                PCF8583_set_time( 23, 59, 55, 00 );
-                PCF8583_set_date( 13, 6, 8, 2015 );
+                PCF8583_set_time( 23, 59, 55, 1 );
+                PCF8583_set_date( 13, 3, 8, 2015 );
                 break;
+            case 15:
+            hsek = EEPROM_read(10);
+            sek = EEPROM_read(11);
+            min = EEPROM_read(12);
+            godz = EEPROM_read(13);
+            dzien = EEPROM_read(14);
+            miesiac = EEPROM_read(15);
+            rok = EEPROM_read_word(16);
+            dzien_tygodnia = EEPROM_read(18);
+            PCF8583_set_weekly_alarm( EEPROM_read(18),  EEPROM_read(13), EEPROM_read(12), EEPROM_read(11), EEPROM_read(10));
 
                 break;
             case 17:
@@ -680,7 +711,7 @@ int main( void )
                     break;
 
                 case 3:
-                    czynnosc( men, 52, tog );
+                    czynnosc( men, 50, tog );
                     //wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 }
