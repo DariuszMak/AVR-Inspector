@@ -124,7 +124,7 @@ int main( void )
 				LCD_Clear();
 				LCD_WriteText( "ATmega32 program" );
 				LCD_GoTo( 0, 1 );
-				LCD_WriteText( "Dariusz Makarew." );
+				LCD_WriteText( "Dariusz M. proj." );
 
 				rozmiar = 16;
 
@@ -165,11 +165,12 @@ int main( void )
 				break;
 			case 12:
 				LCD_Clear();
+				LCD_Blink();
 				LCD_GoTo( 9, 1 );
 				LCD_WriteText( "Witaj!" );
 				_delay_ms( 500 );
 				LCD_Home();
-				LCD_WriteText( "(D)Arek" );
+				LCD_WriteText( "LCD HD44780" );
 				_delay_ms( 500 );
 
 				LCD_ShiftRightScreen();
