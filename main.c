@@ -26,6 +26,7 @@ int main( void )
     int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
+    int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 //zmienne zarezerwowane dla podprogramu nr 2:
     int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -37,7 +38,6 @@ int main( void )
     int u; //inna (dodatkowa) zmienna pomocnicza
     int w; //inna (dodatkowa) zmienna pomocnicza
     int s;//inna (dodatowa zmienna)
-    int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 
 //definicje funkcji
 
@@ -148,7 +148,6 @@ int main( void )
                         }
                     }
                     u = 0;
-
                 }
             }
 
@@ -442,6 +441,9 @@ int main( void )
                 _delay_ms( 1000 );
                 d_led_Int ( -1000 );
                 _delay_ms( 1000 );*/
+                cyfry = 0;
+                pozycja = 0;
+                u = -1;
                 break;
             case 55:
                 wysw_skok( 1000 );
