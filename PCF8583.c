@@ -235,7 +235,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
     *min=bcd2bin(time_f.minutes);
-    *hour=bcd2bin(time_f.hours);
+    *hour=bcd2bin(time_f.hours & 0b00111111);
     *day=bcd2bin(time_f.days & 0b00111111);
     *month=bcd2bin(time_f.months & 0b00011111);
     *day_of_week = (time_f.months & 0b11100000) >> 5;
@@ -265,9 +265,9 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
     time_f.minutes=bin2bcd(min);
-    time_f.hours=bin2bcd(hour);
-    time_f.days = bin2bcd(day) | ( ( (uint8_t)year & 0x03) << 6 );
-    time_f.months = bin2bcd(month) | ( ( (uint8_t)day_of_week & 0x07) << 5 );
+    time_f.hours=(bin2bcd(hour) & 0b00111111) | (PCF8583_read(0x04) & 0b11000000);
+    time_f.days = (bin2bcd(day) & 0b00111111) | ( ( (uint8_t)year & 0x03) << 6 );
+    time_f.months = (bin2bcd(month) & 0b00011111) | ( ( day_of_week & 0x07) << 5 );
 
     year_table[0] = year;
     year_table[1] = year >> 8;

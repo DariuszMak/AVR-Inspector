@@ -1719,6 +1719,10 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
+        RGB_Red = rand() % 255;
+        RGB_Green = rand() % 255;
+        RGB_Blue = rand() % 255;
+
         overflow_timer_2 = 0;
         interr = 0;
 
@@ -1847,9 +1851,7 @@ int main( void )
     RGB_init();
 
 
-     RGB_Red = 0;
-    RGB_Green = 255;
-    RGB_Blue = 0;
+
 
     //PCF8583_write_word(PCF8583_HEAD, 3000);
 

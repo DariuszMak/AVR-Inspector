@@ -32,6 +32,8 @@ struct time_frame
     uint8_t timer;
 };
 
+void PCF8583_init(void);
+
 uint8_t bcd2bin(uint8_t bcd);
 
 uint8_t bin2bcd(uint8_t bin);
@@ -44,11 +46,9 @@ void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf );
 
 void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf);
 
-void PCF8583_init(void);
+void PCF8583_hold_off(void);//zatrzaski
 
-void PCF8583_hold_off(void);
-
-void PCF8583_hold_on(void);
+void PCF8583_hold_on(void);//zatrzaski
 
 void PCF8583_mask_off(void);//wyłącza maskę - dostępne są wszystkie rejestry
 
@@ -65,7 +65,6 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
 void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *month, uint8_t *timer);
 
 void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer);
-
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
