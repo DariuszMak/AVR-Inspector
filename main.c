@@ -26,10 +26,40 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 void change_color_RGB(void)
 {
     static uint8_t temp = 0;
+    static uint8_t left_right = 0;
+    static uint8_t inversion = 0;
     temp -= 64;
     RGB_Red = temp;
-    RGB_Green = temp + 64;
-    RGB_Blue = temp + 128;
+    RGB_Green = temp + 128;
+    RGB_Blue = temp;
+    if(temp == 128)
+    {
+        if(left_right == 0)left_right = 1;
+        else if(left_right == 1) left_right = 2;
+
+        if(left_right == 1)
+        {
+            if(inversion == 0)RGB_Red = 0;
+            else RGB_Blue = 0;
+        }
+
+        else if(left_right == 2)
+        {
+            if(inversion == 0)RGB_Blue = 0;
+            else RGB_Red = 0;
+        }
+
+        if(left_right == 2)
+        {
+            left_right = 3;
+        }
+        else if(left_right == 3)
+        {
+            left_right = 0;
+            if(inversion == 0) inversion = 1;
+            else inversion = 0;
+        }
+    }
     //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
 
@@ -814,7 +844,7 @@ void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_EraseAll();
     LCD_GoTo( 0, 0 );
     LCD_WriteText( "Wybierz program:" );
-    LCD_GoTo( 0, 1 );
+    LCD_GoTo( 4, 1 );
     LCD_WriteText(">>>");
     LCD_Int(switch_menu);
     LCD_WriteText("<<<");
@@ -1916,8 +1946,8 @@ int main( void )
 
     LCD_WriteText("AVR INSPECTOR");
     delay_ms_var(1500);
-    LCD_GoTo(8,1);
-    LCD_WriteText("Darek M.");
+    LCD_GoTo(6,1);
+    LCD_WriteText("Dariusz M.");
     delay_ms_var(1000);
     LCD_PageUpScreen();
     LCD_Clear();
