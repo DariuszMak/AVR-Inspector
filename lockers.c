@@ -95,10 +95,8 @@ void lockers_read_frame(uint16_t index)
     }
     else
     {
-
         temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
         eeprom_busy_wait();
-
 
         frame.seconds = eeprom_read_byte((uint8_t*)temp_address++);
         //_EEGET(frame.seconds,temp_address);
@@ -124,7 +122,6 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
 
-
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
@@ -134,11 +131,8 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             delay_ms_var(50);
             PCF8583_get_wall_time();
 
-
-
-
             uint16_t temp_address = PCF8583_read_word(PCF8583_CELL);//pobranie ostatniego adresu
-            uint8_t overflow_flag = 0;
+            uint8_t overflow_flag = 0;//jeśli == 1 - bramka zmieści się na "styk"
 
             // eeprom_read_word( (uint16_t*)21);
 
@@ -148,17 +142,16 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 {
                     temp_address = SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
-                    overflow_flag = 2;
+                    overflow_flag = 1;
                 }
                 else if((EEPROM_MAX_ADDRESS - (int16_t)temp_address) == (SIZE_OF_FRAME - 1))//jeśli wiadomo, że zmieści się na styk
                 {
-                    overflow_flag = 1;
+                    buzzer_time(200);
                 }
             }
-            else overflow_flag = 2;
+            else overflow_flag = 1;
 
-
-            if(overflow_flag < 2)
+            if(overflow_flag == 0)
             {
                 EEPROM_write(temp_address++,sek);
 
@@ -178,7 +171,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 information += i + 1;
                 EEPROM_write(temp_address++,information);
             }
-            else
+            else if(overflow_flag == 1)
             {
                 temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
 
@@ -209,19 +202,19 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 eeprom_write_byte((uint8_t*)temp_address++,information);
             }
 
-            if(overflow_flag == 1)
+            /*if(overflow_flag == 1)
             {
                 buzzer_time(200);
                 //overflow_flag = 2;//przepełnienie pamięci
-            }
-            else if((overflow_flag == 2) && ((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))
+            }*/
+            if((overflow_flag == 1) && ((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))
             {
                 buzzer_time(1000);
                 temp_address = 0;
                 overflow_flag = 0;
             }
 
-            if(overflow_flag <= 1)
+            if(overflow_flag == 0)
             {
                 PCF8583_write_word(PCF8583_CELL, temp_address);
             }

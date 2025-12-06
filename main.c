@@ -1368,12 +1368,7 @@ void toggle_action(void)
 
 //Koniec definicji metod
 
-
 //Program glowny:
-
-
-
-
 
 int main( void )
 {
