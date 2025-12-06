@@ -107,9 +107,7 @@ int main( void )
         else if(day == 2) LCD_WriteText("Sr.");
         else if(day == 3) LCD_WriteText("Cz.");
         else if(day == 4) LCD_WriteText("Pt.");
-
         else if(day == 5) LCD_WriteText("So.");
-
         else if(day == 6) LCD_WriteText("Nd.");
 
     }
@@ -172,8 +170,12 @@ int main( void )
         LCD_Int(frame.year);
 
         LCD_WriteText(" ");
-        LCD_Int(frame.information);
-
+        LCD_WriteText("NR: ");
+        LCD_Int(frame.information % 100);
+        LCD_WriteText(" ");
+        t = frame.information / 100;
+        if(t == 1) LCD_WriteText("OTWARTA");
+        else if(t == 2) LCD_WriteText("ZAMKNIETA");
     }
 
     void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
