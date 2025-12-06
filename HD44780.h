@@ -7,6 +7,8 @@
 // Kompilator : avr-gcc
 // Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
+#ifndef HD44780_H_
+#define HD44789_H_
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -28,42 +30,42 @@
 
 
 #if USE_RW == 1
-#define LCD_RW_DIR		DDRD
-#define LCD_RW_PORT		PORTD
-#define LCD_RW_PIN		PIND
-#define LCD_RW			(1 << PD1)
+#define LCD_RW_DIR		DDRA
+#define LCD_RW_PORT		PORTA
+#define LCD_RW_PIN		PINA
+#define LCD_RW			(1 << PA1)
 #endif
 
 
-#define LCD_RS_DIR		DDRD
-#define LCD_RS_PORT 	PORTD
-#define LCD_RS_PIN		PIND
-#define LCD_RS			(1 << PD2)
+#define LCD_RS_DIR		DDRA
+#define LCD_RS_PORT 	PORTA
+#define LCD_RS_PIN		PINA
+#define LCD_RS			(1 << PA2)
 
-#define LCD_E_DIR		DDRD
-#define LCD_E_PORT		PORTD
-#define LCD_E_PIN		PIND
-#define LCD_E			(1 << PD3)
+#define LCD_E_DIR		DDRA
+#define LCD_E_PORT		PORTA
+#define LCD_E_PIN		PINA
+#define LCD_E			(1 << PA3)
 
-#define LCD_DB4_DIR		DDRD
-#define LCD_DB4_PORT	PORTD
-#define LCD_DB4_PIN		PIND
-#define LCD_DB4			(1 << PD4)
+#define LCD_DB4_DIR		DDRA
+#define LCD_DB4_PORT	PORTA
+#define LCD_DB4_PIN		PINA
+#define LCD_DB4			(1 << PA4)
 
-#define LCD_DB5_DIR		DDRD
-#define LCD_DB5_PORT	PORTD
-#define LCD_DB5_PIN		PIND
-#define LCD_DB5			(1 << PD5)
+#define LCD_DB5_DIR		DDRA
+#define LCD_DB5_PORT	PORTA
+#define LCD_DB5_PIN		PINA
+#define LCD_DB5			(1 << PA5)
 
-#define LCD_DB6_DIR		DDRD
-#define LCD_DB6_PORT	PORTD
-#define LCD_DB6_PIN		PIND
-#define LCD_DB6			(1 << PD6)
+#define LCD_DB6_DIR		DDRA
+#define LCD_DB6_PORT	PORTA
+#define LCD_DB6_PIN		PINA
+#define LCD_DB6			(1 << PA6)
 
-#define LCD_DB7_DIR		DDRD
-#define LCD_DB7_PORT	PORTD
-#define LCD_DB7_PIN		PIND
-#define LCD_DB7			(1 << PD7)
+#define LCD_DB7_DIR		DDRA
+#define LCD_DB7_PORT	PORTA
+#define LCD_DB7_PIN		PINA
+#define LCD_DB7			(1 << PA7)
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -112,65 +114,65 @@
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
-void delay_ms_var(uint16_t); // czekaj określoną ilość milisekund
-void delay_us_var(uint16_t); // czekaj określoną ilość mikrosekund
-void delay_ms_var_double(double); // czekaj określoną ilość milisekund
-void delay_us_var_double(double); // czekaj określoną ilość mikrosekund
+void delay_ms_var( uint16_t ); // czekaj określoną ilość milisekund
+void delay_us_var( uint16_t ); // czekaj określoną ilość mikrosekund
+void delay_ms_var_double( double ); // czekaj określoną ilość milisekund
+void delay_us_var_double( double ); // czekaj określoną ilość mikrosekund
 
-void _LCD_OutNibble(unsigned char);
+void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
-unsigned char _LCD_InNibble(void);
+unsigned char _LCD_InNibble( void );
 #endif
-void _LCD_Write(unsigned char);
+void _LCD_Write( unsigned char );
 #if USE_RW == 1
-unsigned char _LCD_Read(void);
+unsigned char _LCD_Read( void );
 #endif
-void LCD_WriteCommand(unsigned char);
+void LCD_WriteCommand( unsigned char );
 #if USE_RW == 1
-unsigned char LCD_ReadStatus(void);
+unsigned char LCD_ReadStatus( void );
 #endif
-void LCD_WriteData(unsigned char); // odczytywanie danych po kolei w zależności od pozycji kursora
+void LCD_WriteData( unsigned char ); // odczytywanie danych po kolei w zależności od pozycji kursora
 #if USE_RW == 1
-unsigned char LCD_ReadData(void); // zapisywanie danych po kolei w zależności od pozycji kursora
+unsigned char LCD_ReadData( void ); // zapisywanie danych po kolei w zależności od pozycji kursora
 #endif
-void LCD_WriteText(char *);
-void LCD_GoTo(unsigned char, unsigned char); // pozycja X, pozycja Y
-void LCD_Clear(void); // czyści wszystko sprzętowo
-void LCD_Home(void); // sprętowa funkcje powrotu ns początek (ekran i kursor)
+void LCD_WriteText( char * );
+void LCD_GoTo( unsigned char, unsigned char ); // pozycja X, pozycja Y
+void LCD_Clear( void ); // czyści wszystko sprzętowo
+void LCD_Home( void ); // sprętowa funkcje powrotu ns początek (ekran i kursor)
 
-void LCD_Initalize(void); // Inicjalizacja wyświetlacza
+void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
 
 #if USE_LCD_Int == 1
-void LCD_Int(int); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
+void LCD_Int( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
 #endif
 
 #if USE_LCD_Hex == 1
-void LCD_Hex(int); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
+void LCD_Hex( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
 #endif
 
 #if USE_LCD_MoveRight == 1
-void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
+void LCD_MoveRight( unsigned int, unsigned int, unsigned int ); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
 #define LCD_PageUpScreen() LCD_MoveRight(20,15,1) // przesunięcie o cały ekran w prawo
 #define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
 #define LCD_ShiftRightCursor() LCD_MoveRight(0,1,0) // jeden krok kursora w prawo
 #endif
 
 #if USE_LCD_MoveLeft == 1
-void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
+void LCD_MoveLeft( unsigned int, unsigned int, unsigned int ); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
 #define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
 #define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
 #define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesunięcie o cały ekran w lewo
 #endif
 
 #if USE_LCD_Erase == 1
-void LCD_Erase(unsigned int); // uzuoełnianie spacjami wyświetlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
+void LCD_Erase( unsigned int ); // uzuoełnianie spacjami wyświetlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
 #define LCD_EraseAll() LCD_Erase(0) // uzuoełnianie spacjami wyświetlacza - dwa wiersze
 #define LCD_EraseUp() LCD_Erase(1) // uzuoełnianie spacjami wyświetlacza 1 - górny wiersz,
 #define LCD_EraseDown() LCD_Erase(2) // uzuoełnianie spacjami wyświetlacza 2 - dolny wiersz
 #endif
 
 #if USE_LCD_Displaying == 1
-void LCD_Displaying(unsigned int);
+void LCD_Displaying( unsigned int );
 #define LCD_ScreenOn() LCD_Displaying(1) // zwykły tryb pracy wyświetlacza bez kursora
 #define LCD_ScreenOff() LCD_Displaying(2) // wyłączenie wyświetlacza (nic nie wyświetla, ale wciąż pracuje)
 #define LCD_Cursor() LCD_Displaying(3) // tryb pracy z kursorem
@@ -182,3 +184,4 @@ void LCD_Displaying(unsigned int);
 // Koniec pliku HD44780.h
 //
 //-------------------------------------------------------------------------------------------------
+#endif // HD44780_h_
