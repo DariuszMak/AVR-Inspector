@@ -594,7 +594,7 @@ int main( void )
 
             case 41:
                 PCF8583_set_time( 23, 59, 55, 00 );
-                PCF8583_set_date( 13, 8, 2015 );
+                PCF8583_set_date( 13, 6, 8, 2015 );
                 break;
 
                 break;

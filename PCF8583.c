@@ -225,6 +225,17 @@
 }
 
 /**
+ Ustawia
+ \param address adres komórki w układzie
+ \param day dzień
+ \param year rok
+*/
+ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_week)
+{
+    PCF8583_write(address, bin2bcd(month) | ( ( (uint8_t)day_of_week & 0x07) << 5 ) );
+}
+
+/**
  Czyta czas z układu
  \param hour godzina
  \param min minuta
@@ -290,12 +301,12 @@
  \param month miesiąc
  \param year rok
 */
- void PCF8583_set_date(uint8_t day,uint8_t month,uint16_t year)
+ void PCF8583_set_date(uint8_t day, uint8_t day_of_week, uint8_t month,uint16_t year)
 {
     PCF8583_write_word(16, year);
     PCF8583_stop();
     PCF8583_write_date(5, day, year);
-    PCF8583_write_bcd(6, month);
+    PCF8583_write_month_dayOfWeek(6, month, day_of_week);
     PCF8583_start();
 }
 
