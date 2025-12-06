@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "d_led.h"
+#include <stdlib.h>
 
 volatile uint8_t cy1;
 volatile uint8_t cy2;

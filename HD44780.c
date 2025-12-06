@@ -1,4 +1,5 @@
 #include "HD44780.h"
+#include <stdlib.h>
 //-------------------------------------------------------------------------------------------------
 // Wyœwietlacz alfanumeryczny ze sterownikiem HD44780
 // Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci
@@ -22,7 +23,6 @@ void delay_us_var( uint16_t count )
 	while( count-- )
 	{
 		_delay_us( 1 );
-
 	}
 }
 

@@ -6,20 +6,23 @@
 #include "HD44780.h"
 #include "ir_decode.h"
 #include "d_led.h"
+#include "pwm_led.h"
+#include <stdlib.h>
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
 
+
+
 //Program glowny:
-//##############################################################################
+
 
 int main( void )
 {
-// PORTD7 jako wyjście do buzzera
-//##############################################################################
 
-	DDRD |= ( 1 << PD7 );
 
-//##############################################################################
+
+	DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
+	d_led_init();
 
 	int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
 	int rozmiar = 6; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
@@ -28,9 +31,8 @@ int main( void )
 	int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu, czy nie (dosyć zagmatwany mechanizm)
 
-
 //funkcje
-//##############################################################################
+
 
 	void buzzer( void )
 	{
@@ -48,7 +50,7 @@ int main( void )
 		LCD_Clear();
 	}
 
-	void wysw( int men, int com ) // funkcja wyświetlająca dla każdego z podprogramów,
+	void wysw( int men, int add ) // funkcja wyświetlająca dla każdego z podprogramów,
 	{
 		switch ( men )
 		{
@@ -62,7 +64,7 @@ int main( void )
 		case 1:
 			LCD_EraseAll();
 			LCD_GoTo( 0, 0 );
-			LCD_Int( com );
+			LCD_Int( add );
 			LCD_GoTo( 6, 0 );
 			LCD_Int( address );
 			LCD_GoTo( 0, 1 );
@@ -80,12 +82,16 @@ int main( void )
 		case 3:
 			LCD_EraseAll();
 			LCD_GoTo( 0, 0 );
-			LCD_WriteText( "PWM dla diod" );
+			LCD_Int( pwm1 );
+			LCD_GoTo( 0, 1 );
+			LCD_Int( pwm2 );
 			break;
+
+
 		}
 	}
 
-	void wysw_skok( int number )
+	void wysw_skok( int number ) // funkcja wyświetlająca numer skoku o jakąś wartość
 	{
 		LCD_EraseAll();
 		for ( t = 0; t < 40; t += 8 )
@@ -99,14 +105,14 @@ int main( void )
 	}
 
 // najważniejsza i najbardziej skomplikowana funkcja
-//##############################################################################
+
 	void pilot( int *men , int com )
 	{
 		if( !start ) start = 2;//start przyjmuje wartość inną od 0 albo 1
 		buzzer();
 		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
-//##############################################################################
+
 		case 0:
 			switch ( com )
 			{
@@ -199,12 +205,12 @@ int main( void )
 			}
 			wysw( *men, com );
 			break;
-//##############################################################################
+
 		case 1:
 			LCD_Displaying( com );
 			wysw( *men, com );
 			break;
-//##############################################################################
+
 		case 2:
 
 			switch( com )
@@ -257,13 +263,43 @@ int main( void )
 			}
 			wysw( *men, com );
 			break;
-//##############################################################################
+
 		case 3:
+			switch ( com )
+			{
+			case 55:
+				zwiekszanie = 1000;
+				wysw_skok( zwiekszanie );
+				break;
+			case 54:
+				zwiekszanie = 100;
+				wysw_skok( zwiekszanie );
+				break;
+			case 50:
+				zwiekszanie = 10;
+				wysw_skok( zwiekszanie );
+				break;
+			case 52:
+				zwiekszanie = 1;
+				wysw_skok( zwiekszanie );
+				break;
+			case 17:
+				pwm1 -= zwiekszanie;
+				break;
+			case 16:
+				pwm1 += zwiekszanie;
+				break;
+			case 32:
+				pwm2 += zwiekszanie;
+				break;
+			case 33:
+				pwm2 -= zwiekszanie;
+			}
 			wysw( *men, com );
 			break;
 		}
 //komendy dla wszystkich podprogramów
-//##############################################################################
+
 		switch ( com )
 		{
 		case 38:
@@ -299,14 +335,13 @@ int main( void )
 		if( menu == 0 )
 		{
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
-//##############################################################################
+
 			if ( start == 1 )
 			{
 				TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
 				wybor( *men );
 				start = 0;
 				pilot( &menu, 59 );
-
 			}
 
 			if( com > 0 && com <= 3 )
@@ -323,17 +358,12 @@ int main( void )
 
 				case 2:
 					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-					pilot( &menu, 55 ); // ta komenda działa tak, jaby się wcisnęło przycisk na pilocie RC5
-					pilot( &menu, 16 );
-					pilot( &menu, 54 );
-					pilot( &menu, 16 );
-					pilot( &menu, 50 );
-					pilot( &menu, 16 );
 					pilot( &menu, 52 );
-					pilot( &menu, 16 );
 					break;
 
 				case 3:
+					pilot( &menu, 1 );
+					pilot( &menu, 52 );
 					wysw( *men, com );
 					break;
 				}
@@ -378,7 +408,7 @@ int main( void )
 
 
 
-//##############################################################################
+
 
 	LCD_Initalize();
 	ir_init();
@@ -392,5 +422,4 @@ int main( void )
 
 	return 0;
 }
-
 
