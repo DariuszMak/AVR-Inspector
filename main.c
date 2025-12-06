@@ -25,7 +25,7 @@ int main( void )
 	int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 	int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 	int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
-	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy jest się w podprogramie = 2, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
+	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
 
 //definicje funkcji
 
@@ -118,6 +118,10 @@ int main( void )
 
 	void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 	{
+	    _delay_ms(50);
+	    buzzer();
+	    _delay_ms(20);
+	    buzzer();
 		LCD_Clear();
 		LCD_WriteText( "Program: " );
 		LCD_Int( number );
@@ -137,8 +141,8 @@ int main( void )
 			LCD_WriteText( "1 - 3" );
 
 			LCDClearBuffer();
-			LCDWriteToBuffer( 0, 0, "napis" );
-			LCDWriteToBuffer( 18, 1, "drugi" );
+			//LCDWriteToBuffer( 0, 0, "napis" );
+			LCDWriteToBuffer( 15, 1, "drugi Napis" );
 
 			break;
 		case 1:
@@ -186,7 +190,7 @@ int main( void )
 
 	void czynnosc( const int * const men, int com ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 	{
-		buzzer();
+	    buzzer();
 
 		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
@@ -452,20 +456,6 @@ int main( void )
 
 	void pilot( int * const men , int com )//
 	{
-		if( !start ) start = 2;//jeśli zmienna "start" jest równa zero, ma przyjąć jakąkolwiek wartość różną od 0 i 1 - czyli np. 2 (jeśli wywołujemy tę funkcję z główneg menu (menu = 0) to ma się nie wykonać nic innego, jak określona czynność)
-
-
-		czynnosc( men, com );//wykonanie jakiejść czynności na podstawie podprogramu, w którym się aktualnie jest oraz komendy
-
-
-		if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
-		{
-			start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
-			*men = 0;//
-			TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
-			wybor( *men );
-			wysw ( *men, com );// wyświetlenie ekranu
-		}
 
 		if( *men == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
 		{
@@ -496,6 +486,25 @@ int main( void )
 				}
 			}
 		}
+
+		if( !start ) czynnosc( men, com );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+
+
+
+
+
+
+		if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
+		{
+			start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
+			*men = 0;//
+			TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
+			wybor( *men );
+			wysw ( *men, com );// wyświetlenie ekranu
+		}
+
+
+
 	}
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
