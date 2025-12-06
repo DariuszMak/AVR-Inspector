@@ -181,7 +181,8 @@ void setting_information(uint8_t case_of_time, int8_t step)
     LCD_GoTo(moveStep, 0);
     if(step == end_of_settings(case_of_time))
     {
-        if(step == 0)LCD_WriteText("ZAPISANO GODZINE");
+        if(case_of_time == 0)LCD_WriteText("ZAPISANO GODZINE");
+        else if( case_of_time == 5 ) LCD_WriteText("WYLACZONO ALARM");
         else LCD_WriteText("ZAPISANO ALARM");
     }
     else
@@ -604,7 +605,11 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             w = 1;
             if(c != -1)
             {
-                if(c == 0) PCF8583_alarm_off();
+                if(c == 0)
+                {
+                    PCF8583_alarm_off();
+                    PCF8583_alarm_flag_off();
+                }
                 else if(c == 1)
                 {
                     PCF8583_alarm_every_day();
@@ -641,8 +646,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             if(c == 0)//specjalny warunek do poprawnego wyświetlenia ustawienia alarmu
             {
-                c = 1;
-                u = end_of_settings(c);
+                c = 5;
             }
             setting_information(c, u);
             w = 0;
@@ -1250,13 +1254,14 @@ void pilot( int com, int tog )//
             }
             else if ( menu == 3 )
             {
-                //czynnosc( men, 50, tog );
+
                 lockers_beginning_actions();
                 //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
 //                checking_lockers_state = 1;
                 refreshing_interrupt_on();
                 u = PCF8583_recognise_type_of_alarm();
-                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                czynnosc( 100, tog );
+                //refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 4 )
             {
@@ -1389,16 +1394,19 @@ int main( void )
 
     //PCF8583_alarm_monthly();
 
-    zczytaj_komende();
+
 
     //eeprom_write_word((uint16_t*)257,5);
 
-    //pilot( eeprom_read_word((uint16_t*)257), 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;
 
     sei();//włącza przerwania
+    zczytaj_komende();
+    pilot( 3, 0 );//przejście do podprogramu nr 3
+
+
 
     //PCF8583_write_word(254, 1256);
 
