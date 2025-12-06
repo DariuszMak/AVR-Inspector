@@ -379,7 +379,7 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
     LCD_WriteText("Krok:");
     LCD_GoTo(0,1);
     LCD_Int(number);
-    send_all_screen();
+    if(lockers_is_flag_bit(2) == 1) send_all_screen();
     delay_ms_var_double( 500 );
     pilot_reset();
     //LCD_set_appropiate_position(d);
@@ -420,7 +420,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         else if(number == 6) LCD_WriteText("USTAWIENIA FLAG");
         else if(number == 7) LCD_WriteText("TEMP. KRYTYCZNA");
 
-        send_all_screen();
+        if(lockers_is_flag_bit(2) == 1) send_all_screen();
 
         for ( t = 0; t < 5; ++t )
         {
@@ -442,7 +442,6 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
 
     LCD_Home();
     LCD_Clear();
-
 
     if(number == 13)
     {
@@ -509,8 +508,8 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             }
         }
     }
+    if(number != 8 || lockers_is_flag_bit(2) == 1) send_all_screen();
 
-    send_all_screen();
     delay_ms_var_double( 500 );
     pilot_reset();
     //LCD_set_appropiate_position(d);
@@ -717,7 +716,7 @@ void setting_information()
             }
         }
     }
-    send_all_screen();
+    if(lockers_is_flag_bit(2) == 1) send_all_screen();
     delay_ms_var(400);
     pilot_reset();
     LCD_position = temp_position;
@@ -2185,7 +2184,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_WriteText( "Na poczatek" );
         LCD_GoTo( 0, 1 );
         LCD_WriteText( "ekranu..." );
-        send_all_screen();
+        if(lockers_is_flag_bit(2) == 1) send_all_screen();
         delay_ms_var_double( 250 );
         LCD_PageUpScreen();
         LCD_PageDownScreen();
@@ -2354,6 +2353,7 @@ void sczytaj_komende( void )
 
         if(start_program == 0)
         {
+            printf("\n");
             lockers_print_date_of_report();
             show_properties(11);
 
