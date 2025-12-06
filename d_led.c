@@ -172,7 +172,15 @@ ISR( TIMER0_COMP_vect )
 
 void d_led_Int ( int dana )
 {
-    if ( dana >= 10000 || dana <= -1000 ) dana = 0;//zakres ziennych do wyświetlania
+    if ( dana >= 10000 || dana <= -1000 )//zakres zMiennych do wyświetlania
+    {
+        cy1 = 11;
+        cy2 = 11;
+        cy3 = 11;
+        cy4 = 11;
+        return;
+    }
+
     int dana_temp = abs( dana );
 
     int d = 1;
@@ -210,7 +218,7 @@ void d_led_Int ( int dana )
         if(f == 1 )
         {
             cy3 = 10;
-            if ( dana_temp == 0 ) cy4 = 10;
+            //if ( dana_temp == 0 ) cy4 = 10;
         }
 
         if(f == 2 ) cy2 = 10;

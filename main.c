@@ -442,18 +442,20 @@ int main( void )
 
                 break;
             case 59:
-                /*d_led_Int ( 9000 );
+                d_led_Int ( 9000 );
                 _delay_ms( 1000 );
                 d_led_Int ( 8765 );
                 _delay_ms( 1000 );
                 d_led_Int ( 4321 );
+                _delay_ms( 1000 );
+                d_led_Int ( 0 );
                 _delay_ms( 1000 );
                 d_led_Int ( -123 );
                 _delay_ms( 1000 );
                 d_led_Int ( -3 );
                 _delay_ms( 1000 );
                 d_led_Int ( -1000 );
-                _delay_ms( 1000 );*/
+                _delay_ms( 1000 );
                 cyfry = 0;
                 pozycja = 0;
                 u = -1;
