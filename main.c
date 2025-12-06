@@ -2007,6 +2007,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         if(pilot_state == 1)
         {
             pilot_state = 0;
+            blue_colors_RGB();
             buzzer_time(500);
             pilot_off();
             backlight(0);
@@ -2014,6 +2015,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         else if(pilot_state == 0)
         {
             pilot_state = 1;
+            green_colors_RGB();
             pilot_on();
             backlight(2);
         }
