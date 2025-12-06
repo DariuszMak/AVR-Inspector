@@ -77,7 +77,7 @@ void show_time_only_format(void);
 
 void show_time_format(void);
 
-void show_timer_format(void);
+void show_timer_alarm_format(void);
 
 void show_alarm_format(uint8_t case_of_format);
 

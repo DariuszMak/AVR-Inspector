@@ -106,20 +106,25 @@ void PCF8583_write_bcd(uint8_t address,uint8_t data)
 void PCF8583_init(void)
 {
 //    PCF8583_alarm=0;
-    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b11111101);//bez zerowania flagi alarmu
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b00110000);//bez zerowania flagi alarmu
     PCF8583_write(0x00, PCF8583_read(0x00) | 0b00000100);//komórki do alarmu dozwolone
     PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
-    PCF8583_mask_off();//maskowanie dni i roku wyłączone
+    PCF8583_mask_on();//maskowanie dni i roku wyłączone
     PCF8583_write(0x04, PCF8583_read(0x04) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
 
-    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00000101);//przerwania alarmu dozwolone i timera też
-    PCF8583_write(0x08, PCF8583_read(0x08) | 0b10001010);//przerwania alarmu dozwolone i timera też
+    //PCF8583_alarm_flag_off();
 
-    PCF8583_write(0x0F, 0b11111100);
+    //PCF8583_timer_flag_on();
+    PCF8583_start();
 
-    PCF8583_timer_flag_off();
+    PCF8583_set_timer_mode(2);
+    PCF8583_timer_interrupt_on();
+    PCF8583_timer_alarm_on();
+    PCF8583_alarm_interrupt_on();
 
-    PCF8583_timer_on();
+
+
+
 
 
     //PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
@@ -130,7 +135,7 @@ void PCF8583_init(void)
 */
 void PCF8583_stop(void)
 {
-    PCF8583_write(0, PCF8583_read(0) | 0x80);
+    PCF8583_write(0x00, PCF8583_read(0x00) | 0b10000000);
 }
 
 /**
@@ -138,8 +143,26 @@ void PCF8583_stop(void)
 */
 void PCF8583_start(void)
 {
-    PCF8583_write(0, PCF8583_read(0) & ~0x80);
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b10000000);
 }
+
+uint8_t PCF8583_is_clock_counting(void)
+{
+    if(PCF8583_read(0x00) & 0b10000000) return 1;
+    else return 0;
+}
+
+uint8_t PCF8583_timer_mode(void)
+{
+    return PCF8583_read(0x08) & 0b00000111;
+}
+
+void PCF8583_set_timer_mode(uint8_t mode)
+{
+    PCF8583_write(0x08, mode & 0b00000111);
+}
+
+
 
 /**
  Odwiesza układ
@@ -186,7 +209,7 @@ void PCF8583_timer_flag_off(void)
 */
 void PCF8583_timer_flag_on(void)
 {
-    PCF8583_write(0, PCF8583_read(0) | 0b00000001);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) | 0b00000001);//alarm codzienny
 }
 
 /**
@@ -194,7 +217,7 @@ void PCF8583_timer_flag_on(void)
 */
 void PCF8583_alarm_flag_off(void)
 {
-    PCF8583_write(0, PCF8583_read(0) & ~0b00000010);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b00000010);//alarm codzienny
 }
 
 /**
@@ -202,7 +225,7 @@ void PCF8583_alarm_flag_off(void)
 */
 void PCF8583_alarm_flag_on(void)
 {
-    PCF8583_write(0, PCF8583_read(0) | 0b00000010);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) | 0b00000010);//alarm codzienny
 }
 
 /**
@@ -283,7 +306,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
 
     PCF8583_stop();
     PCF8583_write_buf(0x01, 6, (uint8_t*)&time_f);
-    PCF8583_start();
+    //PCF8583_start();
     PCF8583_write_buf(0x10, 2, year_table);
 }
 
@@ -351,16 +374,6 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     PCF8583_write_buf(0x09, 6, (uint8_t*)&time_f);
 }
 
-void PCF8583_timer_off()
-{
-    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b01000000);
-}
-
-void PCF8583_timer_on()
-{
-    PCF8583_write(0x08, PCF8583_read(0x08) | 0b01000000);
-}
-
 /**
  Wyłącza alarm
 */
@@ -395,16 +408,66 @@ void PCF8583_alarm_monthly(void)
     PCF8583_write(0x08, PCF8583_read(0x08) | 0b00110000);//alarm codzienny
 }
 
+void PCF8583_timer_alarm_off(void)
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b01000000);
+}
+
+void PCF8583_timer_alarm_on(void)
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b01000000);
+}
+
+
+void PCF8583_alarm_interrupt_off(void)
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b10000000);
+}
+
+void PCF8583_alarm_interrupt_on(void)
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b10000000);
+}
+
+uint8_t PCF8583_is_alarm_interrupt(void)
+{
+    if(PCF8583_read(0x08) & 0b10000000) return 1;
+    else return 0;
+}
+
+void PCF8583_timer_interrupt_off(void)
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00001000);
+}
+
+void PCF8583_timer_interrupt_on(void)
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b00001000);
+}
+
+uint8_t PCF8583_is_timer_interrupt(void)
+{
+    if(PCF8583_read(0x08) & 0b00001000) return 1;
+    else return 0;
+}
+
+
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
 
 
 uint8_t PCF8583_recognise_type_of_alarm(void)
 {
-    return ((PCF8583_read(0x08) & 0x30) >> 4);
+    return ((PCF8583_read(0x08) & 0b00110000) >> 4);
 }
 
-uint8_t PCF8583_is_timer_set(void)
+uint8_t PCF8583_recognise_type_of_timer_alarm(void)
+{
+    if(PCF8583_read(0x08) & 0b01000000) return 1;
+    else return 0;
+}
+
+uint8_t PCF8583_is_timer_flag_set(void)
 {
     if(PCF8583_read(0x00) & 0b00000001) return 1;
     else return 0;
@@ -414,7 +477,7 @@ uint8_t PCF8583_is_timer_set(void)
  Sprawdza, czy alarm jest włączony
 */
 
-uint8_t PCF8583_is_alarm_set(void)
+uint8_t PCF8583_is_alarm_flag_set(void)
 {
     if(PCF8583_read(0x00) & 0b00000010) return 1;
     else return 0;

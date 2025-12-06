@@ -167,7 +167,7 @@ void show_time_format(void)
     show_day_of_week(dzien_tygodnia);
 }
 
-void show_timer_format(void)
+void show_timer_alarm_format(void)
 {
     LCD_GoTo( 0 + moveStep, 0 );
     LCD_Int(bcd2bin(PCF8583_read(0x07)));
@@ -520,7 +520,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     moveStep = 35;
-    show_timer_format();
+    show_timer_alarm_format();
     LCD_GoTo(12, 0);
     LCD_Double(ds18b20_temperature(),1);
 
@@ -1256,7 +1256,7 @@ void zczytaj_komende( void )
             else if(temp_char == 'i') lockers_print_latest_data();
             if(temp_char != 0) refresh_screen = 1;
 
-            if(/*PCF8583_is_alarm_set() == 1 || */PCF8583_is_timer_set() == 1)
+            if(/*PCF8583_is_alarm_flag_set() == 1 || */PCF8583_is_timer_flag_set() == 1)
             {
                 buzzer();
                 lockers_print_latest_data();

@@ -108,15 +108,6 @@ void PCF8583_write_bcd(uint8_t address,uint8_t data);
 */
 void PCF8583_init(void);
 
-/**
- Zatrzymuje układ
-*/
-void PCF8583_stop(void);
-
-/**
- Startuje układ
-*/
-void PCF8583_start(void);
 
 /**
  Odwiesza układ
@@ -137,18 +128,6 @@ void PCF8583_mask_off(void);//wyłącza maskę - dostępne są wszystkie rejestr
  Zawiesza układu
 */
 void PCF8583_mask_on(void);//maskuje dane - można bezpośrednio odczytywać
-
-
-void PCF8583_timer_flag_off(void);
-
-void PCF8583_timer_flag_on(void);
-
-/**
- Wyłacza wskaźnik alarmu
-*/
-void PCF8583_alarm_flag_off(void);
-
-void PCF8583_alarm_flag_on(void);
 
 
 /**
@@ -210,25 +189,6 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
 */
 void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t type_of_alarm);
 
-
-
-
-/*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
-
-void PCF8583_timer_off();
-
-void PCF8583_timer_on();
-
-uint8_t PCF8583_is_timer_set(void);
-
-uint8_t PCF8583_recognise_type_of_alarm(void);
-
-/**
- Sprawdza, czy alarm jest włączony
-*/
-
-uint8_t PCF8583_is_alarm_set(void);
-
 /**
  Wyłącza alarm
 */
@@ -248,6 +208,82 @@ void PCF8583_alarm_weekly(void);
  Załącza alarm dla dni w miesiącu
 */
 void PCF8583_alarm_monthly(void);
+
+
+
+
+/*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
+
+//flagi
+
+//flaga alarmu
+
+void PCF8583_alarm_flag_off(void);
+
+void PCF8583_alarm_flag_on(void);
+
+uint8_t PCF8583_is_alarm_flag_set(void);
+
+//flaga timera
+
+void PCF8583_timer_flag_off(void);
+
+void PCF8583_timer_flag_on(void);
+
+uint8_t PCF8583_is_timer_flag_set(void);
+
+//odliczanie zegara
+
+void PCF8583_stop(void);
+
+void PCF8583_start(void);
+
+uint8_t PCF8583_is_clock_counting(void);
+
+//tryby odliczania timera
+
+uint8_t PCF8583_timer_mode(void);
+
+void PCF8583_set_timer_mode(uint8_t mode);
+
+//przerwanie timera
+
+void PCF8583_timer_interrupt_off(void);
+
+void PCF8583_timer_interrupt_on(void);
+
+uint8_t PCF8583_is_timer_interrupt(void);
+
+//alarm alarmu - do zrobienia
+
+uint8_t PCF8583_recognise_type_of_alarm(void);
+
+//alarm timera
+
+void PCF8583_timer_alarm_off(void);
+
+void PCF8583_timer_alarm_on(void);
+
+uint8_t PCF8583_recognise_type_of_timer_alarm(void);
+
+//przerwanie alarmu
+
+void PCF8583_alarm_interrupt_off(void);
+
+void PCF8583_alarm_interrupt_on(void);
+
+uint8_t PCF8583_is_alarm_interrupt(void);
+
+
+
+
+
+
+
+
+
+
+
 
 void PCF8583_get_wall_alarm(void);
 
