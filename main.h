@@ -7,6 +7,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#define BAUD 9600
+#define MYUBRR  F_CPU/BAUD/16-1
 
 #include "delay_lib.h"
 #include "HD44780.h"
@@ -47,6 +51,14 @@ int8_t s;//inna (dodatowa zmienna)
 int16_t c;//inna (dodatowa zmienna)
 
 uint8_t refresh_screen;
+
+/* Inicjuje port szeregowy AVRa */
+void USART_init(unsigned int myubrr);
+
+/* Wysyła znak do portu szeregowego */
+uint8_t USART_Transmit(char c, FILE *stream);
+
+
 
 
 int main( void );

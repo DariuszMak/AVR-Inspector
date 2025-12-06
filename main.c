@@ -22,6 +22,35 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 //definicje funkcji
 
 
+/* Inicjuje port szeregowy AVRa */
+void USART_init(unsigned int myubrr)
+{
+    /* Ustala prędkość transmisji */
+    UBRRH = (unsigned char)(myubrr>>8);
+    UBRRL = (unsigned char)myubrr;
+
+    /* Włącza nadajnika */
+    UCSRB = (1<<TXEN);
+
+    /* Format ramki: 8 bitów danych, 1 bit stopu, brak bitu parzystości */
+    UCSRC = (1<<URSEL)|(3<<UCSZ0);
+}
+
+
+/* Wysyła znak do portu szeregowego */
+uint8_t USART_Transmit(char c, FILE *stream)
+{
+    while(!(UCSRA & (1<<UDRE)));
+    UDR = c;
+
+    return 0;
+}
+
+
+
+
+
+
 void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 {
     PORTD |= ( 1 << PD7 );
@@ -153,12 +182,12 @@ void show_alarm_format(uint8_t case_of_format)
         }
         else
         {
-            for(w = 0; w < 7; ++w)
+            for(t = 0; t < 7; ++t)
             {
-                if(miesiac & (1 << w))
+                if(miesiac & (1 << t))
                 {
                     LCD_WriteText("|");
-                    LCD_Int(w+1);
+                    LCD_Int(t+1);
                 }
             }
             LCD_WriteText("|");
@@ -1385,6 +1414,17 @@ int main( void )
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
 
+
+/* Tworzy strumienia danych o nazwie 'mystdout' połączony
+    z funkcją 'USART_Transmit' */
+ FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
+
+    /* Inicjalizuje  port szeregowy AVRa */
+    USART_init(MYUBRR);
+
+    /* Przekierowuje standardowe wyjście do  'mystdout' */
+    stdout = &mystdout;
+
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
@@ -1407,6 +1447,13 @@ int main( void )
     pilot( 3, 0 );//przejście do podprogramu nr 3
 
 
+
+    while(1)
+    {
+
+        printf("Temperatura powietrza:\n\r");
+        delay_ms_var(500);
+    }
 
     //PCF8583_write_word(254, 1256);
 
