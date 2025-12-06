@@ -2063,6 +2063,13 @@ void czynnosc3( int com, int tog )
     {
         c += zwiekszanie;
     }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+            c = 0;
+        }
+    }
 
     refresh_screen = 1;
 }
