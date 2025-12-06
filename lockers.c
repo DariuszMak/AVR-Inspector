@@ -290,7 +290,6 @@ void lockers_print_all_memory(void)
 
 void lockers_print_latest_data(void)
 {
-
     printf("Raport. ");
     lockers_print_date_of_report();
     lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
@@ -428,24 +427,35 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
     {
         if(save_info_table[i])
         {
+            uint8_t end_of_mem = 0;
             buzzer();
             delay_ms_var(5);
             if(lockers_tail() == lockers_number_of_frames() - 1)
             {
                 if(lockers_head() == 0)
                 {
-                    lockers_print_latest_data();
+                    end_of_mem = 1;
                 }
             }
             else
             {
                 if(lockers_head() == lockers_tail() + 1)
                 {
-                    lockers_print_latest_data();
+                    end_of_mem = 1;
                 }
             }
 
-            lockers_save_frame(lockers_tail(), i);
+            if( end_of_mem == 1)
+            {
+                if(start_program == 1) buzzer_time(3000);
+                else
+                {
+                    lockers_print_latest_data();
+
+
+                }
+            }
+            else lockers_save_frame(lockers_tail(), i);
         }
     }
     backlight(2);

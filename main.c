@@ -963,7 +963,7 @@ void czynnosc2( int com, int tog )
         }
         else if(pilot_state == 0)
         {
-            if(start_program == 0)
+            if(start_program != 1 )
             {
                 pilot_state = 1;
                 backlight(1);
@@ -1200,10 +1200,11 @@ void zczytaj_komende( void )
         }
         else
         {
-            if(lockers_is_safety_bit() == 1)
+            if(lockers_is_safety_bit() == 1 && start_program == 0)
             {
                 lockers_print_all_memory();
             }
+            start_program = 2;
 
             uint8_t temp_char = USART_Recieve_without_waiting();
 
