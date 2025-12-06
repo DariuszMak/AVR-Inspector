@@ -154,7 +154,19 @@ void lockers_read_frame(uint8_t index)
 
 void lockers_print_entire_frame(void)
 {
-    printf("%d:%d:%d %d:%d:%d %d\n\r", frame.hours, frame.minutes, frame.seconds, frame.day, frame.month, frame.year, frame.information );
+
+    printf("%d:%d:%d %d:%d:%d", frame.hours, frame.minutes, frame.seconds, frame.day, frame.month, frame.year);
+
+    uint8_t number = frame.information % 100;
+
+    if(number != 0)
+    {
+        printf(" SZAFKA NR: %d ",number);
+        uint8_t t = frame.information / 100;
+        if(t == 1) printf("OTWARCIE");
+        else if(t == 2) printf("ZAMKNIECIE");
+    }
+    printf("\n\r");
 }
 
 void lockers_print_all_memory(void)
@@ -164,6 +176,7 @@ void lockers_print_all_memory(void)
     for(; index_of_frame < lockers_number_of_frames(); ++ index_of_frame)
     {
         lockers_read_frame(index_of_frame);
+        printf("%d. ", index_of_frame + 1);
         lockers_print_entire_frame();
     }
 }
@@ -268,6 +281,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 buzzer_time(1000);
                 temp_address = 0;
                 overflow_flag = 0;
+                lockers_print_all_memory();
             }
 
             if(overflow_flag == 0)

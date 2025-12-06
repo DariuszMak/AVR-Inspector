@@ -1,6 +1,9 @@
 #ifndef LOCKERS_H_
 #define LOCKERS_H_
 
+#define BAUD 9600
+#define MYUBRR  F_CPU/BAUD/16-1
+
 #include <stdio.h>
 #include <avr/io.h>
 #include "delay_lib.h"

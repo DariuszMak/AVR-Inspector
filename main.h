@@ -8,9 +8,6 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
-#define BAUD 9600
-#define MYUBRR  F_CPU/BAUD/16-1
-
 #include "delay_lib.h"
 #include "HD44780.h"
 #include "ir_decode.h"

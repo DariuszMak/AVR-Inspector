@@ -1415,8 +1415,6 @@ int main( void )
     pilot( 3, 0 );//przejście do podprogramu nr 3
 
 
-
-
     //PCF8583_write_word(254, 1256);
 
     //główna pętla programu
