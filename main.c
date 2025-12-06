@@ -12,10 +12,12 @@
 
 //##############################################################################
 
+int t, rozmiar = 6;
+
+
 int main( void )
 {
 
-	int t, rozmiar = 6;
 	char i[rozmiar];
 
 	void pisz( void )
