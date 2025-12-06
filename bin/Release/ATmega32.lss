@@ -4620,8 +4620,8 @@ Disassembly of section .text:
     2a3c:	11 05       	cpc	r17, r1
     2a3e:	51 f4       	brne	.+20     	; 0x2a54 <czynnosc+0xe0>
     2a40:	80 91 7c 00 	lds	r24, 0x007C
-    2a44:	8f 3f       	cpi	r24, 0xFF	; 255
-    2a46:	19 f4       	brne	.+6      	; 0x2a4e <czynnosc+0xda>
+    2a44:	88 23       	and	r24, r24
+    2a46:	19 f0       	breq	.+6      	; 0x2a4e <czynnosc+0xda>
     2a48:	10 92 7c 00 	sts	0x007C, r1
     2a4c:	31 c0       	rjmp	.+98     	; 0x2ab0 <czynnosc+0x13c>
     2a4e:	0e 94 e9 08 	call	0x11d2	; 0x11d2 <backlight.part.0>
@@ -5822,12 +5822,12 @@ Disassembly of section .text:
     34be:	18 95       	reti
 
 000034c0 <main>:
-    34c0:	0e 94 de 01 	call	0x3bc	; 0x3bc <LCD_Initalize>
-    34c4:	84 e6       	ldi	r24, 0x64	; 100
-    34c6:	90 e0       	ldi	r25, 0x00	; 0
-    34c8:	0e 94 be 03 	call	0x77c	; 0x77c <i2cSetBitrate>
-    34cc:	0e 94 41 17 	call	0x2e82	; 0x2e82 <PCF8583_init>
-    34d0:	8f 9a       	sbi	0x11, 7	; 17
+    34c0:	8f 9a       	sbi	0x11, 7	; 17
+    34c2:	0e 94 de 01 	call	0x3bc	; 0x3bc <LCD_Initalize>
+    34c6:	84 e6       	ldi	r24, 0x64	; 100
+    34c8:	90 e0       	ldi	r25, 0x00	; 0
+    34ca:	0e 94 be 03 	call	0x77c	; 0x77c <i2cSetBitrate>
+    34ce:	0e 94 41 17 	call	0x2e82	; 0x2e82 <PCF8583_init>
     34d2:	0e 94 11 1a 	call	0x3422	; 0x3422 <ds18b20_temperature>
     34d6:	0e 94 37 1a 	call	0x346e	; 0x346e <random_generator_init>
     34da:	0e 94 40 1a 	call	0x3480	; 0x3480 <refreshing_interrupt_on>

@@ -18,6 +18,11 @@
 #include "i2c.h"
 #include "termometer.h"
 
+#define BUZZER_DIR	DDRD
+#define BUZZER_PORT	PORTD
+#define BUZZER_PIN	PIND
+#define BUZZER		(1 << PD7)
+
 //Program glowny:
 
 //UWAGA!!! PONIŻSZE CHARAKTERYZACJE ZMIENNYCH SĄ BARDZO ISTOTNE W CELU POPRAWNEGO ICH UŻYWANIA W PROGRAMIE

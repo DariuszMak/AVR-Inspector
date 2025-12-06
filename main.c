@@ -38,16 +38,16 @@ void backlight(int8_t state)
 
 void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 {
-    PORTD |= ( 1 << PD7 );
+    BUZZER_PORT |= BUZZER;
     delay_ms_var_double( 1 );
-    PORTD &= ~( 1 << PD7 );
+    BUZZER_PORT &= ~BUZZER;
 }
 
 void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
 {
-    PORTD |= ( 1 << PD7 );
+    BUZZER_PORT |= BUZZER;
     delay_ms_var_double( time );
-    PORTD &= ~( 1 << PD7 );
+    BUZZER_PORT &= ~BUZZER;
 }
 
 void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
@@ -1118,7 +1118,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     {
         if( tog == 0)
         {
-            if( backlight_of_lcd == -1 ) backlight(0);
+            if( backlight_of_lcd != 0 ) backlight(0);
             else backlight(2);
         }
         if( tog == 1)
@@ -1273,12 +1273,15 @@ int main( void )
 {
 
 //Inicjalizacja
+
+    BUZZER_DIR |= BUZZER;// PORTD7 jako wyjście do buzzera
     LCD_Initalize();//inicjalizacja wyświetlacza
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
 
-    DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
+
+
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
     refreshing_interrupt_on();
