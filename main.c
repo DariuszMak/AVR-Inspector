@@ -876,7 +876,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if(u == end_of_settings())
     {
-        PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok, timer);
+        PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
         refresh_screen = 0;
         LCD_Clear();
         w = 1;
@@ -950,7 +950,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     start = 1;
                     w = 1;
 
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
                     PCF8583_set_type_of_alarm(c);
 
                     if(c == 0)
@@ -984,7 +984,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     start = 1;
                     w = 1;
 
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
                     if(c == 0)
                     {
                         PCF8583_timer_alarm_off();
@@ -1719,9 +1719,17 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
-        RGB_Red = rand() % 255;
+        /*RGB_Red = rand() % 255;
         RGB_Green = rand() % 255;
         RGB_Blue = rand() % 255;
+        */
+
+        if(rano_wieczor == 0 )RGB_Red =  255;
+        else RGB_Red = 0;
+        if(PCF8583_is_12h_24h_format() == 0) RGB_Blue = 255;
+        else RGB_Blue = 0;
+        RGB_Green = 0;
+        //RGB_Blue = rand() % 255;
 
         overflow_timer_2 = 0;
         interr = 0;
@@ -1848,10 +1856,9 @@ int main( void )
     PCF8583_alarm_flag_off();
     PCF8583_timer_flag_off();
 
+    PCF8583_24h_format();
+
     RGB_init();
-
-
-
 
     //PCF8583_write_word(PCF8583_HEAD, 3000);
 
