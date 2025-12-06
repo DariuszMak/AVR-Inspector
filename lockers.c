@@ -130,26 +130,21 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
     // eeprom_read_word( (uint16_t*)21);
 
-
     if(lockers_convert_address_to_index_of_frame(temp_address) < lockers_number_of_frames_exteral_EEPROM())
     {
-        if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści
+        if((EEPROM_MAX_ADDRESS - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
         {
             temp_address = SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
             overflow_flag = 2;
         }
-        else if((EEPROM_MAX_ADDRESS - temp_address) == (SIZE_OF_FRAME - 1))//jeśli wiadomo, że zmieści się na styk
+        else if((EEPROM_MAX_ADDRESS - (int16_t)temp_address) == (SIZE_OF_FRAME - 1))//jeśli wiadomo, że zmieści się na styk
         {
             overflow_flag = 1;
         }
     }
     else overflow_flag = 2;
 
-    if(overflow_flag == 2)
-    {
-        temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
-    }
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
@@ -181,6 +176,8 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             }
             else
             {
+                temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
+
                 eeprom_busy_wait();
                 //_EEPUT(temp_address, sek);
                 eeprom_write_word((uint16_t*)temp_address++,sek);
@@ -189,7 +186,6 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 //_EEPUT(temp_address, godz);
 
                 eeprom_write_word((uint16_t*)temp_address++,godz);
-
 
                 //_EEPUT(temp_address, dzien);
                 eeprom_write_word((uint16_t*)temp_address++,dzien);
@@ -201,32 +197,32 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 eeprom_write_word((uint16_t*)temp_address++, rok);
                 temp_address++;
 
-
                 uint8_t information = (uint8_t)save_info_table[i] * 100;
                 information += i + 1;
                 //_EEPUT(temp_address, information);
                 eeprom_write_word((uint16_t*)temp_address++,information);
-
             }
         }
     }
 
-
     if(overflow_flag == 1)
     {
-        buzzer_time(3000);
+        buzzer_time(200);
         //overflow_flag = 2;//przepełnienie pamięci
     }
-    else if(overflow_flag == 2) buzzer_time(1000);
+    else if((overflow_flag == 2) && ((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))
+    {
+        buzzer_time(1000);
+        temp_address = 0;
+        overflow_flag = 0;
+    }
 
     if(overflow_flag <= 1)
     {
         PCF8583_write_word(PCF8583_CELL, temp_address);
     }
-    else PCF8583_write_word(PCF8583_CELL, temp_address +  SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM());
-
+    else PCF8583_write_word(PCF8583_CELL, temp_address + SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM());
 }
-
 
 uint8_t locker_1_button(void)//przycisk fizycznie umieszczony na płytce
 {
