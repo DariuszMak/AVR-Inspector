@@ -174,7 +174,7 @@ void show_alarm_format(uint8_t case_of_format)
     }
 }
 
-void setting_information(uint8_t case_of_time, uint8_t step)
+void setting_information(uint8_t case_of_time, int8_t step)
 {
     if(step == 0) LCD_WriteText("GODZINY");
     else if(step == 1) LCD_WriteText("MINUTY");
@@ -203,7 +203,7 @@ void setting_information(uint8_t case_of_time, uint8_t step)
     }
 }
 
-void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
+void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s)
 {
     int16_t temp = 0;
     if(s == 2) temp -= zwiekszanie;
@@ -264,9 +264,9 @@ void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
         }
     }
 }
-void check_step_value(uint8_t case_of_time, uint8_t u)
+void check_step_value(uint8_t case_of_time, int8_t u)
 {
-
+    if(u == -1 && zwiekszanie > 1) wysw_skok(1);
     if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
 
 
@@ -423,8 +423,7 @@ void cube_position(uint8_t case_of_effect)
         if(s == pozycja) tablicaTemp[s] = '1';
         else tablicaTemp[s] = '0';
     }
-    if(case_of_effect == 0)
-    {
+
         for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
         {
             if(tablicaTemp[s] == '1')
@@ -442,8 +441,8 @@ void cube_position(uint8_t case_of_effect)
                 if (s == 3 || cyfra == 0) cy4 = 10;
             }
         }
-    }
-    else if(case_of_effect == 1)
+
+     if(case_of_effect == 1)
     {
         for(s = 0; s < rozmiar; ++s)
         {
@@ -575,8 +574,6 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         LCD_EraseAll();
     }
 
-
-
     if( s != 0 )
     {
         set_appropriate_values_of_time(0, u, s);
@@ -594,7 +591,9 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
+
     if (u < -1) u = -1;
+    check_step_value(c, u);
     if(u == -1)
     {
         LCD_EraseAll();
@@ -604,7 +603,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
     else
     {
-        check_step_value(c, u);
         LCD_EraseAll();
         if(u == end_of_settings(c) || c == 0 || c == -1)
         {
@@ -677,19 +675,19 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 {
     if( menu == 0 )
     {
-wysw0();
+        wysw0();
     }
     else if( menu == 1 )
     {
-wysw1();
+        wysw1();
     }
     else if( menu == 2 )
     {
-wysw2();
+        wysw2();
     }
     else if( menu == 3 )
     {
-wysw3();
+        wysw3();
     }
     else if( menu == 4 )
     {
@@ -697,14 +695,446 @@ wysw3();
     }
     else if( menu == 5 )
     {
-wysw5();
+        wysw5();
 
     }
     else if( menu == 6 )
     {
-wysw6();
+        wysw6();
     }
 }
+
+
+void czynnosc0( int com, int tog )
+{
+    if ( com == 41 )
+    {
+        pilot_off();
+        refresh_screen = 0;
+        LCD_Clear();
+        rozmiar = LCD_CHARSPERLINE;
+        char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
+
+        char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
+
+        for ( t = 0; t < 2; ++t )
+        {
+            original_text[t] = ( char* ) malloc ( LCD_CHARSPERLINE * sizeof ( *original_text ) );
+            for (u = 0; u < rozmiar; ++u)
+            {
+                original_text[t][u] = original_text_static[t][u];
+            }
+        }
+
+        /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";//błąd, bo nie działa przy powtórnym użyciu
+        original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
+
+        for( t = 0; t < LCD_CHARSPERLINE; ++t )
+        {
+            LCD_WriteData( original_text[0][t] );
+        }
+
+        LCD_GoTo( 0, 1 );
+
+        for( t = 0; t < LCD_CHARSPERLINE; ++t )
+        {
+            LCD_WriteData( original_text[1][t] );
+        }
+
+        rozmiar = 40;
+        u = 1;
+
+        while( u )
+        {
+            char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
+
+            for ( t = 0; t < 2; ++t )
+            {
+                buffer_table[t] = ( char* ) malloc ( rozmiar * sizeof ( *buffer_table ) );
+            }
+
+            LCD_Home();
+
+            for( t = 0; t < rozmiar; ++t )
+            {
+                buffer_table[0][t] = LCD_ReadData();
+            }
+
+            LCD_GoTo( 0, 1 );
+
+            for( t = 0; t < rozmiar; ++t )
+            {
+                buffer_table[1][t] = LCD_ReadData();
+            }
+
+            LCD_Clear();
+
+            for( t = 0; t < rozmiar; ++t )
+            {
+                if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 0;
+            }
+
+            if ( stop_button() )//jeśli przycisk zatrzymania został wciśnięty
+            {
+                u = 0;
+            }
+
+            if( u )
+            {
+                for( t = 0; t < rozmiar; ++t )
+                {
+                    LCD_WriteData( buffer_table[0][t] );
+                }
+
+                LCD_GoTo( 0, 1 );
+
+                for( t = 0; t < rozmiar; ++t )
+                {
+                    LCD_WriteData( buffer_table[1][t] );
+                }
+            }
+
+            for ( t = 0; t < 2; ++t )
+            {
+                free( buffer_table[t] );
+            }
+            free( buffer_table );
+        }
+
+        for ( t = 0; t < 2; ++t )
+        {
+            free( original_text[t] );
+        }
+        free( original_text );
+
+        buzzer();
+        delay_ms_var_double(10);
+        buzzer();
+        delay_ms_var_double(10);
+        buzzer();
+        pilot_on();
+
+    }
+    if ( com == 12 )
+    {
+        pilot_off();
+        refresh_screen = 0;
+        LCD_Clear();
+        LCD_Blink();
+        LCD_GoTo( 9, 1 );
+        LCD_WriteText( "Witaj!" );
+        delay_ms_var_double( 500 );
+        LCD_Home();
+        LCD_WriteText( "LCD HD44780" );
+        delay_ms_var_double( 500 );
+
+        LCD_ShiftRightScreen();
+        delay_ms_var_double( 700 );
+
+        LCD_ScreenOff();
+        delay_ms_var_double( 700 );
+        LCD_ScreenOn();
+        delay_ms_var_double( 700 );
+
+        LCD_ScreenOff();
+        delay_ms_var_double( 700 );
+        LCD_CursorBlink();
+        delay_ms_var_double( 1000 );
+        LCD_Blink() ;
+        LCD_ShiftRightCursor();
+        delay_ms_var_double( 1000 );
+        LCD_ShiftLeftCursor();
+        LCD_Cursor();
+        delay_ms_var_double( 1000 );
+        LCD_CursorBlink() ;
+        LCD_GoTo( 0, 1 );
+        LCD_WriteText( "Czytam:" );
+        delay_ms_var_double( 1500 );
+
+        LCD_GoTo( 9, 1 );
+
+        rozmiar = 6;
+
+        char * i =  ( char* ) malloc( rozmiar * sizeof (*i) );
+
+        void pisz( void )
+        {
+            for( t = 0; t < rozmiar; ++t )
+            {
+                LCD_WriteData( i[t] );
+                delay_ms_var_double( 50 );
+            }
+        }
+
+        for( t = 0; t < rozmiar; ++t )
+        {
+            i[t] = LCD_ReadData();
+            delay_ms_var_double( 100 );
+        }
+
+        LCD_ShiftLeftScreen();
+        delay_ms_var_double( 1500 );
+
+        LCD_Cursor();
+        LCD_EraseAll();
+        delay_ms_var_double( 1500 );
+        LCD_GoTo( 0, 1 );
+        pisz();
+        LCD_Blink();
+        LCD_GoTo( 9, 0 );
+        pisz();
+        LCD_GoTo( 8, 1 );
+        LCD_CursorBlink();
+        pisz();
+        LCD_GoTo( 1, 0 );
+        pisz();
+
+        free( i );
+
+        LCD_Cursor();
+        delay_ms_var_double( 1500 );
+        LCD_PageUpScreen ();
+        LCD_PageDownScreen();
+        LCD_EraseUp();
+        LCD_Blink();
+        delay_ms_var_double( 1000 );
+        LCD_PageDownScreen();
+        LCD_PageUpScreen();
+        LCD_Cursor();
+        LCD_EraseDown();
+        delay_ms_var_double( 500 );
+
+        LCD_Clear();
+        LCD_ScreenOn();
+        pilot_on();
+    }
+    refresh_screen = 1;
+}
+
+void czynnosc1( int com, int tog )
+{
+    LCD_Displaying( com );
+    if ( com != 100 ) refresh_screen = 1;
+}
+
+void czynnosc2( int com, int tog )
+{
+    if ( com == 41 || com == 100)
+    {
+        //reakcja na naciśnięcie przycisku "stop"
+        //reakcja na naciśnięcie przyciku z pilota RC5
+
+        t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
+        u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
+
+        do
+        {
+            buzzer_time(0.4);
+            ++t;
+            refresh_screen = 1;
+            delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
+        }
+        while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
+
+        delay_ms_var_double(200);
+        PCF8583_get_wall_time();
+        for(w = 0; w < hsek; ++w)
+        {
+            rand();
+        }
+
+        while ( t != 1 )
+        {
+            u=rand()%6 + 1;//wylosowanie liczby oczek na kostce
+
+            for(w = 1; w <= u; ++w)//przekulnięcia kostki w danej próbie
+            {
+                delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
+                pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
+                cyfra = w;
+                cube_position(0);
+                buzzer_time(0.8);
+            }
+            --t;
+        }
+        t++;//przywrócenie efektu z ostatniej tury
+        if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
+        u = -1;//tryb wyświetlania
+
+        cube_position(1);
+
+        u = 0;
+        refresh_screen = 1;
+
+
+        //cy1 = 8;
+    }
+    if ( com == 59 )
+    {
+        cyfra = 0;
+        pozycja = 0;
+        u = 0;
+        cube_position(1);
+        refresh_screen = 1;
+    }
+    if ( com == 55 )
+    {
+        wysw_skok( 1000 );
+    }
+    if ( com == 54 )
+    {
+        wysw_skok( 100 );
+    }
+    if ( com == 50 )
+    {
+        wysw_skok( 10 );
+    }
+    if ( com == 52 )
+    {
+        wysw_skok( 1 );
+    }
+    if ( com == 32 )
+    {
+        TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
+    }
+    if ( com == 33 )
+    {
+        TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
+    }
+    if ( com == 17 )
+    {
+        //cyfry -= zwiekszanie;
+    }
+    if ( com == 16 )
+    {
+        //cyfry += zwiekszanie;
+    }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+        }
+        if( tog == 1)
+        {
+            //wygaszenie elementów wyświetlacza podczas opuszczania podprogramu
+            TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
+            cy1 = 10;
+            cy2 = 10;
+            cy3 = 10;
+            cy4 = 10;
+
+        }
+    }
+    refresh_screen = 1;
+}
+
+void czynnosc3( int com, int tog )
+{
+    if ( com == 59 )
+    {
+        PCF8583_alarm_flag_off();
+    }
+    if ( com == 100 )
+    {
+        if(pilot_state == 1)
+        {
+            pilot_state = 0;
+        }
+        else if(pilot_state == 0)
+        {
+            pilot_state = 1;
+        }
+    }
+    refresh_screen = 1;
+}
+
+void czynnosc4( int com, int tog )
+{
+    if ( com == 16 )
+    {
+        ++u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 17 )
+    {
+        --u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 32 )
+    {
+        s = 1;
+    }
+    if ( com == 33 )
+    {
+        s = 2;
+    }
+    if ( com == 59 )
+    {
+        u = end_of_settings(0);
+    }
+    refresh_screen = 1;
+}
+
+void czynnosc5( int com, int tog )
+{
+    if ( com == 16 )
+    {
+        ++u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 17 )
+    {
+        --u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 32 )
+    {
+        if(u == -1) c -= zwiekszanie;
+        else s = 1;
+    }
+    if ( com == 33 )
+    {
+        if(u == -1) c += zwiekszanie;
+        else s = 2;
+    }
+    if ( com == 59 )
+    {
+        u = end_of_settings(c);
+
+    }
+    refresh_screen = 1;
+}
+
+void czynnosc6( int com, int tog )
+{
+    if ( com == 12 )
+    {
+        if( tog == 0)
+        {
+        }
+        if( tog == 1)
+        {
+            EEPROM_clear_all_memory();
+            PCF8583_write(PCF8583_CELL, 0);
+            u = 0;
+        }
+    }
+    if ( com == 32 )
+    {
+        u -= zwiekszanie;
+    }
+    if ( com == 33 )
+    {
+        u += zwiekszanie;
+    }
+    if ( com == 59 )
+    {
+        u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
+    }
+
+    refresh_screen = 1;
+}
+
 
 
 
@@ -714,429 +1144,32 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
     if( menu == 0)
     {
-
-        if ( com == 41 )
-        {
-            pilot_off();
-            refresh_screen = 0;
-            LCD_Clear();
-            rozmiar = LCD_CHARSPERLINE;
-            char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
-
-            char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
-
-            for ( t = 0; t < 2; ++t )
-            {
-                original_text[t] = ( char* ) malloc ( LCD_CHARSPERLINE * sizeof ( *original_text ) );
-                for (u = 0; u < rozmiar; ++u)
-                {
-                    original_text[t][u] = original_text_static[t][u];
-                }
-            }
-
-            /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";//błąd, bo nie działa przy powtórnym użyciu
-            original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
-
-            for( t = 0; t < LCD_CHARSPERLINE; ++t )
-            {
-                LCD_WriteData( original_text[0][t] );
-            }
-
-            LCD_GoTo( 0, 1 );
-
-            for( t = 0; t < LCD_CHARSPERLINE; ++t )
-            {
-                LCD_WriteData( original_text[1][t] );
-            }
-
-            rozmiar = 40;
-            u = 1;
-
-            while( u )
-            {
-                char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
-
-                for ( t = 0; t < 2; ++t )
-                {
-                    buffer_table[t] = ( char* ) malloc ( rozmiar * sizeof ( *buffer_table ) );
-                }
-
-                LCD_Home();
-
-                for( t = 0; t < rozmiar; ++t )
-                {
-                    buffer_table[0][t] = LCD_ReadData();
-                }
-
-                LCD_GoTo( 0, 1 );
-
-                for( t = 0; t < rozmiar; ++t )
-                {
-                    buffer_table[1][t] = LCD_ReadData();
-                }
-
-                LCD_Clear();
-
-                for( t = 0; t < rozmiar; ++t )
-                {
-                    if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 0;
-                }
-
-                if ( stop_button() )//jeśli przycisk zatrzymania został wciśnięty
-                {
-                    u = 0;
-                }
-
-                if( u )
-                {
-                    for( t = 0; t < rozmiar; ++t )
-                    {
-                        LCD_WriteData( buffer_table[0][t] );
-                    }
-
-                    LCD_GoTo( 0, 1 );
-
-                    for( t = 0; t < rozmiar; ++t )
-                    {
-                        LCD_WriteData( buffer_table[1][t] );
-                    }
-                }
-
-                for ( t = 0; t < 2; ++t )
-                {
-                    free( buffer_table[t] );
-                }
-                free( buffer_table );
-            }
-
-            for ( t = 0; t < 2; ++t )
-            {
-                free( original_text[t] );
-            }
-            free( original_text );
-
-            buzzer();
-            delay_ms_var_double(10);
-            buzzer();
-            delay_ms_var_double(10);
-            buzzer();
-            pilot_on();
-
-        }
-        if ( com == 12 )
-        {
-            pilot_off();
-            refresh_screen = 0;
-            LCD_Clear();
-            LCD_Blink();
-            LCD_GoTo( 9, 1 );
-            LCD_WriteText( "Witaj!" );
-            delay_ms_var_double( 500 );
-            LCD_Home();
-            LCD_WriteText( "LCD HD44780" );
-            delay_ms_var_double( 500 );
-
-            LCD_ShiftRightScreen();
-            delay_ms_var_double( 700 );
-
-            LCD_ScreenOff();
-            delay_ms_var_double( 700 );
-            LCD_ScreenOn();
-            delay_ms_var_double( 700 );
-
-            LCD_ScreenOff();
-            delay_ms_var_double( 700 );
-            LCD_CursorBlink();
-            delay_ms_var_double( 1000 );
-            LCD_Blink() ;
-            LCD_ShiftRightCursor();
-            delay_ms_var_double( 1000 );
-            LCD_ShiftLeftCursor();
-            LCD_Cursor();
-            delay_ms_var_double( 1000 );
-            LCD_CursorBlink() ;
-            LCD_GoTo( 0, 1 );
-            LCD_WriteText( "Czytam:" );
-            delay_ms_var_double( 1500 );
-
-            LCD_GoTo( 9, 1 );
-
-            rozmiar = 6;
-
-            char * i =  ( char* ) malloc( rozmiar * sizeof (*i) );
-
-            void pisz( void )
-            {
-                for( t = 0; t < rozmiar; ++t )
-                {
-                    LCD_WriteData( i[t] );
-                    delay_ms_var_double( 50 );
-                }
-            }
-
-            for( t = 0; t < rozmiar; ++t )
-            {
-                i[t] = LCD_ReadData();
-                delay_ms_var_double( 100 );
-            }
-
-            LCD_ShiftLeftScreen();
-            delay_ms_var_double( 1500 );
-
-            LCD_Cursor();
-            LCD_EraseAll();
-            delay_ms_var_double( 1500 );
-            LCD_GoTo( 0, 1 );
-            pisz();
-            LCD_Blink();
-            LCD_GoTo( 9, 0 );
-            pisz();
-            LCD_GoTo( 8, 1 );
-            LCD_CursorBlink();
-            pisz();
-            LCD_GoTo( 1, 0 );
-            pisz();
-
-            free( i );
-
-            LCD_Cursor();
-            delay_ms_var_double( 1500 );
-            LCD_PageUpScreen ();
-            LCD_PageDownScreen();
-            LCD_EraseUp();
-            LCD_Blink();
-            delay_ms_var_double( 1000 );
-            LCD_PageDownScreen();
-            LCD_PageUpScreen();
-            LCD_Cursor();
-            LCD_EraseDown();
-            delay_ms_var_double( 500 );
-
-            LCD_Clear();
-            LCD_ScreenOn();
-            pilot_on();
-        }
-        refresh_screen = 1;
+        czynnosc0(com, tog);
     }
     else if( menu == 1 )
     {
-        LCD_Displaying( com );
-        if ( com != 100 ) refresh_screen = 1;
+        czynnosc1(com, tog);
     }
     else if( menu == 2 )
     {
-        if ( com == 41 || com == 100)
-        {
-            //reakcja na naciśnięcie przycisku "stop"
-            //reakcja na naciśnięcie przyciku z pilota RC5
-
-            t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
-            u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
-
-            do
-            {
-                buzzer_time(0.4);
-                ++t;
-                refresh_screen = 1;
-                delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
-            }
-            while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
-
-            delay_ms_var_double(200);
-            PCF8583_get_wall_time();
-            for(w = 0; w < hsek; ++w)
-            {
-                rand();
-            }
-
-            while ( t != 1 )
-            {
-                u=rand()%6 + 1;//wylosowanie liczby oczek na kostce
-
-                for(w = 1; w <= u; ++w)//przekulnięcia kostki w danej próbie
-                {
-                    delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
-                    pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
-                    cyfra = w;
-                    cube_position(0);
-                    buzzer_time(0.8);
-                }
-                --t;
-            }
-            t++;//przywrócenie efektu z ostatniej tury
-            if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
-            u = -1;//tryb wyświetlania
-
-            cube_position(1);
-
-            u = 0;
-            refresh_screen = 1;
-
-
-            //cy1 = 8;
-        }
-        if ( com == 59 )
-        {
-            cyfra = 0;
-            pozycja = 0;
-            u = -1;
-            refresh_screen = 1;
-        }
-        if ( com == 55 )
-        {
-            wysw_skok( 1000 );
-        }
-        if ( com == 54 )
-        {
-            wysw_skok( 100 );
-        }
-        if ( com == 50 )
-        {
-            wysw_skok( 10 );
-        }
-        if ( com == 52 )
-        {
-            wysw_skok( 1 );
-        }
-        if ( com == 32 )
-        {
-            TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-        }
-        if ( com == 33 )
-        {
-            TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
-        }
-        if ( com == 17 )
-        {
-            //cyfry -= zwiekszanie;
-        }
-        if ( com == 16 )
-        {
-            //cyfry += zwiekszanie;
-        }
-        if ( com == 14 )
-        {
-            if( tog == 0)
-            {
-            }
-            if( tog == 1)
-            {
-                //wygaszenie elementów wyświetlacza podczas opuszczania podprogramu
-                TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-                cy1 = 10;
-                cy2 = 10;
-                cy3 = 10;
-                cy4 = 10;
-
-            }
-        }
-        refresh_screen = 1;
+        czynnosc2(com, tog);
     }
     else if( menu == 3 )
     {
-        if ( com == 59 )
-        {
-            PCF8583_alarm_flag_off();
-        }
-        if ( com == 100 )
-        {
-            if(pilot_state == 1)
-            {
-                pilot_state = 0;
-            }
-            else if(pilot_state == 0)
-            {
-                pilot_state = 1;
-            }
-        }
-        refresh_screen = 1;
+        czynnosc3(com, tog);
     }
 
     else if( menu == 4 )
     {
-        if ( com == 16 )
-        {
-            ++u;
-            w = 1;//wymuszenie wyświetlenia komunikatu
-        }
-        if ( com == 17 )
-        {
-            --u;
-            w = 1;//wymuszenie wyświetlenia komunikatu
-        }
-        if ( com == 32 )
-        {
-            s = 1;
-        }
-        if ( com == 33 )
-        {
-            s = 2;
-        }
-        if ( com == 59 )
-        {
-            u = end_of_settings(0);
-        }
-        refresh_screen = 1;
+        czynnosc4(com, tog);
     }
-
     else if( menu == 5 )
     {
-        if ( com == 16 )
-        {
-            ++u;
-            w = 1;//wymuszenie wyświetlenia komunikatu
-        }
-        if ( com == 17 )
-        {
-            --u;
-            w = 1;//wymuszenie wyświetlenia komunikatu
-        }
-        if ( com == 32 )
-        {
-            if(u == -1) c -= zwiekszanie;
-            else s = 1;
-        }
-        if ( com == 33 )
-        {
-            if(u == -1) c += zwiekszanie;
-            else s = 2;
-        }
-        if ( com == 59 )
-        {
-            u = end_of_settings(c);
-
-        }
-        refresh_screen = 1;
+        czynnosc5(com, tog);
     }
     else if( menu == 6 )
     {
-
-        if ( com == 12 )
-        {
-            if( tog == 0)
-            {
-            }
-            if( tog == 1)
-            {
-                EEPROM_clear_all_memory();
-                PCF8583_write(PCF8583_CELL, 0);
-                u = 0;
-            }
-        }
-        if ( com == 32 )
-        {
-            u -= zwiekszanie;
-        }
-        if ( com == 33 )
-        {
-            u += zwiekszanie;
-        }
-        if ( com == 59 )
-        {
-            u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
-        }
-
-        refresh_screen = 1;
+        czynnosc6(com, tog);
     }
 
 
@@ -1204,7 +1237,7 @@ void pilot( int com, int tog )//
     {
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
-        if( com > 0 && com <= liczbaPodprogramow )//jeśli komenda była z zakresu numerów podprogramów
+        if( com >= 0 && com <= liczbaPodprogramow )//jeśli komenda była z zakresu numerów podprogramów
         {
             menu = com;//przypisanie zmiennej menu nowej wartości
             wybor( menu );
@@ -1216,9 +1249,11 @@ void pilot( int com, int tog )//
             else if ( menu == 2 )
             {
                 rozmiar = 4;
-                u = -1;//wymuszenie wykonania animacji z kreskami
+                u = 0;
+
                 t = 0;
                 TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
+                cube_position(1);
                 refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 3 )
@@ -1261,18 +1296,6 @@ void pilot( int com, int tog )//
 
     if( start == 0 ) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
-    if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
-    {
-        start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
-        menu = 0;//
-        zwiekszanie = 1;
-        checking_lockers_state = 0;
-        TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
-        //TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera preskaler 1024, timer do odświeżania
-        wybor( menu );
-        refresh_screen = 1;// wyświetlenie ekranu
-
-    }
     if(pilot_state == 1) pilot_on();
 }
 
@@ -1289,11 +1312,22 @@ void zczytaj_komende( void )
         wysw();
     }
 
+    if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
+    {
+        start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
+        menu = 0;//
+        zwiekszanie = 1;
+        checking_lockers_state = 0;
+        TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
+        //TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera preskaler 1024, timer do odświeżania
+        pilot(0,0);
+        //refresh_screen = 1;// wyświetlenie ekranu
+    }
+
     if(refresh_screen == 1 )
     {
         refresh_screen = 0;
         wysw();
-
     }
 
     if ( stop_button())
@@ -1357,15 +1391,15 @@ int main( void )
 
     //PCF8583_alarm_monthly();
 
-    sei();//włącza przerwania
 
 
-
-    pilot( 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
+    zczytaj_komende();
     pilot( 3, 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;
+
+    sei();//włącza przerwania
 
     //główna pętla programu
 

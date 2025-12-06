@@ -77,11 +77,11 @@ void correction_of_time(void);
 
 void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
 
-void setting_information(uint8_t case_of_time, uint8_t u);
+void setting_information(uint8_t case_of_time, int8_t u);
 
-void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s);
+void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s);
 
-void check_step_value(uint8_t case_of_time, uint8_t u);
+void check_step_value(uint8_t case_of_time, int8_t u);
 
 uint8_t end_of_settings(uint8_t case_of_time);
 
@@ -108,6 +108,20 @@ void wysw5( void );// funkcja wyświetlająca - interfejs dla każdego z podprog
 void wysw6( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
 void czynnosc( int com, int tog ); //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
+
+void czynnosc0( int com, int tog );
+
+void czynnosc1( int com, int tog );
+
+void czynnosc2( int com, int tog );
+
+void czynnosc3( int com, int tog );
+
+void czynnosc4( int com, int tog );
+
+void czynnosc5( int com, int tog );
+
+void czynnosc6( int com, int tog );
 
 // funkcja obsługująca menu dwupoziomowe
 
