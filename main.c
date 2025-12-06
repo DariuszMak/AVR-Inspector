@@ -30,8 +30,8 @@ int main( void )
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
     uint16_t zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
-    uint8_t pilot_state = 0;//stan pilota
-    uint8_t checking_lockers_state = 0;
+    uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
+    uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
     int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -109,7 +109,6 @@ int main( void )
         else if(day == 4) LCD_WriteText("Pt.");
         else if(day == 5) LCD_WriteText("So.");
         else if(day == 6) LCD_WriteText("Nd.");
-
     }
 
     void show_time_only_format(void)
@@ -269,14 +268,14 @@ int main( void )
             break;
         case 3:
             u = PCF8583_recognise_type_of_alarm();
-            LCD_EraseAll();
-
             moveStep=0;
             PCF8583_get_wall_time();
+            LCD_EraseAll();
+            LCD_GoTo(11,0);
+            if(pilot_state == 0) LCD_WriteText("!");
+            else if(pilot_state == 1) LCD_WriteText("|");
 
             show_time_format();
-
-
 
             PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
             moveStep=22;
@@ -423,24 +422,24 @@ int main( void )
             if(u == 0)
             {
                 lockers_read_frame(u);
-                show_list_of_frames(1, u);
                 LCD_EraseUp();
+                show_list_of_frames(1, u);
+
 
             }
             else if (u >= lockers_number_of_frames())
             {
                 lockers_read_frame(u-1);
                 show_list_of_frames(0, u - 1);
-
                 LCD_EraseDown();
 
             }
             else
             {
-                lockers_read_frame(u);
-                show_list_of_frames(1, u);
                 lockers_read_frame(u - 1);
                 show_list_of_frames(0, u - 1);
+                lockers_read_frame(u);
+                show_list_of_frames(1, u);
             }
             break;
         }

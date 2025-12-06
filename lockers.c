@@ -10,6 +10,7 @@ void lockers_init()
 
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
+    lockers_address_of_frame = 0;
 
     lockers_find_latest_data();
 }
@@ -23,12 +24,8 @@ void lockers_beginning_actions(void)
     }
 }
 
-uint8_t lockers_index_of_current_frame(void)
-{
-    return (lockers_address_of_frame / SIZE_OF_FRAME);
-}
 
-int lockers_state_of_single_button( int index )//zwraca stan danego przycisku względem numeru indeksu
+uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przycisku względem numeru indeksu
 {
     if(index == 0) return locker_1_button();
     else if(index == 1) return locker_2_button();
@@ -65,7 +62,7 @@ void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milise
 
 void lockers_find_latest_data(void)
 {
-    lockers_address_of_frame = 0;
+    //lockers_address_of_frame = 0;
 }
 
 uint8_t lockers_number_of_frames(void)
@@ -73,9 +70,10 @@ uint8_t lockers_number_of_frames(void)
     return ((EEPROM_MAX_ADDRESS + 1) / SIZE_OF_FRAME);
 }
 
+
 uint8_t lockers_convert_address_to_index_of_frame(uint8_t add)
 {
-    return (add/ SIZE_OF_FRAME);
+    return (add / SIZE_OF_FRAME);
 }
 
 void lockers_read_frame(uint8_t index)
@@ -103,7 +101,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
     delay_ms_var(1000);
     uint8_t temp_address = lockers_address_of_frame;//pobranie ostatniego adresu
 
-    if((EEPROM_ADDRESS - temp_address) < SIZE_OF_FRAME - 1) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+    if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1)) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
     int i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
@@ -137,7 +135,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 }
 
 
-int locker_1_button(void)//przycisk fizycznie umieszczony na płytce
+uint8_t locker_1_button(void)//przycisk fizycznie umieszczony na płytce
 {
     int temp = 0;
     if(!( LOCKER_1_BUTTON_PIN & LOCKER_1_BUTTON_IN ))
@@ -147,7 +145,7 @@ int locker_1_button(void)//przycisk fizycznie umieszczony na płytce
     return temp;
 }
 
-int locker_2_button(void)//przycisk fizycznie umieszczony na płytce
+uint8_t locker_2_button(void)//przycisk fizycznie umieszczony na płytce
 {
     int temp = 0;
     if(!( LOCKER_2_BUTTON_PIN & LOCKER_2_BUTTON_IN ))

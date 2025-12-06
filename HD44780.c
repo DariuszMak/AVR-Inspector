@@ -273,7 +273,7 @@ void LCD_Double( double value, unsigned int approximation)
     }
     value *= ten;
     value -= ten * value_temp;
-    if(approximation)
+    if(approximation)//wyświetlanie liczb po przecinku
     {
         LCD_WriteText(".");
         uint16_t ten2 = 10;
