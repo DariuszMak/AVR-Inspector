@@ -134,6 +134,8 @@ void show_time_format(void)
 void show_alarm_format(uint8_t case_of_format)
 {
 
+show_time_only_format();
+LCD_GoTo(moveStep,1);
     if(case_of_format == 2)
     {
         if(miesiac == 0)
@@ -1162,6 +1164,7 @@ void pilot( int com, int tog )//
                 //wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 5:
+                PCF8583_get_wall_alarm();
                 //czynnosc( men, 50, tog );
                 u = -1;
                 w = 1;//wymuszenie wyświetlenia komunikatu
