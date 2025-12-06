@@ -7,7 +7,7 @@
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
 int8_t switch_menu = 0;//zmienna służąca do wchodzenia do poszczególnych podprogramów
-const int liczbaPodprogramow = 6;
+const int liczbaPodprogramow = 7;
 uint8_t refresh_screen = 0;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
@@ -111,17 +111,17 @@ void change_color_RGB(void)
     static uint8_t inversion = 0;
     temp -= 64;
     //RGB_Red = temp;
-    RGB_Green = temp + 128;
+    RGB_Red = temp + 128;
     //RGB_Blue = temp;
 
     if(inversion == 0)
     {
-        RGB_Red = temp + 64;
+        RGB_Green = temp + 64;
         RGB_Blue = temp;
     }
     else
     {
-        RGB_Red = temp;
+        RGB_Green = temp;
         RGB_Blue = temp + 64;
     }
 
@@ -132,13 +132,13 @@ void change_color_RGB(void)
 
         if(left_right == 1)
         {
-            if(inversion == 0)RGB_Red = 0;
+            if(inversion == 0)RGB_Green = 0;
             else RGB_Blue = 0;
         }
         else if(left_right == 2)
         {
             if(inversion == 0)RGB_Blue = 0;
-            else RGB_Red = 0;
+            else RGB_Green = 0;
         }
 
         if(left_right == 2)
@@ -249,6 +249,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
         else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
         else if(number == 6) LCD_WriteText("USTAWIENIA FLAG");
+        else if(number == 7) LCD_WriteText("TEMP. KRYTYCZNA");
 
         for ( t = 0; t < 5; ++t )
         {
@@ -303,6 +304,7 @@ void show_time_format(void)
     LCD_Int(miesiac);
     LCD_WriteText(":");
     LCD_Int(rok);
+    LCD_GoTo(moveStep + 10, 1);
     LCD_WriteText("|");
     show_day_of_week(dzien_tygodnia);
     LCD_WriteText("|");
@@ -1052,7 +1054,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if (u < -2) u = -2;
-    check_step_value();//zrobic
+    check_step_value();
 
     if( s != 0 )
     {
@@ -1263,6 +1265,11 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 }
 
+void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    LCD_EraseAll();
+}
+
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if(start_program == 3)
@@ -1310,6 +1317,10 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         else if( menu == 6 )
         {
             wysw6();
+        }
+        else if( menu == 7 )
+        {
+            wysw7();
         }
     }
 }
@@ -1732,6 +1743,16 @@ void czynnosc6( int com, int tog )
     refresh_screen = 1;
 }
 
+void czynnosc7( int com, int tog )
+{
+
+    if ( com == 59 )
+    {
+        u = end_of_settings();
+    }
+    refresh_screen = 1;
+}
+
 void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 {
     buzzer();
@@ -1890,7 +1911,7 @@ void sczytaj_komende( void )
 
                 temp_char = USART_Recieve_without_waiting();
 
-                if(temp_char == 'o')
+                if(temp_char == 'r')
                 {
                     printf("\nOczekiwanie na restart.");
                     lockers_safety_bit_off();
@@ -2069,6 +2090,8 @@ int main( void )
 
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
+    printf("Inicjalizacja w toku...\n");
+
     //PCF8583_alarm_monthly();
 
     //eeprom_write_word((uint16_t*)257,5);
@@ -2102,7 +2125,7 @@ int main( void )
 
     sczytaj_komende();
     switch_menu = 2;
-    pilot( 59, 0 );//przejście do podprogramu nr 3
+    pilot( 59, 0 );//przejście do podprogramu nr 2
 
     start_program = 3;
 

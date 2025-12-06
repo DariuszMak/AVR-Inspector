@@ -156,6 +156,8 @@ void wysw5( void );// funkcja wyświetlająca - interfejs dla każdego z podprog
 
 void wysw6( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
+void wysw7( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
 void czynnosc( int com, int tog ); //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 
 void czynnosc0( int com, int tog );//tutaj są inicjowane wartości przy wchodzeniu do podprogramów
@@ -171,6 +173,8 @@ void czynnosc4( int com, int tog );
 void czynnosc5( int com, int tog );
 
 void czynnosc6( int com, int tog );
+
+void czynnosc7( int com, int tog );
 
 // funkcja obsługująca menu dwupoziomowe
 
