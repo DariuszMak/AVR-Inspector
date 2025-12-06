@@ -177,6 +177,14 @@ void change_color_RGB(void)
     //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
 
+void red_colors_RGB(void)
+{
+    RGB_Red = 255;
+    RGB_Green = 0;
+    RGB_Blue = 0;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
+}
+
 void green_colors_RGB(void)
 {
     RGB_Red = 0;
@@ -660,7 +668,7 @@ uint8_t end_of_settings(void)
         }
         //else return u;
     }
-    else if(menu == 6 && ( e >= 0 && e <= 5)) return 0;
+    else if(menu == 6 && ( e >= 0 && e <= 5) && c >= 0) return 0;
     else if(menu == 7) return 2;
     return u;
 }
@@ -1401,6 +1409,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             LCD_EraseAll();
             LCD_WriteText("RESTART");
+            red_colors_RGB();
         }
     }
     else
