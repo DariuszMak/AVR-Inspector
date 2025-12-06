@@ -8,7 +8,7 @@
 
 #define PCF8583_ADDRESS 0xA0
 
-#define PCF8583_A0 1//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
+#define PCF8583_A0 0//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
 
 #define buffer 1
 

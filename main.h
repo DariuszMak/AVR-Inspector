@@ -90,7 +90,7 @@ void correction_of_time(void);
 
 void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
 
-void setting_information(uint8_t case_of_time, int8_t u);
+void setting_information();
 
 void set_appropriate_values_of_time();
 

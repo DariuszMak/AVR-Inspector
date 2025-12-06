@@ -208,45 +208,54 @@ void show_alarm_format(uint8_t case_of_format)
     }
 }
 
-void setting_information(uint8_t case_of_time, int8_t step)
+void setting_information()
 {
     refresh_screen = 0;
     LCD_EraseAll();
     LCD_GoTo(moveStep, 0);
-    if(step == end_of_settings(case_of_time))
+    if( e == 0)
     {
-        if(case_of_time == 0)LCD_WriteText("ZAPISANO GODZINE");
-        else if( case_of_time == 5 ) LCD_WriteText("WYLACZONO ALARM");
+    if(u == end_of_settings(c))
+    {
+        if(c == 0)
+        {
+            if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
+            else if( menu == 5 ) LCD_WriteText("WYLACZONO ALARM");
+        }
         else LCD_WriteText("ZAPISANO ALARM");
     }
     else
     {
-        if(step == 0) LCD_WriteText("GODZINY");
-        else if(step == 1) LCD_WriteText("MINUTY");
-        else if(step == 2) LCD_WriteText("SEKUNDY");
-        else if(step == 3) LCD_WriteText("SETNE SEKUND");
+        if(u == 0) LCD_WriteText("GODZINY");
+        else if(u == 1) LCD_WriteText("MINUTY");
+        else if(u == 2) LCD_WriteText("SEKUNDY");
+        else if(u == 3) LCD_WriteText("SETNE SEKUND");
 
-        if(case_of_time == 0 || case_of_time == 3)
+        if(c == 0 || c == 3)
         {
-            if(step == 4) LCD_WriteText("DZIEN");
-            else if(step == 5) LCD_WriteText("MIESIAC");
-            if(case_of_time == 0)
+            if(u == 4) LCD_WriteText("DZIEN");
+            else if(u == 5) LCD_WriteText("MIESIAC");
+            if(c == 0)
             {
-                if(step == 6) LCD_WriteText("ROK");
-                else if(step == 7) LCD_WriteText("DZIEN TYGODNIA");
-                else if(step == 8) LCD_WriteText("TIMER");
+                if(u == 6) LCD_WriteText("ROK");
+                else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+                else if(u == 8) LCD_WriteText("TIMER");
             }
         }
-        else if( case_of_time == 2)
+        else if( c == 2)
         {
-            if(step == 4) LCD_WriteText("PONIEDZIALEK");
-            else if(step == 5) LCD_WriteText("WTOREK");
-            else if(step == 6) LCD_WriteText("SRODA");
-            else if(step == 7) LCD_WriteText("CZWARTEK");
-            else if(step == 8) LCD_WriteText("PIATEK");
-            else if(step == 9) LCD_WriteText("SOBOTA");
-            else if(step == 10) LCD_WriteText("NIEDZIELA");
+            if(u == 4) LCD_WriteText("PONIEDZIALEK");
+            else if(u == 5) LCD_WriteText("WTOREK");
+            else if(u == 6) LCD_WriteText("SRODA");
+            else if(u == 7) LCD_WriteText("CZWARTEK");
+            else if(u == 8) LCD_WriteText("PIATEK");
+            else if(u == 9) LCD_WriteText("SOBOTA");
+            else if(u == 10) LCD_WriteText("NIEDZIELA");
         }
+    }
+    }else if(e == 1)
+    {
+        if(u == 0) LCD_WriteText("TIMER");
     }
     delay_ms_var(400);
     pilot_reset();
@@ -259,12 +268,12 @@ void set_appropriate_values_of_time()
     if(s == 2) temp -= zwiekszanie;
     else if (s == 1) temp = zwiekszanie;
 
-    if(u == -2) e += temp;
+    if(u == -2) e -= temp;
     else
     {
         if(e == 0)
         {
-            if(u == -1) c += temp;
+            if(u == -1) c -= temp;
             else
             {
                 if(u == 0) godz += temp;
@@ -325,7 +334,7 @@ void set_appropriate_values_of_time()
         }
         else if(e == 1)
         {
-            if(u == -1) d += temp;
+            if(u == -1) d -= temp;
         }
     }
 
@@ -656,7 +665,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if( w == 1 )
     {
-        setting_information(0, u);
+        setting_information();
         w = 0;
     }
 }
@@ -712,15 +721,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 moveStep = 0;
                 show_alarm_format(c);
 
-                if( w == 1 )
-                {
-                    if(c == 0)//specjalny warunek do poprawnego wyświetlenia ustawienia alarmu
-                    {
-                        c = 5;
-                    }
-                    setting_information(c, u);
-                    w = 0;
-                }
+
             }
         }
         else if( e == 1)
@@ -733,6 +734,21 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             }
 
         }
+    }
+
+    if( w == 1 )
+    {
+        if(e == 0)
+        {
+
+        }
+        else if(e == 1)
+        {
+
+        }
+
+        setting_information();
+        w = 0;
     }
 }
 
