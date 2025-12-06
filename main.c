@@ -2351,7 +2351,7 @@ void pilot( int com, int tog )//
     //if(lockers_is_flag_bit(3) == 1) pilot_off();
     backlight(2);
 
-    if(start_program != 3) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+    if(start_program != 3 && start_program != 1) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     if( (start_program == 3 && lockers_is_flag_bit(0) == 1) )
     {
@@ -2394,87 +2394,91 @@ void sczytaj_komende( void )
         }
     }
 
-    if(pilot_button_pressed == 1)
+    if(start_program != 0)
     {
-        pilot(100, 0);
-        delay_ms_var(100);
-        pilot_button_pressed = 0;
-    }
-
-    if( Ir_key_press_flag )
-    {
-        if( !address )
+        if(pilot_button_pressed == 1)
         {
-            //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-            toggle_action();
-            //Ir_key_press_flag = 0;
-            pilot( command, t );//wywołanie funkcji pilot
-            pilot_reset();
+            pilot(100, 0);
+            delay_ms_var(100);
+            pilot_button_pressed = 0;
         }
-    }
-    else
-    {
-        temp_char = uart_getc();
-        if(start_program == 3 && temp_char != 0 && temp_char != 't' && temp_char != 'T')
+
+        if( Ir_key_press_flag )
         {
-            if(temp_char == 'r') reset_variable = 1;
-            else pilot(-1, 0);
+            if( !address )
+            {
+                //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
+                toggle_action();
+                //Ir_key_press_flag = 0;
+                pilot( command, t );//wywołanie funkcji pilot
+                pilot_reset();
+            }
         }
         else
         {
-            if(lockers_is_flag_bit(2) == 1)
+            temp_char = uart_getc();
+            if(start_program == 3 && temp_char != 0 && temp_char != 't' && temp_char != 'T')
             {
-                if(temp_char == 'e') pilot(59, 0);
-                else if(temp_char == 'w') pilot(32, 0);
-                else if(temp_char == 's') pilot(33, 0);
-                else if(temp_char == 'd') pilot(16, 0);
-                else if(temp_char == 'a') pilot(17, 0);
-                else if(temp_char == 'q') pilot(14, 0);
-                else if(temp_char == 'Q') pilot(14, 1);
-                else if(temp_char == 'k') pilot(38, 0);
-                else if(temp_char == 'p') pilot(100, 0);
-                else if(temp_char == 'l') pilot(15, 0);
-                else if(temp_char == 'c') pilot(12, 0);
-                else if(temp_char == 'C') pilot(12, 1);
-                else if(temp_char == '[') pilot(46, 0);
-                else if(temp_char == ']') pilot(34, 0);
-                else if(temp_char == '{') pilot(36, 0);
-                else if(temp_char == '}') pilot(35, 0);
-                else if(temp_char == '!') pilot(41, 0);
-                else if(temp_char == '<') pilot(45, 0);
-                else if(temp_char == '>') pilot(44, 0);
-                else if(temp_char == '0') pilot(0, 0);
-                else if(temp_char == '1') pilot(1, 0);
-                else if(temp_char == '2') pilot(2, 0);
-                else if(temp_char == '3') pilot(3, 0);
-                else if(temp_char == '4') pilot(4, 0);
-                else if(temp_char == '5') pilot(5, 0);
-                else if(temp_char == '6') pilot(6, 0);
-                else if(temp_char == '7') pilot(7, 0);
-                else if(temp_char == '8') pilot(8, 0);
-                else if(temp_char == '9') pilot(9, 0);
+                if(temp_char == 'r') reset_variable = 1;
+                else pilot(-1, 0);
             }
-
-            if(temp_char == 't')
+            else
             {
                 if(lockers_is_flag_bit(2) == 1)
                 {
-                    lockers_flag_bit_off(2);
+                    if(temp_char == 'e') pilot(59, 0);
+                    else if(temp_char == 'w') pilot(32, 0);
+                    else if(temp_char == 's') pilot(33, 0);
+                    else if(temp_char == 'd') pilot(16, 0);
+                    else if(temp_char == 'a') pilot(17, 0);
+                    else if(temp_char == 'q') pilot(14, 0);
+                    else if(temp_char == 'Q') pilot(14, 1);
+                    else if(temp_char == 'k') pilot(38, 0);
+                    else if(temp_char == 'p') pilot(100, 0);
+                    else if(temp_char == 'l') pilot(15, 0);
+                    else if(temp_char == 'c') pilot(12, 0);
+                    else if(temp_char == 'C') pilot(12, 1);
+                    else if(temp_char == '[') pilot(46, 0);
+                    else if(temp_char == ']') pilot(34, 0);
+                    else if(temp_char == '{') pilot(36, 0);
+                    else if(temp_char == '}') pilot(35, 0);
+                    else if(temp_char == '!') pilot(41, 0);
+                    else if(temp_char == '<') pilot(45, 0);
+                    else if(temp_char == '>') pilot(44, 0);
+                    else if(temp_char == '0') pilot(0, 0);
+                    else if(temp_char == '1') pilot(1, 0);
+                    else if(temp_char == '2') pilot(2, 0);
+                    else if(temp_char == '3') pilot(3, 0);
+                    else if(temp_char == '4') pilot(4, 0);
+                    else if(temp_char == '5') pilot(5, 0);
+                    else if(temp_char == '6') pilot(6, 0);
+                    else if(temp_char == '7') pilot(7, 0);
+                    else if(temp_char == '8') pilot(8, 0);
+                    else if(temp_char == '9') pilot(9, 0);
+                }
 
-                    // printf("\nTRYB RC5\n");
-                }
-                else
+                if(temp_char == 't')
                 {
-                    lockers_flag_bit_on(2);
-                    //printf("\nTRYB RC5 & TERMINAL\n");
-                    //refresh_screen = 1;
+                    if(lockers_is_flag_bit(2) == 1)
+                    {
+                        lockers_flag_bit_off(2);
+
+                        // printf("\nTRYB RC5\n");
+                    }
+                    else
+                    {
+                        lockers_flag_bit_on(2);
+                        //printf("\nTRYB RC5 & TERMINAL\n");
+                        //refresh_screen = 1;
+                    }
+                    show_properties(2);
                 }
-                show_properties(2);
+                //else if(temp_char == 'R') lockers_print_all_memory();
+                //else if(temp_char == 'r') lockers_print_latest_data();
             }
-            //else if(temp_char == 'R') lockers_print_all_memory();
-            //else if(temp_char == 'r') lockers_print_latest_data();
         }
     }
+
 
     if( interr == 1 )
     {
@@ -2537,6 +2541,8 @@ void sczytaj_komende( void )
                 lockers_print_latest_data();
             }
             else if (lockers_is_queue_empty() == 0)lockers_print_latest_data();
+            pilot_reset();
+            pilot_button_pressed = 0;
             start_program = 2;
         }
 
