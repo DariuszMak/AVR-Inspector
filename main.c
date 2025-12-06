@@ -443,45 +443,45 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     LCD_Home();
     LCD_Clear();
 
-    if(lockers_is_flag_bit(number) == 1)
+    if(number == 9)
     {
-        if(number == 1)
-        {
-            LCD_WriteText("TEMPERATURA");
-            LCD_GoTo(0,1);
-            LCD_WriteText("KRYTYCZNA!!!");
-            buzzer_time(10);
-            backlight(2);
-            lockers_print_temperature();
-        }
-        if(number == 2) LCD_WriteText("RC5 & TERMINAL");
-        if(number == 3)
-        {
-            LCD_WriteText("PILOT ON");
-            green_colors_RGB();
-            pilot_on();
-            backlight(2);
-        }
+        LCD_WriteText("PRZEPELNIENIE");
+        LCD_GoTo(0,1);
+        LCD_WriteText("PAMIECI");
+    }
+    else if(number == 8)
+    {
+        LCD_WriteText("SYGNAL");
     }
     else
     {
-        if(number == 1)
+        if(lockers_is_flag_bit(number) == 1)
         {
-            LCD_WriteText("TEMPERATURA");
-            LCD_GoTo(0, 1);
-            LCD_WriteText("USTABILIZOWANA!");
-            buzzer();
-            backlight(2);
-            lockers_print_temperature();
+            if(number == 1)
+            {
+                LCD_WriteText("TEMPERATURA");
+                LCD_GoTo(0,1);
+                LCD_WriteText("KRYTYCZNA!!!");
+            }
+            if(number == 2) LCD_WriteText("RC5 & TERMINAL");
+            if(number == 3)
+            {
+                LCD_WriteText("PILOT ON");
+            }
         }
-        if(number == 2) LCD_WriteText("RC5");
-        if(number == 3)
+        else
         {
-            LCD_WriteText("PILOT OFF");
-            blue_colors_RGB();
-            buzzer_time(500);
-            pilot_off();
-            backlight(0);
+            if(number == 1)
+            {
+                LCD_WriteText("TEMPERATURA");
+                LCD_GoTo(0, 1);
+                LCD_WriteText("USTABILIZOWANA!");
+            }
+            if(number == 2) LCD_WriteText("RC5");
+            if(number == 3)
+            {
+                LCD_WriteText("PILOT OFF");
+            }
         }
     }
 
@@ -831,7 +831,10 @@ void check_step_value(void)
 
 uint8_t end_of_settings(void)
 {
-    if(u < 0) return u;
+    if(menu == 5 || menu == 6)
+    {
+        if(u < -1) return u;
+    }else if(u < 0) return u;
 
     if(menu == 4)
     {
@@ -2027,9 +2030,9 @@ void czynnosc5( int com, int tog )
     {
         if( tog == 0)
         {
-            if(u >= 0)
+            if(u >= -1)
             {
-                u = 0;//oznaka wyjścia z podprogramów
+                u = -1;//oznaka wyjścia z podprogramów
                 w = 1;
             }
         }
@@ -2066,8 +2069,11 @@ void czynnosc6( int com, int tog )
     {
         if( tog == 0)
         {
-            u = -2;//oznaka wyjścia z podprogramów
-            w = 1;
+            if(u >= -1)
+            {
+                u = -1;//oznaka wyjścia z podprogramów
+                w = 1;
+            }
         }
     }
 
@@ -2214,13 +2220,18 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         if(lockers_is_flag_bit(3) == 1)
         {
             lockers_flag_bit_off(3);
-
+            blue_colors_RGB();
+            buzzer_time(500);
+            pilot_off();
+            backlight(0);
             //printf("\nPilot OFF\n");
         }
         else
         {
             lockers_flag_bit_on(3);
-
+            green_colors_RGB();
+            pilot_on();
+            backlight(2);
             //printf("\nPilot ON\n");
         }
         show_properties(3);
@@ -2366,10 +2377,11 @@ void sczytaj_komende( void )
                     {
                         if(lockers_is_flag_bit(1) == 0 || beginning_raport == 0)
                         {
-
-
                             lockers_flag_bit_on(1);
                             show_properties(1);
+                            buzzer();
+                            backlight(2);
+                            lockers_print_temperature();
                         }
                     }
                     else
@@ -2378,6 +2390,9 @@ void sczytaj_komende( void )
                         {
                             lockers_flag_bit_off(1);
                             show_properties(1);
+                            buzzer_time(10);
+                            backlight(2);
+                            lockers_print_temperature();
                         }
                     }
 

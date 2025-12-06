@@ -113,6 +113,7 @@ void lockers_check_events(void)
     {
         blue_colors_RGB();
         lockers_queue_enque();
+        show_properties(8);
         //refresh_screen = 1;
         buzzer_time(300);
         change_color_RGB();
@@ -200,7 +201,9 @@ void lockers_print_date_of_report()
 
 void lockers_print_temperature()
 {
-    printf("\nTEMPERATURA. ");
+    printf("\nTEMPERATURA");
+    if(lockers_is_flag_bit(1) == 1) printf(" KRYTYCZNA");
+    printf(". ");
     lockers_print_date_of_report();
     struct double_format temp_double_format = set_double_format(termometer_temperature, 2);
     printf("%d.%02d stopni Celsjusza\n", temp_double_format.integer_number, temp_double_format.decimal_number);
@@ -325,6 +328,7 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
             {
                 if(start_program == 3)
                 {
+                    show_properties(9);
                     buzzer_time(2000);
                     lockers_queue_dequeue();
                 }
