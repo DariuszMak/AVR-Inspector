@@ -211,6 +211,7 @@ void lockers_print_temperature(void)
     lockers_print_date_of_report();
     struct double_format temp_double_format = set_double_format(termometer_temperature, 2);
     printf("%d.%02d stopni Celsjusza\n", temp_double_format.integer_number, temp_double_format.decimal_number);
+    refresh_screen = 1;
 }
 
 void lockers_print_all_memory(void)
