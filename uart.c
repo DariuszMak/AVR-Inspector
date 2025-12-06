@@ -1,11 +1,4 @@
-/*
- * uart.c
- *
- *  Created on: 23-05-2013
- *      Author: Piotr Rzeszut
- *
- * Description: Przyk³ad obs³ugi UART z zastosowaniem przerwañ i bufora ko³owego
- */
+
 #include "uart.h"
 
 volatile char UART_RX_BUF[UART_BUFFER_SIZE];
@@ -20,15 +13,18 @@ volatile uint8_t rx_overrun=0;
 
 void uart_init(uint16_t baud)
 {
-    //wyliczamy wartoœæ rejestru UBRR
+    //wyliczamy wartoÅ“Ã¦ rejestru UBRR
     uint16_t ubrr_cal=F_CPU/16/baud-1;
     //konfiguracja baud
     UBRRH = (uint8_t)(ubrr_cal>>8);
     UBRRL = (uint8_t)ubrr_cal;
-    //w³¹czenie UART
+    //wÂ³Â¹czenie UART
     UCSRB = (1<<RXEN)|(1<<TXEN);
     UCSRC = (1<<URSEL)|(1<<UCSZ0)|(1<<UCSZ1);
     UCSRB |= (1<<RXEN)|(1<<TXEN)|(1<<RXCIE);
+
+     DDRD &= ~(1<<PD2);
+    PORTD |= (1<<PD2);//PD2 - wejÅ›cie + pull-up
 }
 
 void uart_putc(char data)
@@ -72,7 +68,7 @@ void uart_gets(char * temporary_table, uint16_t size_of_table)
         odebrany=uart_getc();
         if(odebrany!=0)
         {
-            if(odebrany!='\r') //filtrujemy znak zakoñczenia liczby
+            if(odebrany!='\r') //filtrujemy znak zakoÃ±czenia liczby
             {
                 uart_putc(odebrany);
                 //uart_putint(times,10);
@@ -98,7 +94,7 @@ uint16_t uart_getint(void)
         odebrany=uart_getc();
         if(odebrany!=0)
         {
-            if(odebrany!='\r') //filtrujemy znak zakoñczenia liczby
+            if(odebrany!='\r') //filtrujemy znak zakoÃ±czenia liczby
             {
                 uart_putc(odebrany);
                 liczba*=10;
@@ -106,8 +102,8 @@ uint16_t uart_getint(void)
             }
         }
     }
-    while(odebrany!='\r'); //jeœli odebraliœmy znak zakoñczenia liczby to wychodzimy z pêtli
-    return liczba;//zwracamy odebran¹ liczbê
+    while(odebrany!='\r'); //jeÅ“li odebraliÅ“my znak zakoÃ±czenia liczby to wychodzimy z pÃªtli
+    return liczba;//zwracamy odebranÂ¹ liczbÃª
 }
 
 ISR(USART_RXC_vect)
@@ -122,7 +118,7 @@ ISR(USART_RXC_vect)
     else
     {
         rx_overrun=1;
-        new_h=UDR;//odczytujemy bufor, ¿eby nie zawiesiæ systemu
+        new_h=UDR;//odczytujemy bufor, Â¿eby nie zawiesiÃ¦ systemu
     }
 }
 

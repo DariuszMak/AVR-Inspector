@@ -1,11 +1,3 @@
-/*
- * uart.h
- *
- *  Created on: 23-05-2013
- *      Author: Piotr Rzeszut
- *
- * Description: Przyk³ad obs³ugi UART z zastosowaniem przerwañ i bufora ko³owego
- */
 #ifndef UART_H
 #define UART_H
 
