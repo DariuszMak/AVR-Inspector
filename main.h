@@ -86,6 +86,16 @@ void show_setting_alarm_case(uint8_t index);
 
 void show_alarm_flag_options(uint8_t index);
 
+void show_timer_flag_options(uint8_t index);
+
+void show_clock_options(uint8_t index);
+
+void show_timer_mode_options(uint8_t index);
+
+void show_alarm_interrupt_options(uint8_t index);
+
+void show_timer_interrupt_options(uint8_t index);
+
 void show_setting_flags_case(uint8_t index);
 
 void show_alarm_options(uint8_t index);

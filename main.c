@@ -217,11 +217,26 @@ void setting_information()
     {
         if(u == end_of_settings())
         {
-            if(e == 0)
+            LCD_WriteText("ZAPISANO");
+            /*if(e == 0)
             {
                 if(c == 0) LCD_WriteText("ALARM F. WYL");
                 else if(c == 1) LCD_WriteText("ALARM F. WL.");
             }
+            else if(e == 1)
+            {
+                if(c == 0) LCD_WriteText("TIMER F. WYL");
+                else if( c == 1) LCD_WriteText("TIMER F. WL");
+            }
+            else if(e == 2)
+            {
+                if(c == 0) LCD_WriteText("ODLICZANIE CZASU");
+                else if(c == 1) LCD_WriteText("ZEGAR STOP");
+            }
+            else if(e == 3)
+            {
+                if(c == 0) LCD_WriteText("")
+            }*/
         }
     }
     else
@@ -441,6 +456,87 @@ void show_alarm_flag_options(uint8_t index)
     }
 }
 
+void show_timer_flag_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Flaga tim. WYL.");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Flaga tim. WL.");
+    }
+}
+
+void show_clock_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Zegar stop");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Zegar start");
+    }
+}
+
+void show_timer_mode_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Timer stop");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Timer s. sekund");
+    }
+    else if(index == 2)
+    {
+        LCD_WriteText("Timer sekund");
+    }
+    else if(index == 3)
+    {
+        LCD_WriteText("Timer minut");
+    }
+    else if(index == 4)
+    {
+        LCD_WriteText("Timer godzin");
+    }
+    else if(index == 5)
+    {
+        LCD_WriteText("Timer dni");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Timer test");
+    }
+
+}
+
+void show_alarm_interrupt_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Alarm int. WYL.");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Alarm int. WL.");
+    }
+}
+
+void show_timer_interrupt_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Timer int. WYL.");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Timer int. WL.");
+    }
+}
+
 void show_setting_flags_case(uint8_t index)
 {
     if(index == 0)
@@ -618,7 +714,26 @@ void show_list_case(index)
                 if(e == 0)
                 {
                     show_alarm_flag_options(index);
-
+                }
+                else if(e == 1)
+                {
+                    show_timer_flag_options(index);
+                }
+                else if(e == 2)
+                {
+                    show_clock_options(index);
+                }
+                else if(e == 3)
+                {
+                    show_timer_options(index);
+                }
+                else if(e == 4)
+                {
+                    show_alarm_interrupt_options(index);
+                }
+                else if(e == 5)
+                {
+                    show_timer_interrupt_options(index);
                 }
             }
         }
@@ -944,6 +1059,30 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             {
                 if(c == 0) PCF8583_alarm_flag_off();
                 else if(c == 1) PCF8583_alarm_flag_on();
+            }
+            else if(e == 1)
+            {
+                if(c == 0) PCF8583_timer_flag_off();
+                else if(c == 1) PCF8583_timer_flag_on();
+            }
+            else if(e == 2)
+            {
+                if(c == 0) PCF8583_stop();
+                else if(c == 1) PCF8583_start();
+            }
+            else if(e == 3)
+            {
+                PCF8583_set_timer_mode(c);
+            }
+            else if(e == 4)
+            {
+                if(c == 0) PCF8583_alarm_interrupt_off();
+                else if(c == 1) PCF8583_alarm_interrupt_on();
+            }
+            else if(e == 5)
+            {
+                if(c == 0) PCF8583_timer_interrupt_off();
+                else if(c == 1) PCF8583_timer_interrupt_on();
             }
         }
     }
