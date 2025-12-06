@@ -21,12 +21,16 @@ void lockers_init()
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
+    lockers_find_latest_data();
+}
+
+void lockers_beginning_actions(void)
+{
     int i = 0;
     for(; i < AMOUNT_OF_LOCKERS; ++i)
     {
         states_table[i] = (uint8_t) lockers_state_of_single_button(i);//przypisanie wartości początkowych
     }
-    lockers_find_latest_data();
 }
 
 int lockers_state_of_single_button( int index )//zwraca stan danego przycisku względem numeru indeksu
@@ -82,8 +86,8 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
         if(save_info_table[i])
         {
-              buzzer();
-                    delay_ms_var(50);
+            buzzer();
+            delay_ms_var(50);
             PCF8583_get_wall_time();
             EEPROM_write(temp_address,sek);
             ++temp_address;

@@ -28,7 +28,8 @@ int main( void )
     uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
-    unsigned int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
+    uint16_t zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
+    uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 //zmienne zarezerwowane dla podprogramu nr 2:
     int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -106,6 +107,35 @@ int main( void )
 
         else if(day == 6) LCD_WriteText("Nd.");
 
+    }
+
+    void show_time_format(void)
+    {
+        LCD_GoTo( 0 + moveStep, 0 );
+        if(godz < 10) LCD_Int(0);
+        LCD_Int(godz);
+        LCD_WriteText(":");
+        if(min < 10) LCD_Int(0);
+        LCD_Int(min);
+        LCD_WriteText(":");
+        if(sek < 10) LCD_Int(0);
+        LCD_Int(sek);
+        LCD_WriteText(":");
+        if(hsek < 10) LCD_Int(0);
+        LCD_Int(hsek);
+
+
+        LCD_GoTo( 0 + moveStep, 1 );
+        if(dzien < 10) LCD_Int(0);
+        LCD_Int(dzien);
+        LCD_WriteText(":");
+        if(miesiac < 10) LCD_Int(0);
+        LCD_Int(miesiac);
+        LCD_WriteText(":");
+        LCD_Int(rok);
+
+        LCD_GoTo(13,1);
+        show_day_of_week(dzien_tygodnia);
     }
 
     void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -201,36 +231,10 @@ int main( void )
             u = PCF8583_recognise_type_of_alarm();
             LCD_EraseAll();
 
-            int moveStep=0;
+            moveStep=0;
             PCF8583_get_wall_time();
 
-            LCD_GoTo( 0 + moveStep, 0 );
-            if(godz < 10) LCD_Int(0);
-            LCD_Int(godz);
-            LCD_WriteText(":");
-            if(min < 10) LCD_Int(0);
-            LCD_Int(min);
-            LCD_WriteText(":");
-            if(sek < 10) LCD_Int(0);
-            LCD_Int(sek);
-            LCD_WriteText(":");
-            if(hsek < 10) LCD_Int(0);
-            LCD_Int(hsek);
-
-
-            LCD_GoTo( 0 + moveStep, 1 );
-            if(dzien < 10) LCD_Int(0);
-            LCD_Int(dzien);
-            LCD_WriteText(":");
-            if(miesiac < 10) LCD_Int(0);
-            LCD_Int(miesiac);
-            LCD_WriteText(":");
-            LCD_Int(rok);
-
-            LCD_GoTo(13,1);
-            show_day_of_week(dzien_tygodnia);
-
-
+            show_time_format();
 
             LCD_GoTo(18, 0);
             LCD_WriteText("|");
@@ -286,6 +290,68 @@ int main( void )
             break;
         case 4:
             LCD_EraseAll();
+
+            if (u < 0) u = 0;
+
+            if(u == 8)
+            {
+                PCF8583_set_time(godz,min,sek,hsek);
+                PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
+                LCD_Clear();
+                LCD_GoTo(0,0);
+                LCD_WriteText("Zapisano!");
+                start = 1;
+            }
+
+            if( w == 1 )
+            {
+                LCD_EraseAll();
+                LCD_GoTo(moveStep, 0);
+                if(u == 0) LCD_WriteText("GODZINY");
+                else if(u == 1) LCD_WriteText("MINUTY");
+                else if(u == 2) LCD_WriteText("SEKUNDY");
+                else if(u == 3) LCD_WriteText("SETNE SEKUND");
+                else if(u == 4) LCD_WriteText("DZIEN");
+                else if(u == 5) LCD_WriteText("MIESIAC");
+                else if(u == 6) LCD_WriteText("ROK");
+                else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+                w = 0;
+                _delay_ms(400);
+            }
+
+            if( s != 0 )
+            {
+                if ( s == 1 )
+                {
+                    if(u == 0) godz += zwiekszanie;
+                    else if(u == 1) min += zwiekszanie;
+                    else if(u == 2) sek += zwiekszanie;
+                    else if(u == 3) hsek += zwiekszanie;
+                    else if(u == 4) dzien += zwiekszanie;
+                    else if(u == 5) miesiac += zwiekszanie;
+                    else if(u == 6) rok += zwiekszanie;
+                    else if(u == 7) dzien_tygodnia += zwiekszanie;
+                }
+                else if( s == 2 )
+                {
+                    if(u == 0) godz -= zwiekszanie;
+                    else if(u == 1) min -= zwiekszanie;
+                    else if(u == 2) sek -= zwiekszanie;
+                    else if(u == 3) hsek -= zwiekszanie;
+                    else if(u == 4) dzien -= zwiekszanie;
+                    else if(u == 5) miesiac -= zwiekszanie;
+                    else if(u == 6) rok -= zwiekszanie;
+                    else if(u == 7) dzien_tygodnia -= zwiekszanie;
+                }
+
+                s = 0;
+            }
+
+
+
+            moveStep = 0;
+            show_time_format();
+
 
             break;
         }
@@ -625,10 +691,40 @@ int main( void )
         case 4:
             switch ( com )
             {
-            case 1:
-
+            case 55:
+                zwiekszanie = 1000;
+                wysw_skok( zwiekszanie );
+                break;
+            case 54:
+                zwiekszanie = 100;
+                wysw_skok( zwiekszanie );
+                break;
+            case 50:
+                zwiekszanie = 10;
+                wysw_skok( zwiekszanie );
+                break;
+            case 52:
+                zwiekszanie = 1;
+                wysw_skok( zwiekszanie );
+                break;
+            case 16:
+                ++u;
+                w = 1;//wymuszenie wyświetlenia komunikatu
                 break;
 
+            case 17:
+                --u;
+                w = 1;//wymuszenie wyświetlenia komunikatu
+                break;
+            case 32://zwiększenie
+                s = 1;
+                break;
+            case 33://zmniejszenie
+                s = 2;
+                break;
+            case 59:
+                u = 8;
+                break;
             }
             wysw( *men );
             break;
@@ -710,11 +806,17 @@ int main( void )
 
                 case 3:
                     //czynnosc( men, 50, tog );
+                    lockers_beginning_actions();
                     TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 case 4:
-                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    PCF8583_get_wall_time();
+                    u = 0;
+                    w = 1;//wymuszenie wyświetlenia komunikatu
+                    s = 0;
+                    czynnosc( men, 52, tog );
+                    //wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 }
             }
@@ -762,6 +864,7 @@ int main( void )
             interr = 0;
             cnt = 0;
         }
+
         if ( stop_button())
         {
             delay_ms_var_double(30);
@@ -809,7 +912,7 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-    PCF8583_alarm_monthly();
+    //PCF8583_alarm_monthly();
 
     sei();//włącza przerwania
 

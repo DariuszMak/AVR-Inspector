@@ -26,6 +26,7 @@
 #define LOCKER_2_BUTTON_IN (1 << PD3)
 
 void lockers_init();
+void lockers_beginning_actions(void);
 
 struct frame;
 
