@@ -2205,7 +2205,9 @@ void sczytaj_komende( void )
         overflow_timer_2 = 0;
         interr = 0;
 
-        static uint8_t temp = 0;
+        //restartowanie
+
+        static uint8_t temp = 0;//zmienna pomocna do resetu
 
         if(start_program == 3 && temp == 0)
         {
@@ -2224,7 +2226,7 @@ void sczytaj_komende( void )
                     printf("\nOczekiwanie na restart.\n");
                 }
             }
-            else if(lockers_is_flag_bit(0) == 0)
+            else
             {
                 lockers_flag_bit_on(0);
                 start_program = 0;
@@ -2234,6 +2236,10 @@ void sczytaj_komende( void )
         {
             buzzer_time(100);
         }
+
+        //restartowanie - koniec
+
+        //krótki etap przejściowy
 
         if(start_program == 0)
         {
@@ -2247,6 +2253,8 @@ void sczytaj_komende( void )
             }
             start_program = 2;
         }
+
+        //krótki etap przejściowy - koniec
 
         if(start_program == 2 || start_program == 3)
         {
@@ -2351,7 +2359,7 @@ void sczytaj_komende( void )
         refresh_screen = 1;// wyświetlenie ekranu
     }
 
-    if ( stop_button())
+    if (stop_button())
     {
         delay_ms_var(30);
         if (stop_button())
@@ -2380,54 +2388,55 @@ void sczytaj_komende( void )
             if(temp_char == 'r') reset_variable = 1;
             else pilot(-1, 0);
         }
-
-        if(lockers_is_flag_bit(2) == 1)
-        {
-            if(temp_char == 'e') pilot(59, 0);
-            else if(temp_char == 'w') pilot(32, 0);
-            else if(temp_char == 's') pilot(33, 0);
-            else if(temp_char == 'd') pilot(16, 0);
-            else if(temp_char == 'a') pilot(17, 0);
-            else if(temp_char == 'q') pilot(14, 0);
-            else if(temp_char == 'Q') pilot(14, 1);
-            else if(temp_char == 'k') pilot(38, 0);
-            else if(temp_char == 'p') pilot(15, 0);
-            else if(temp_char == 'P') pilot(15, 1);
-            else if(temp_char == 'c') pilot(12, 0);
-            else if(temp_char == '[') pilot(46, 0);
-            else if(temp_char == ']') pilot(34, 0);
-            else if(temp_char == '{') pilot(36, 0);
-            else if(temp_char == '}') pilot(35, 0);
-            else if(temp_char == '!') pilot(41, 0);
-            else if(temp_char == '<') pilot(45, 0);
-            else if(temp_char == '>') pilot(44, 0);
-            else if(temp_char == '0') pilot(0, 0);
-            else if(temp_char == '1') pilot(1, 0);
-            else if(temp_char == '2') pilot(2, 0);
-            else if(temp_char == '3') pilot(3, 0);
-            else if(temp_char == '4') pilot(4, 0);
-            else if(temp_char == '5') pilot(5, 0);
-            else if(temp_char == '6') pilot(6, 0);
-            else if(temp_char == '7') pilot(7, 0);
-            else if(temp_char == '8') pilot(8, 0);
-            else if(temp_char == '9') pilot(9, 0);
-            else if(temp_char == 't')
-            {
-                lockers_flag_bit_off(2);
-                printf("\nTRYB RC5\n");
-            }
-            //else if(temp_char == 'R') lockers_print_all_memory();
-            //else if(temp_char == 'r') lockers_print_latest_data();
-        }
         else
         {
-            if(temp_char == 'T')
+            if(lockers_is_flag_bit(2) == 1)
             {
-                lockers_flag_bit_on(2);
-                printf("\nTRYB HYBRYDOWY\n");
+                if(temp_char == 'e') pilot(59, 0);
+                else if(temp_char == 'w') pilot(32, 0);
+                else if(temp_char == 's') pilot(33, 0);
+                else if(temp_char == 'd') pilot(16, 0);
+                else if(temp_char == 'a') pilot(17, 0);
+                else if(temp_char == 'q') pilot(14, 0);
+                else if(temp_char == 'Q') pilot(14, 1);
+                else if(temp_char == 'k') pilot(38, 0);
+                else if(temp_char == 'p') pilot(15, 0);
+                else if(temp_char == 'P') pilot(15, 1);
+                else if(temp_char == 'c') pilot(12, 0);
+                else if(temp_char == '[') pilot(46, 0);
+                else if(temp_char == ']') pilot(34, 0);
+                else if(temp_char == '{') pilot(36, 0);
+                else if(temp_char == '}') pilot(35, 0);
+                else if(temp_char == '!') pilot(41, 0);
+                else if(temp_char == '<') pilot(45, 0);
+                else if(temp_char == '>') pilot(44, 0);
+                else if(temp_char == '0') pilot(0, 0);
+                else if(temp_char == '1') pilot(1, 0);
+                else if(temp_char == '2') pilot(2, 0);
+                else if(temp_char == '3') pilot(3, 0);
+                else if(temp_char == '4') pilot(4, 0);
+                else if(temp_char == '5') pilot(5, 0);
+                else if(temp_char == '6') pilot(6, 0);
+                else if(temp_char == '7') pilot(7, 0);
+                else if(temp_char == '8') pilot(8, 0);
+                else if(temp_char == '9') pilot(9, 0);
+                else if(temp_char == 't')
+                {
+                    lockers_flag_bit_off(2);
+                    printf("\nTRYB RC5\n");
+                }
+                //else if(temp_char == 'R') lockers_print_all_memory();
+                //else if(temp_char == 'r') lockers_print_latest_data();
+            }
+            else
+            {
+                if(temp_char == 'T')
+                {
+                    lockers_flag_bit_on(2);
+                    printf("\nTRYB HYBRYDOWY\n");
+                }
             }
         }
-
     }
 }
 
