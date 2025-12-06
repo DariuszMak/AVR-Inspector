@@ -45,6 +45,11 @@ void show_double(double number, uint8_t approximation)
     LCD_Int (temp_double_format.decimal_number);
 }
 
+double get_double_form_double_format(struct double_format temp_double_format)//funkcja konwertująca strukturę do doubli na zmienną typu double
+{
+    return temp_double_format.integer_number + temp_double_format.decimal_number / 100.0;
+}
+
 struct double_format get_double_format( double value, uint8_t approximation)
 {
     struct double_format double_format_temp;
@@ -83,7 +88,6 @@ struct double_format get_double_format( double value, uint8_t approximation)
     {
         LCD_Int(0);
     }*/
-
 
     ten = 1;
 
@@ -1941,12 +1945,24 @@ void sczytaj_komende( void )
                         PCF8583_timer_flag_off();
                     }
 
-                    if(PCF8583_is_alarm_flag_set() == 1)
+                    double current_temp_temperature = get_double_form_double_format( get_double_format(termometer_temperature, 2));
+                    double maximum_temp_temperature = get_double_form_double_format( maximum_temperature );
+
+                    if( PCF8583_is_alarm_flag_set() == 1 || current_temp_temperature > maximum_temp_temperature)
                     {
                         backlight(2);
-                        buzzer();
+                        if(current_temp_temperature > maximum_temp_temperature)
+                        {
+                            buzzer_time(10);
+                            printf("\nTEMPERATURA PRZEKROCZONA!");
+                        }
+                        else if(PCF8583_is_alarm_flag_set() == 1)
+                        {
+                            buzzer();
+                        }
                         lockers_print_temperature();
                         PCF8583_alarm_flag_off();
+                        //PCF8583_alarm_flag_off();
                     }
                 }
             }
@@ -2096,6 +2112,10 @@ int main( void )
 //    start_program = 0;
 
     lockers_beginning_actions();
+
+    maximum_temperature.integer_number = 27;
+    maximum_temperature.decimal_number = 15;
+
     sei();//włącza przerwania
 
     while( 1 )

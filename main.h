@@ -60,11 +60,15 @@ struct double_format
     uint8_t decimal_number;
 };
 
+struct double_format maximum_temperature;
+
 int main( void );
 
 uint8_t number_of_digits(uint32_t);//funkcja zwracjąca ilość cyfr dla danej liczby
 
 void show_double(double, uint8_t);//funkcja wyświetlająca format (rozbity na dwie części), przjmuje liczbę i miejsca po przecinku
+
+double get_double_form_double_format(struct double_format);//funkcja konwertująca strukturę do doubli na zmienną typu double
 
 struct double_format get_double_format(double, uint8_t);// umieszcza w strukturze odpowiednie wartośći liczby double rozpitej na dwie części (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
 

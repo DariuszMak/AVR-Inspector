@@ -252,9 +252,9 @@ void lockers_print_date_of_report()
     printf("%04d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }
 
-void lockers_print_temperature(void)
+void lockers_print_temperature()
 {
-    printf("\nTEMPERATURA.");
+    printf("\nTEMPERATURA. ");
     lockers_print_date_of_report();
     struct double_format temp_double_format = get_double_format(termometer_temperature, 2);
     printf("%d.%d stopni Celcjusza\n", temp_double_format.integer_number, temp_double_format.decimal_number);
