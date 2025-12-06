@@ -1176,6 +1176,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             if(pilot_state == 1)
             {
                 pilot_state = 0;
+                buzzer_time(500);
                 pilot_off();
                 backlight(0);
             }

@@ -126,7 +126,7 @@ void pilot_reset(void)
 {
  Ir_key_press_flag = 0;
             //uint8_t command_temp = command;
-            //command = 0xff;
+            command = 0xff;
             address = 0xff;
 }
 
