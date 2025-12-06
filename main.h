@@ -60,6 +60,8 @@ void change_color_RGB(void);
 
 void all_colors_RGB(void);
 
+void no_colors_RGB(void);
+
 void backlight(int8_t);
 
 void buzzer(void);//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)

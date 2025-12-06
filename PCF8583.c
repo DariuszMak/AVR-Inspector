@@ -53,7 +53,7 @@ uint8_t bin2bcd(uint8_t bin)
 */
 void PCF8583_write(uint8_t address,uint8_t data)
 {
-    PCF8583_write_buf(address, 1, &data );
+    i2c_write_buf(PCF8583_address(), address, 1, &data );
 }
 
 /**
@@ -64,30 +64,13 @@ void PCF8583_write(uint8_t address,uint8_t data)
 uint8_t PCF8583_read(uint8_t address)
 {
     uint8_t temp;
-    PCF8583_read_buf( address, 1, &temp );
+    i2c_read_buf( PCF8583_address(), address, 1, &temp );
     return temp;
 }
 
-void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf )
+uint8_t PCF8583_address(void)
 {
-    i2cStart();
-    i2cWrite((PCF8583_A0 << 1) | PCF8583_ADDRESS);
-    i2cWrite(adr);
-    while (len--) i2cWrite(*buf++);
-    i2cStop();
-}
-
-void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
-{
-    uint8_t a;
-    a = (PCF8583_A0 << 1) | PCF8583_ADDRESS;
-    i2cStart();
-    i2cWrite(a);
-    i2cWrite(adr);
-    i2cStart();
-    i2cWrite(a + 1);
-    while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
-    i2cStop();
+    return (PCF8583_A0 << 1) | PCF8583_ADDRESS;
 }
 
 /**
@@ -200,14 +183,14 @@ void PCF8583_write_word(uint8_t address,uint16_t data)
     uint8_t table_temp[2];
     table_temp[0] = (uint8_t)(data & 0xFF);
     table_temp[1] = (uint8_t)(data >> 8);
-    PCF8583_write_buf(address, 2, table_temp);
+    i2c_write_buf(PCF8583_address(), address, 2, table_temp);
 }
 
 uint16_t PCF8583_read_word(uint8_t address)
 {
     uint16_t temp;
     uint8_t table_temp[2];
-    PCF8583_read_buf(address, 2, table_temp);
+    i2c_read_buf(PCF8583_address(), address, 2, table_temp);
     temp = table_temp[0] & 0xFF;
     temp |= table_temp[1] << 8;
     return temp;
@@ -226,10 +209,10 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
     uint8_t year_table[2];
     PCF8583_mask_off();
     PCF8583_hold_on();
-    PCF8583_read_buf(0x01, 7, (uint8_t*)&time_f);
+    i2c_read_buf(PCF8583_address(), 0x01, 7, (uint8_t*)&time_f);
     PCF8583_hold_off();
     PCF8583_mask_on();
-    PCF8583_read_buf(0x10, 2, year_table);
+    i2c_read_buf(PCF8583_address(), 0x10, 2, year_table);
 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
@@ -277,8 +260,8 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
 
     uint8_t temp = PCF8583_is_clock_counting();
     PCF8583_stop();
-    PCF8583_write_buf(0x01, 7, (uint8_t*)&time_f);
-    PCF8583_write_buf(0x10, 2, year_table);
+    i2c_write_buf(PCF8583_address(), 0x01, 7, (uint8_t*)&time_f);
+    i2c_write_buf(PCF8583_address(), 0x10, 2, year_table);
     if(temp == 1) PCF8583_start();
 }
 
@@ -292,7 +275,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
 void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *month, uint8_t *timer, uint8_t *AM_PM)
 {
     struct time_frame time_f;
-    PCF8583_read_buf(0x09, 7, (uint8_t*)&time_f);
+    i2c_read_buf(PCF8583_address(), 0x09, 7, (uint8_t*)&time_f);
 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
@@ -337,7 +320,7 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     }
     time_f.timer=bin2bcd(timer);
 
-    PCF8583_write_buf(0x09, 7, (uint8_t*)&time_f);
+    i2c_write_buf(PCF8583_address(), 0x09, 7, (uint8_t*)&time_f);
 }
 
 

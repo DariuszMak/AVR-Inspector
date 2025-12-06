@@ -8,7 +8,7 @@
 
 #define PCF8583_ADDRESS 0xA0
 
-#define PCF8583_A0 0//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
+#define PCF8583_A0 1//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
 
 #define buffer 1
 
@@ -38,13 +38,11 @@ uint8_t bcd2bin(uint8_t bcd);
 
 uint8_t bin2bcd(uint8_t bin);
 
+uint8_t PCF8583_address(void);
+
 uint8_t PCF8583_read(uint8_t address);
 
 void PCF8583_write(uint8_t address,uint8_t data);
-
-void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf );
-
-void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf);
 
 void PCF8583_hold_off(void);//zatrzaski
 

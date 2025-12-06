@@ -33,4 +33,8 @@ void i2cSetBitrate(uint16_t bitrateKHz);
 */
  uint8_t i2cRead(uint8_t);
 
+void i2c_write_buf(uint8_t dev, uint8_t adr, uint8_t len, uint8_t *buf );
+
+void i2c_read_buf(uint8_t dev, uint8_t adr, uint8_t len, uint8_t *buf);
+
 #endif // I2C_H_INCLUDED

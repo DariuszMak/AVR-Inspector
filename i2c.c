@@ -52,3 +52,24 @@ uint8_t i2cRead(uint8_t ack)
     return TWDR;
 }
 
+void i2c_write_buf(uint8_t dev, uint8_t adr, uint8_t len, uint8_t *buf )
+{
+    i2cStart();
+    i2cWrite(dev);
+    i2cWrite(adr);
+    while (len--) i2cWrite(*buf++);
+    i2cStop();
+}
+
+void i2c_read_buf(uint8_t dev, uint8_t adr, uint8_t len, uint8_t *buf)
+{
+    uint8_t a;
+    a = dev;
+    i2cStart();
+    i2cWrite(a);
+    i2cWrite(adr);
+    i2cStart();
+    i2cWrite(a + 1);
+    while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
+    i2cStop();
+}

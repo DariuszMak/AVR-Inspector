@@ -33,8 +33,6 @@ void change_color_RGB(void)
     //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
 
-//definicje funkcji
-
 void all_colors_RGB(void)
 {
     RGB_Red = 255;
@@ -42,6 +40,15 @@ void all_colors_RGB(void)
     RGB_Blue = 255;
     //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
+
+void no_colors_RGB(void)
+{
+    RGB_Red = 0;
+    RGB_Green = 0;
+    RGB_Blue = 0;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
+}
+
 
 void backlight(int8_t state)
 {
@@ -1739,7 +1746,6 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
-
         /*if(rano_wieczor == 0 )RGB_Red =  255;
         else RGB_Red = 0;
         if(PCF8583_is_12h_24h_format() == 0) RGB_Blue = 255;
@@ -1796,7 +1802,7 @@ void sczytaj_komende( void )
         else
         {
             lockers_beginning_actions();
-            all_colors_RGB();
+            no_colors_RGB();
         }
 
         if( menu == 2 )
