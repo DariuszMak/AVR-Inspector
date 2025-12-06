@@ -64,7 +64,8 @@ int main( void )
 
 			LCDClearBuffer();
 			//LCDWriteToBuffer( 0, 0, "napis" );
-			LCDWriteToBuffer( 15, 1, "drugi Napis" );
+			LCDWriteToBuffer( 15, 1, "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
+			LCDWriteToBuffer( 0, 1, "Drugi" );
 
 			break;
 		case 1:

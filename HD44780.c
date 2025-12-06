@@ -134,7 +134,7 @@ void _LCD_Write( unsigned char dataToWrite )
 	_LCD_OutNibble( dataToWrite );
 	LCD_E_PORT &= ~LCD_E;
 #if ( USE_RW == 1 ) || ( BUFFERING == 1 )
-	while( LCD_ReadStatus() & 0x80 );
+	while( LCD_ReadStatus() & HD44780_DDRAM_SET );
 #else
 	_delay_us( 50 );
 #endif
@@ -228,7 +228,7 @@ void LCD_WriteText( char * text )
 //-------------------------------------------------------------------------------------------------
 void LCD_GoTo( unsigned char x, unsigned char y )
 {
-	LCD_WriteCommand( HD44780_DDRAM_SET | ( x + ( 0x40 * y ) ) );
+	LCD_WriteCommand( HD44780_DDRAM_SET | ( x + ( HD44780_CGRAM_SET * y ) ) );
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -420,11 +420,11 @@ void LCD_Displaying ( unsigned int option )
 
 #if BUFFERING == 1
 
-unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];
-unsigned char LCDNeedUpdate[LCD_LINES];
-signed 	 char LCDCharIndex[LCD_LINES];
-unsigned char LCDLineIndex;
-unsigned char LCDLineAddress[4] = {0x00, 0x40, 0x14, 0x54};
+unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];//tablica dwuwymiarowa stanowiąca bufor (znaki do wyświetlania)
+unsigned char LCDNeedUpdate[LCD_LINES];//tablica wielkości ilości linii wyświetlacza (stwierdzenie, czy dana linia wymaga odświeżenia)
+signed 	 char LCDCharIndex[LCD_LINES];//w tej tablicy przechowywana jest pozycja w danej linii wyświetlacza
+unsigned char LCDLineIndex = 0;//zmienna pomocnicza w iteracjach
+unsigned char LCDLineAddress[2] = {0x00, 0x40/*, 0x14, 0x54*/};//adresy (w pamięci DDRAM wyświetlacza) poszczególnych linii
 
 //-------------------------------------------------------------------------------------------------
 // Wywoływane funkcje zewnętrzne :
@@ -433,21 +433,6 @@ unsigned char LCDLineAddress[4] = {0x00, 0x40, 0x14, 0x54};
 //		LCD_JustWriteData	 - zapisuje dane do sterownika wyświetlacza (bezzwłocznie)
 //=================================================================================================
 
-int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
-{
-	int cnt = 0;
-	while( *str != 0 )
-	{
-		LCDBuffer[y][x + cnt] = *str;
-		++str;
-		++cnt;
-	}
-	LCDNeedUpdate[y] = 1;
-	return cnt;
-}
-//=================================================================================================
-//
-//=================================================================================================
 void LCDClearBuffer( void )
 {
 	int i, j;
@@ -456,9 +441,24 @@ void LCDClearBuffer( void )
 		LCDCharIndex[j] = -1;
 		for( i = 0; i < LCD_CHARSPERLINE; ++i )
 		{
-			LCDBuffer[j][i] = 32;
+			LCDBuffer[j][i] = 32;//wypełnienie bufora znakami "spacji"
 		}
 	}
+}
+
+//=================================================================================================
+
+void LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
+{
+	int cnt = 0;//zmienna pomocnicza
+	while( *str != 0 && cnt + x < LCD_CHARSPERLINE)//w pętli o ilości iteracji równej długości łąńcucha, jeśli łańcuch jest zbyt długi, to się nie prześle
+	{
+		LCDBuffer[y][x + cnt] = *str;//do tablicy bufora o określonej linii i od określonego miejsca zapisywane zostają dane
+		++str;
+		++cnt;
+	}
+	LCDNeedUpdate[y] = 1;
+	//return cnt;
 }
 //=================================================================================================
 // Należy wywoływać cykliczne w pętli głównej
@@ -466,27 +466,27 @@ void LCDClearBuffer( void )
 
 void LCDUpdateTask( void )
 {
-	if( LCDNeedUpdate[LCDLineIndex] )
+	if( LCDNeedUpdate[LCDLineIndex] )//jeśli któraś linia potrzebuje "aktualizacji"
 	{
-		if( LCD_ReadStatus() != 0x80 )
+		if( LCD_ReadStatus() != HD44780_DDRAM_SET )// jeśli wyświetlacz nie jest zajęty
 		{
-			if( LCDCharIndex[LCDLineIndex] == -1 )
+			if( LCDCharIndex[LCDLineIndex] == -1 )//jeśli jest to pozycja pierwsza w danej linii
 			{
-				LCD_WriteCommand( 0x80 | LCDLineAddress[LCDLineIndex] );
-				LCDCharIndex[LCDLineIndex]++;
-				return;
+				LCD_WriteCommand( HD44780_DDRAM_SET | LCDLineAddress[LCDLineIndex] );//ustawienie kursora na początku
+				LCDCharIndex[LCDLineIndex]++;//zwiększenie kursora w tablicy z położeniem o jeden
+				return;//wyjście z funkcji
 			}
-			LCD_WriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );
-			if( LCDCharIndex[LCDLineIndex] == ( LCD_CHARSPERLINE - 1 ) )
+			LCD_WriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );//zapis na wyświetlaczu pojedynczego znaku
+			if( LCDCharIndex[LCDLineIndex] == ( LCD_CHARSPERLINE ) )//jeśli w tablicy położenia jest już ostatni indeks
 			{
-				LCDCharIndex[LCDLineIndex] 		= -1;
-				LCDNeedUpdate[LCDLineIndex] 	= 0;
+				LCDCharIndex[LCDLineIndex] 		= -1;//położenie w danej linii zostanie przywrócone na początek
+				LCDNeedUpdate[LCDLineIndex] 	= 0;//dana linia nie potrzebuje już aktualizacji
 			}
 		}
 		return;
 	}
-	++LCDLineIndex;
-	if( LCDLineIndex == LCD_LINES )
+	++LCDLineIndex;//inkrementacja linii
+	if( LCDLineIndex == LCD_LINES )//jeśli indeks przyjmuje wartoś spoza zakresu, należy przypisać mu wartość zero
 		LCDLineIndex = 0;
 }
 
