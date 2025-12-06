@@ -24,7 +24,7 @@ int main( void )
 
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
-    const int liczbaPodprogramow = 3;
+    const int liczbaPodprogramow = 4;
     int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
@@ -94,6 +94,20 @@ int main( void )
         LCD_Clear();
     }
 
+    void show_day_of_week( uint8_t day)
+    {
+        if(day == 0) LCD_WriteText("Pn.");
+        else if(day == 1) LCD_WriteText("Wt.");
+        else if(day == 2) LCD_WriteText("Sr.");
+        else if(day == 3) LCD_WriteText("Cz.");
+        else if(day == 4) LCD_WriteText("Pt.");
+
+        else if(day == 5) LCD_WriteText("So.");
+
+        else if(day == 6) LCD_WriteText("Nd.");
+
+    }
+
     void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
     {
         switch ( men )
@@ -103,7 +117,8 @@ int main( void )
             LCD_GoTo( 0, 0 );
             LCD_WriteText( "Wybierz:" );
             LCD_GoTo( 0, 1 );
-            LCD_WriteText( "1 - 3" );
+            LCD_WriteText( "1 - " );
+            LCD_Int(liczbaPodprogramow);
 
             //LCDWriteToBuffer( 0, 0, "napis" );
             //LCD_WriteText ( "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
@@ -199,8 +214,8 @@ int main( void )
             LCD_WriteText(":");
             if(hsek < 10) LCD_Int(0);
             LCD_Int(hsek);
-            LCD_WriteText(":");
-            LCD_Int(dzien_tygodnia);
+
+
             LCD_GoTo( 0 + moveStep, 1 );
             if(dzien < 10) LCD_Int(0);
             LCD_Int(dzien);
@@ -210,24 +225,38 @@ int main( void )
             LCD_WriteText(":");
             LCD_Int(rok);
 
-            LCD_WriteText(":");
-            LCD_Double(ds18b20_temperature(),2);
+            LCD_GoTo(13,1);
+            show_day_of_week(dzien_tygodnia);
+
+
+
+            LCD_GoTo(18, 0);
+            LCD_WriteText("|");
+
+            LCD_GoTo(18, 1);
+            LCD_WriteText("|");
 
             PCF8583_get_wall_alarm();
-            moveStep=24;
+            moveStep=22;
 
-            LCD_GoTo( 0 + moveStep, 0 );
-            if(godz < 10) LCD_Int(0);
-            LCD_Int(godz);
-            LCD_WriteText(":");
-            if(min < 10) LCD_Int(0);
-            LCD_Int(min);
-            LCD_WriteText(":");
-            if(sek < 10) LCD_Int(0);
-            LCD_Int(sek);
-            LCD_WriteText(":");
-            if(hsek < 10) LCD_Int(0);
-            LCD_Int(hsek);
+            if(PCF8583_recognise_type_of_alarm())
+            {
+                LCD_GoTo( 0 + moveStep, 0 );
+                if(godz < 10) LCD_Int(0);
+                LCD_Int(godz);
+                LCD_WriteText(":");
+                if(min < 10) LCD_Int(0);
+                LCD_Int(min);
+                LCD_WriteText(":");
+                if(sek < 10) LCD_Int(0);
+                LCD_Int(sek);
+                LCD_WriteText(":");
+                if(hsek < 10) LCD_Int(0);
+                LCD_Int(hsek);
+            }
+
+
+
             LCD_WriteText(":");
             LCD_Int(dzien_tygodnia);
             LCD_GoTo( 0 + moveStep, 1 );
@@ -241,10 +270,17 @@ int main( void )
 
 
 
+            LCD_GoTo(12, 0);
+            LCD_Double(ds18b20_temperature(),1);
+
 
             //LCD_Int( pwm1 );
             //LCD_Int( pwm2 );
             //OCR0 = pwm1;//zmienna przepełnienia Timera 0
+            break;
+        case 4:
+            LCD_EraseAll();
+
             break;
         }
     }
@@ -569,77 +605,33 @@ int main( void )
         case 3:
             switch ( com )
             {
-            case 1:
-                EEPROM_write(10, 0);
-                EEPROM_write(11, 0);
-                EEPROM_write(12, 0);
-                EEPROM_write(13, 0);
-                EEPROM_write(14, 0);
-                EEPROM_write(15, 0);
-                EEPROM_write_word(16, 0);
-                EEPROM_write(18,0);
-                break;
-            case 2:
-                EEPROM_write(10, 1);
-                EEPROM_write(11, 2);
-                EEPROM_write(12, 0);
-                EEPROM_write(13, 0);
-                EEPROM_write(14, 5);
-                EEPROM_write(15, 6);
-                EEPROM_write_word(16, 1234);
-                EEPROM_write(18,0b00010000);
-                break;
-            case 55:
-                wysw_skok( 1000 );
-                PCF8583_alarm_off();
-                break;
-            case 54:
-                wysw_skok( 100 );
-                PCF8583_alarm_every_day();
-                break;
-            case 50:
-                wysw_skok( 10 );
-                PCF8583_alarm_weekly();
-                break;
-            case 52:
-                wysw_skok( 1 );
-                PCF8583_alarm_monthly();
+
+
             case 59:
                 PCF8583_alarm_flag_off();
                 break;
 
-            case 41:
-                PCF8583_set_time( 23, 59, 55, 1 );
-                PCF8583_set_date( 13, 3, 8, 2015 );
-                break;
-            case 15:
-            hsek = EEPROM_read(10);
-            sek = EEPROM_read(11);
-            min = EEPROM_read(12);
-            godz = EEPROM_read(13);
-            dzien = EEPROM_read(14);
-            miesiac = EEPROM_read(15);
-            rok = EEPROM_read_word(16);
-            dzien_tygodnia = EEPROM_read(18);
-            PCF8583_set_weekly_alarm( EEPROM_read(18),  EEPROM_read(13), EEPROM_read(12), EEPROM_read(11), EEPROM_read(10));
-
-                break;
-            case 17:
-//                pwm1 -= zwiekszanie;
-                break;
-            case 16:
-//                pwm1 += zwiekszanie;
-                break;
-            case 32:
-//                pwm2 += zwiekszanie;
-                break;
-            case 33:
-//                pwm2 -= zwiekszanie;
-                break;
             }
             wysw( *men );
             break;
+
+
+        case 4:
+            switch ( com )
+            {
+            case 1:
+
+                break;
+
+            }
+            wysw( *men );
+            break;
+
         }
+
+
+
+
 //komendy wspólne dla wszystkich podprogramów
 
         switch ( com )
@@ -711,8 +703,12 @@ int main( void )
                     break;
 
                 case 3:
-                    czynnosc( men, 50, tog );
-                    //wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    //czynnosc( men, 50, tog );
+                    TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
+                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    break;
+                case 4:
+                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 }
             }
@@ -725,6 +721,7 @@ int main( void )
             start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
             *men = 0;//
             TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
+            TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
             wybor( *men );
             wysw ( *men );// wyświetlenie ekranu
         }
@@ -816,7 +813,7 @@ int main( void )
     while( 1 )
     {
         zczytaj_komende();
-        lockers_check_events();
+        if( menu == 3) lockers_check_events();
     }
 
     return 0;
