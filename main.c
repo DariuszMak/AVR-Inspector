@@ -8,6 +8,8 @@
 #include "d_led.h"
 #include "random_generator.h"
 #include "inverter.h"
+#include "PCF8583.h"
+#include "i2c.h"
 #include <stdlib.h>
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
@@ -38,6 +40,11 @@ int main( void )
     int u; //inna (dodatkowa) zmienna pomocnicza
     int w; //inna (dodatkowa) zmienna pomocnicza
     int s;//inna (dodatowa zmienna)
+
+
+    uint8_t godz, min, sek, hsek;
+uint8_t dzien, miesiac;
+uint16_t rok;
 
 //definicje funkcji
 
@@ -180,8 +187,23 @@ int main( void )
 
             break;
         case 3:
+            PCF8583_get_time( &godz, &min, &sek, &hsek );
+    PCF8583_get_date( &dzien, &miesiac, &rok );
             LCD_EraseAll();
             LCD_GoTo( 0, 0 );
+            LCD_Int(hsek);
+            LCD_GoTo( 3, 0 );
+            LCD_Int(sek);
+            LCD_GoTo( 6, 0 );
+            LCD_Int(min);
+            LCD_GoTo( 9, 0 );
+            LCD_Int(godz);
+            LCD_GoTo( 0, 1 );
+            LCD_Int(dzien);
+            LCD_GoTo( 3, 1 );
+            LCD_Int(miesiac);
+            LCD_GoTo( 6, 1 );
+            LCD_Int(rok);
             //LCD_Int( pwm1 );
             LCD_GoTo( 0, 1 );
             //LCD_Int( pwm2 );
@@ -691,6 +713,12 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     inverter_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
+    i2cInit();
+     PCF8583_init();
+    PCF8583_set_time( 19, 17, 1, 0 );
+    PCF8583_set_date( 6, 2, 2012 );
+
+
     sei();//włącza przerwania
 
     pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu
