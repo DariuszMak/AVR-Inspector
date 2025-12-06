@@ -11,7 +11,6 @@
 #include "delay_lib.h"
 #include "HD44780.h"
 #include "ir_decode.h"
-#include "d_led.h"
 #include "random_generator.h"
 #include "lockers.h"
 #include "PCF8583.h"
@@ -34,8 +33,7 @@ uint8_t moveStep;//zmienna do przesunięcia wyświetlanych partii danych (dla da
 uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
-uint8_t pozycja;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
-int8_t	cyfra; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+
 //zmienne spełniające określone funkcje
 int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
 int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
@@ -89,8 +87,6 @@ uint8_t end_of_settings(uint8_t case_of_time);
 void show_frame( int16_t number);
 
 void show_list(int16_t current_index, int16_t max_index);
-
-void cube_position(uint8_t case_of_effect);
 
 void wysw( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 

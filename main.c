@@ -87,11 +87,11 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
     LCD_GoTo(0,1);
     if(number == 0) LCD_WriteText("PROGRAM GLOWNY");
     else if(number == 1) LCD_WriteText("PROGRAM TESTOWY");
-    else if(number == 2) LCD_WriteText("KOSTKA DO GRY");
-    else if(number == 3) LCD_WriteText("CZUWANIE");
+    else if(number == 2) LCD_WriteText("CZUWANIE");
+    else if(number == 3) LCD_WriteText("DANE - EEPROM");
     else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
     else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
-    else if(number == 6) LCD_WriteText("DANE - EEPROM");
+    else if(number == 6) LCD_WriteText("");
     for ( t = 0; t < 5; ++t )
     {
         delay_ms_var_double( 30 );
@@ -400,7 +400,7 @@ void show_frame( int16_t number )
 
 void show_list_case(index)
 {
-    if(menu == 6)
+    if(menu == 3)
     {
         lockers_read_frame(index);
         show_frame(index+1);
@@ -428,52 +428,6 @@ void show_list(int16_t current_index, int16_t max_index)
     }
 }
 
-void cube_position(uint8_t case_of_effect)
-{
-    wysw();
-    char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomocnicza do umiejscowienia cyfry
-
-    for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
-    {
-        if(s == pozycja) tablicaTemp[s] = '1';
-        else tablicaTemp[s] = '0';
-    }
-
-    for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
-    {
-        if(tablicaTemp[s] == '1')
-        {
-            if (s == 0) cy1 = cyfra;
-            if (s == 1) cy2 = cyfra;
-            if (s == 2) cy3 = cyfra;
-            if (s == 3) cy4 = cyfra;
-        }
-        else
-        {
-            if (s == 0 || cyfra == 0) cy1 = 10;
-            if (s == 1 || cyfra == 0) cy2 = 10;
-            if (s == 2 || cyfra == 0) cy3 = 10;
-            if (s == 3 || cyfra == 0) cy4 = 10;
-        }
-    }
-
-    if(case_of_effect == 1)
-    {
-        for(s = 0; s < rozmiar; ++s)
-        {
-            if(tablicaTemp[s] == '0' || cyfra == 0 )
-            {
-                if ( s == 0 ) cy1 = 11;
-                if ( s == 1 ) cy2 = 11;
-                if ( s == 2 ) cy3 = 11;
-                if ( s == 3 ) cy4 = 11;
-                buzzer();
-                delay_ms_var_double(100);
-            }
-        }
-    }
-    free(tablicaTemp);
-}
 
 void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
@@ -506,26 +460,6 @@ void wysw1( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    /*if ( cyfry >= 10000 ) cyfry = 10000;
-        else if( cyfry <= -10000 ) cyfry = -10000;*/
-    //OCR0 = cyfry;//zmienna przepełnienia Timera 0
-    LCD_EraseAll();
-    //d_led_Int( cyfry );
-
-    //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
-
-    LCD_GoTo(0,0);
-    LCD_Int( cyfra );
-    if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
-    {
-        LCD_GoTo(4,0);
-        LCD_Int((int) (t * 100 / 250));
-        LCD_WriteText("%");
-    }
-}
-
-void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
-{
     moveStep=0;
     PCF8583_get_wall_time();
     LCD_EraseAll();
@@ -554,6 +488,16 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     //LCD_Int( pwm1 );
     //LCD_Int( pwm2 );
     //OCR0 = pwm1;//zmienna przepełnienia Timera 0
+}
+
+void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    LCD_EraseAll();
+    if(zwiekszanie > 10) wysw_skok(10);
+
+    if(c < -1) c = lockers_number_of_frames() - 1;
+    else if(c > lockers_number_of_frames() - 1) c = -1;
+    show_list(c, lockers_number_of_frames() -1);
 }
 
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -666,11 +610,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     LCD_EraseAll();
-    if(zwiekszanie > 10) wysw_skok(10);
-
-    if(c < -1) c = lockers_number_of_frames() - 1;
-    else if(c > lockers_number_of_frames() - 1) c = -1;
-    show_list(c, lockers_number_of_frames() -1);
 }
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -722,17 +661,6 @@ void czynnosc0( int com, int tog )
         }
         else if ( menu == 2 )
         {
-            rozmiar = 4;
-            u = 0;
-
-            t = 0;
-            TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-            cube_position(1);
-            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-        }
-        else if ( menu == 3 )
-        {
-
             lockers_beginning_actions();
             //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
 //                checking_lockers_state = 1;
@@ -740,6 +668,14 @@ void czynnosc0( int com, int tog )
             u = PCF8583_recognise_type_of_alarm();
             czynnosc( 100, tog );
             //refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+        else if ( menu == 3 )
+        {
+            //czynnosc( men, 50, tog );
+            //lockers_find_latest_data();
+            c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+
         }
         else if ( menu == 4 )
         {
@@ -762,10 +698,7 @@ void czynnosc0( int com, int tog )
         }
         else if ( menu == 6 )
         {
-            //czynnosc( men, 50, tog );
-            //lockers_find_latest_data();
-            c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
-            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+            refresh_screen = 1;
         }
     }
 
@@ -992,117 +925,6 @@ void czynnosc1( int com, int tog )
 
 void czynnosc2( int com, int tog )
 {
-    if ( com == 41 || com == 100)
-    {
-        //reakcja na naciśnięcie przycisku "stop"
-        //reakcja na naciśnięcie przyciku z pilota RC5
-
-        t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
-        u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
-
-        do
-        {
-            buzzer_time(0.4);
-            ++t;
-            wysw();
-            delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
-        }
-        while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
-
-        delay_ms_var_double(200);
-        PCF8583_get_wall_time();
-        for(w = 0; w < hsek; ++w)
-        {
-            rand();
-        }
-
-        while ( t != 1 )
-        {
-            u=rand()%6 + 1;//wylosowanie liczby oczek na kostce
-
-            for(w = 1; w <= u; ++w)//przekulnięcia kostki w danej próbie
-            {
-                delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
-                pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
-                cyfra = w;
-                cube_position(0);
-                wysw();
-                buzzer_time(0.8);
-            }
-            --t;
-        }
-        t++;//przywrócenie efektu z ostatniej tury
-        if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
-        u = -1;//tryb wyświetlania
-
-        cube_position(1);
-
-        u = 0;
-        refresh_screen = 1;
-
-        //cy1 = 8;
-    }
-    if ( com == 59 )
-    {
-        cyfra = 0;
-        pozycja = 0;
-        u = 0;
-        cube_position(1);
-        refresh_screen = 1;
-    }
-    if ( com == 55 )
-    {
-        wysw_skok( 1000 );
-    }
-    if ( com == 54 )
-    {
-        wysw_skok( 100 );
-    }
-    if ( com == 50 )
-    {
-        wysw_skok( 10 );
-    }
-    if ( com == 52 )
-    {
-        wysw_skok( 1 );
-    }
-    if ( com == 32 )
-    {
-        TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-    }
-    if ( com == 33 )
-    {
-        TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
-    }
-    if ( com == 17 )
-    {
-        //cyfry -= zwiekszanie;
-    }
-    if ( com == 16 )
-    {
-        //cyfry += zwiekszanie;
-    }
-    if ( com == 14 )
-    {
-        if( tog == 0)
-        {
-        }
-        if( tog == 1)
-        {
-            //wygaszenie elementów wyświetlacza podczas opuszczania podprogramu
-            TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-            cy1 = 10;
-            cy2 = 10;
-            cy3 = 10;
-            cy4 = 10;
-
-        }
-    }
-    refresh_screen = 1;
-}
-
-void czynnosc3( int com, int tog )
-{
     if( com == 42 )
     {
         PCF8583_alarm_flag_on();
@@ -1127,6 +949,37 @@ void czynnosc3( int com, int tog )
             pilot_state = 1;
         }
     }
+    refresh_screen = 1;
+}
+
+void czynnosc3( int com, int tog )
+{
+    if ( com == 12 )
+    {
+        if( tog == 0)
+        {
+        }
+        if( tog == 1)
+        {
+            LCD_Clear();
+            LCD_WriteText("Czyszczenie...");
+            lockers_clear_all_memory();
+            c = 0;
+        }
+    }
+    if ( com == 32 )
+    {
+        c -= zwiekszanie;
+    }
+    if ( com == 33 )
+    {
+        c += zwiekszanie;
+    }
+    if ( com == 59 )
+    {
+        c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+    }
+
     refresh_screen = 1;
 }
 
@@ -1189,31 +1042,6 @@ void czynnosc5( int com, int tog )
 
 void czynnosc6( int com, int tog )
 {
-    if ( com == 12 )
-    {
-        if( tog == 0)
-        {
-        }
-        if( tog == 1)
-        {
-            LCD_Clear();
-            LCD_WriteText("Czyszczenie...");
-            lockers_clear_all_memory();
-            c = 0;
-        }
-    }
-    if ( com == 32 )
-    {
-        c -= zwiekszanie;
-    }
-    if ( com == 33 )
-    {
-        c += zwiekszanie;
-    }
-    if ( com == 59 )
-    {
-        c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
-    }
 
     refresh_screen = 1;
 }
@@ -1241,7 +1069,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     {
         czynnosc3(com, tog);
     }
-
     else if( menu == 4 )
     {
         czynnosc4(com, tog);
@@ -1324,7 +1151,7 @@ void pilot( int com, int tog )//
 
 void zczytaj_komende( void )
 {
-    if( interr == 1 && menu == 3 )
+    if( interr == 1 && menu == 2 )
     {
         interr = 0;
         cnt = 0;
@@ -1342,18 +1169,13 @@ void zczytaj_komende( void )
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
     {
-        cy1 = 10;
-        cy1 = 10;
-        cy1 = 10;
-        cy1 = 10;
+
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         u = menu;
         menu = 0;
         switch_menu = 0;
         zwiekszanie = 1;
 //        checking_lockers_state = 0;
-        delay_ms_var(10);//chwilowe odczekanie na wygaszenie się wyświetlacza
-        TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
         refreshing_interrupt_off();
         pilot(59,0);
         switch_menu = u;
@@ -1415,7 +1237,7 @@ int main( void )
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
     ir_init();//inicjalizacja odbioru sygnału z pilota
-    d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
+
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
     //PCF8583_alarm_monthly();
@@ -1429,7 +1251,7 @@ int main( void )
 
     sei();//włącza przerwania
     zczytaj_komende();
-    switch_menu = 3;
+    switch_menu = 2;
     pilot( 59, 0 );//przejście do podprogramu nr 3
 
 
