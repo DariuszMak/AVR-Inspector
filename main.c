@@ -176,31 +176,45 @@ void show_alarm_format(uint8_t case_of_format)
 
 void setting_information(uint8_t case_of_time, int8_t step)
 {
-    if(step == 0) LCD_WriteText("GODZINY");
-    else if(step == 1) LCD_WriteText("MINUTY");
-    else if(step == 2) LCD_WriteText("SEKUNDY");
-    else if(step == 3) LCD_WriteText("SETNE SEKUND");
-
-    if(case_of_time == 0 || case_of_time == 3)
+    refresh_screen = 0;
+    LCD_EraseAll();
+    LCD_GoTo(moveStep, 0);
+    if(step == end_of_settings(case_of_time))
     {
-        if(step == 4) LCD_WriteText("DZIEN");
-        else if(step == 5) LCD_WriteText("MIESIAC");
-        if(case_of_time == 0)
+        if(step == 0)LCD_WriteText("ZAPISANO GODZINE");
+        else LCD_WriteText("ZAPISANO ALARM");
+    }
+    else
+    {
+
+        if(step == 0) LCD_WriteText("GODZINY");
+        else if(step == 1) LCD_WriteText("MINUTY");
+        else if(step == 2) LCD_WriteText("SEKUNDY");
+        else if(step == 3) LCD_WriteText("SETNE SEKUND");
+
+        if(case_of_time == 0 || case_of_time == 3)
         {
-            if(step == 6) LCD_WriteText("ROK");
-            else if(step == 7) LCD_WriteText("DZIEN TYGODNIA");
+            if(step == 4) LCD_WriteText("DZIEN");
+            else if(step == 5) LCD_WriteText("MIESIAC");
+            if(case_of_time == 0)
+            {
+                if(step == 6) LCD_WriteText("ROK");
+                else if(step == 7) LCD_WriteText("DZIEN TYGODNIA");
+            }
+        }
+        else if( case_of_time == 2)
+        {
+            if(step == 4) LCD_WriteText("PONIEDZIALEK");
+            else if(step == 5) LCD_WriteText("WTOREK");
+            else if(step == 6) LCD_WriteText("SRODA");
+            else if(step == 7) LCD_WriteText("CZWARTEK");
+            else if(step == 8) LCD_WriteText("PIATEK");
+            else if(step == 9) LCD_WriteText("SOBOTA");
+            else if(step == 10) LCD_WriteText("NIEDZIELA");
         }
     }
-    else if( case_of_time == 2)
-    {
-        if(step == 4) LCD_WriteText("PONIEDZIALEK");
-        else if(step == 5) LCD_WriteText("WTOREK");
-        else if(step == 6) LCD_WriteText("SRODA");
-        else if(step == 7) LCD_WriteText("CZWARTEK");
-        else if(step == 8) LCD_WriteText("PIATEK");
-        else if(step == 9) LCD_WriteText("SOBOTA");
-        else if(step == 10) LCD_WriteText("NIEDZIELA");
-    }
+    delay_ms_var(400);
+    refresh_screen = 1;
 }
 
 void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s)
@@ -488,9 +502,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_EraseAll();
     //d_led_Int( cyfry );
 
-
     //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
-
 
     LCD_GoTo(0,0);
     LCD_Int( cyfra );
@@ -530,7 +542,6 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     show_alarm_format(u);
 
-
     LCD_GoTo(12, 0);
     LCD_Double(ds18b20_temperature(),1);
 
@@ -551,19 +562,8 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
         refresh_screen = 0;
         LCD_Clear();
-        LCD_WriteText("ZAPISANO GODZINE");
-        delay_ms_var(500);
-        LCD_EraseAll();
+        w = 1;
         start = 1;
-    }
-
-    if( w == 1 && start != 1)
-    {
-        LCD_GoTo(moveStep, 0);
-        setting_information(0, u);
-        delay_ms_var(400);
-        w = 0;
-        LCD_EraseAll();
     }
 
     if( s != 0 )
@@ -579,6 +579,12 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     moveStep = 0;
     show_time_format();
+
+    if( w == 1 )
+    {
+        setting_information(0, u);
+        w = 0;
+    }
 }
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -599,6 +605,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         if(u == end_of_settings(c) || c == 0 || c == -1)
         {
             start = 1;
+            w = 1;
             if(c != -1)
             {
                 if(c == 0) PCF8583_alarm_off();
@@ -617,21 +624,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     PCF8583_alarm_monthly();
                     PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
                 }
-                refresh_screen = 0;
-                LCD_Clear();
-                LCD_WriteText("ZAPISANO ALARM");
-                delay_ms_var(500);
-                LCD_EraseAll();
             }
-        }
-
-        if( w == 1 && start != 1)
-        {
-            LCD_GoTo(moveStep, 0);
-            setting_information(c, u);
-            w = 0;
-            delay_ms_var(400);
-            LCD_EraseAll();
         }
 
         if( s != 0 )
@@ -648,6 +641,11 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         moveStep = 0;
         show_alarm_format(c);
 
+        if( w == 1 )
+        {
+            setting_information(c, u);
+            w = 0;
+        }
     }
 }
 
@@ -660,8 +658,6 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     else if(c > lockers_number_of_frames() - 1) c = -1;
     show_list(c, lockers_number_of_frames() -1);
 }
-
-
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
@@ -695,7 +691,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         wysw6();
     }
 }
-
 
 void czynnosc0( int com, int tog )
 {
