@@ -6,6 +6,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include <avr/wdt.h>
 
 #include "delay_lib.h"
 #include "HD44780.h"

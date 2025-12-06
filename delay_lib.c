@@ -4,12 +4,14 @@ void delay_ms_var( uint16_t count )
 {
     while( count-- )
     {
+        wdt_reset();
         _delay_ms( 1 );
     }
 }
 
 void delay_us_var( uint16_t count )
 {
+    wdt_reset();
     while( count-- )
     {
         _delay_us( 1 );
@@ -28,6 +30,7 @@ void delay_ms_var_double( double __ms )
         __ticks = ( uint16_t ) ( __ms * 10.0 );
         while( __ticks )
         {
+            wdt_reset();
             // wait 1/10 ms
             _delay_loop_2( ( ( F_CPU ) / 4e3 ) / 10 );
             __ticks --;
@@ -36,6 +39,7 @@ void delay_ms_var_double( double __ms )
     }
     else
         __ticks = ( uint16_t )__tmp;
+    wdt_reset();
     _delay_loop_2( __ticks );
 }
 

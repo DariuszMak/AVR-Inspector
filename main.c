@@ -356,6 +356,7 @@ void backlight(int8_t state)
 
 void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 {
+    //wdt_reset();
     BUZZER_PORT |= BUZZER;
     delay_ms_var_double( 1 );
     BUZZER_PORT &= ~BUZZER;
@@ -363,6 +364,7 @@ void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milise
 
 void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
 {
+    //wdt_reset();
     BUZZER_PORT |= BUZZER;
     delay_ms_var_double( time );
     BUZZER_PORT &= ~BUZZER;
@@ -2648,6 +2650,8 @@ int main( void )
 
 //Inicjalizacja
 
+    wdt_enable(WDTO_250MS);
+
     BUZZER_DIR |= BUZZER;// PORTD7 jako wyjście do buzzera
     delay_ms_var(1000);
     LCD_Initalize();//inicjalizacja wyświetlacza
@@ -2746,6 +2750,8 @@ int main( void )
         delay_ms_var(2);
     }*/
 
+
+
     LCD_WriteText("AVR INSPECTOR");
     //send_all_screen();
     delay_ms_var(1500);
@@ -2775,6 +2781,7 @@ int main( void )
 
     while( 1 )
     {
+        wdt_reset();
         sczytaj_komende();
     }
 
