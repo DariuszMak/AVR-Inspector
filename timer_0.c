@@ -12,8 +12,8 @@ void timer_0_init( void )
 
 void checking_pins_interrupt_on()
 {
-    TCCR0 |= (1 << CS02);
-    TCCR0 &= ~((1 << CS01) | (1 < CS00));
+    TCCR0 |= (1 << CS02) | (1 << CS00);
+    TCCR0 &= ~(1 << CS01) /*| (1 < CS00)*/;
 }
 
 void checking_pins_interrupt_off()
@@ -25,6 +25,7 @@ void checking_pins_interrupt_off()
 // called whenever TCNT0 overflows
 ISR(TIMER0_OVF_vect)
 {
+    //buzzer_time(0.5);
     int i = 0;//zmienna pmocnicza w pętlach
     //int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
     uint8_t state;//stan przycisku z danej chwili

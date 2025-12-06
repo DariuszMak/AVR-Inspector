@@ -2553,7 +2553,9 @@ void sczytaj_komende( void )
                 {
                     //else if(temp_char == 'u') set_time_by_uart();
                     //if(temp_char != 0) refresh_screen = 1;
-                    printf(" \b");
+
+                    //printf(" \b");
+
                     //printf("%d", Ir_key_press_flag);
 
                     if(PCF8583_is_timer_flag_set() == 1)
