@@ -1398,17 +1398,18 @@ int main( void )
 
     zczytaj_komende();
 
-        eeprom_write_byte((uint8_t*)3,2);
+        //eeprom_write_word((uint16_t*)257,5);
 
 
-    pilot( eeprom_read_byte((uint8_t*)3), 0 );//przejście do podprogramu nr 3
+
+    //pilot( eeprom_read_word((uint16_t*)257), 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;
 
     sei();//włącza przerwania
 
-    PCF8583_write_word(254, 256);
+    PCF8583_write_word(254, 232);
 
     //główna pętla programu
 

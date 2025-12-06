@@ -5,7 +5,7 @@
 #include "delay_lib.h"
 #include "PCF8583.h"
 #include "EEPROM.h"
-#include <avr/eeprom.h>
+#include "avr/eeprom.h"
 #include "stdlib.h"
 #include "main.h"
 
