@@ -99,6 +99,8 @@ struct double_format set_double_format(double, uint8_t);// umieszcza w strukturz
 
 void change_color_RGB(void);//pojedynczy krok w wyświetlaniu diodami
 
+void red_colors_RGB(void);//wyświetlenie koloru zielonego
+
 void green_colors_RGB(void);//wyświetlenie koloru zielonego
 
 void blue_colors_RGB(void);//wyświetlenie koloru niebieskiego

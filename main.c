@@ -2628,7 +2628,7 @@ void sczytaj_komende( void )
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
 
-        if(lockers_is_queue_full() == 1) red_colors_RGB();
+        if(lockers_is_queue_full()) red_colors_RGB();
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
