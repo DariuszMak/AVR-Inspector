@@ -113,8 +113,8 @@ void lockers_read_frame(uint16_t index)
 
 //        uint8_t temp;
         //_EEGET(frame.year,temp_address);
-        frame.year= eeprom_read_word((uint16_t*)temp_address++);
-        ++temp_address;
+        frame.year = eeprom_read_word((uint16_t*)temp_address++);
+        temp_address++;
 
         frame.information = eeprom_read_word((uint16_t*)temp_address++);
 
@@ -181,7 +181,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             }
             else
             {
-
+                eeprom_busy_wait();
                 //_EEPUT(temp_address, sek);
                 eeprom_write_word((uint16_t*)temp_address++,sek);
                 //_EEPUT(temp_address, min);
@@ -212,8 +212,6 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
     }
 
 
-
-
     if(overflow_flag == 1)
     {
         buzzer_time(3000);
@@ -221,7 +219,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
     }
     else if(overflow_flag == 2) buzzer_time(1000);
 
-    if(overflow_flag < 1)
+    if(overflow_flag <= 1)
     {
         PCF8583_write_word(PCF8583_CELL, temp_address);
     }
