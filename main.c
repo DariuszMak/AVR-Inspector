@@ -137,7 +137,6 @@ int main( void )
 					for( t = 0; t < rozmiar; ++t )
 					{
 						j[t] = LCD_ReadData();
-						_delay_ms( 1 );
 					}
 
 					LCD_GoTo( 0, 1 );
@@ -145,7 +144,6 @@ int main( void )
 					for( t = rozmiar; t < 2 * rozmiar; ++t )
 					{
 						j[t] = LCD_ReadData();
-						_delay_ms( 1 );
 					}
 
 					LCD_Clear();

@@ -125,7 +125,6 @@ void _LCD_Write( unsigned char dataToWrite )
 	LCD_DB5_DIR |= LCD_DB5;
 	LCD_DB6_DIR |= LCD_DB6;
 	LCD_DB7_DIR |= LCD_DB7;
-
 	LCD_RW_PORT &= ~LCD_RW;
 #endif
 	LCD_E_PORT |= LCD_E;
@@ -140,8 +139,6 @@ void _LCD_Write( unsigned char dataToWrite )
 	_delay_us( 50 );
 #endif
 }
-
-
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -164,6 +161,7 @@ unsigned char _LCD_Read( void )
 	LCD_E_PORT |= LCD_E;
 	tmp |= _LCD_InNibble();
 	LCD_E_PORT &= ~LCD_E;
+	_delay_us( 50 );
 	return tmp;
 }
 #endif
@@ -377,7 +375,7 @@ void LCD_Erase ( unsigned int row )
 		LCD_GoTo( 0, 0 );
 		for ( temp = 0; temp < czterdziesci; ++temp )
 		{
-			LCD_WriteText( " " );
+			LCD_WriteData( 32 );//znak "spacji"
 		}
 	}
 
@@ -386,7 +384,7 @@ void LCD_Erase ( unsigned int row )
 		LCD_GoTo( 0, 1 );
 		for ( temp = 0; temp < czterdziesci; ++temp )
 		{
-			LCD_WriteText( " " );
+			LCD_WriteData( 32 );//znak "spacji"
 		}
 	}
 }
@@ -427,38 +425,6 @@ unsigned char LCDNeedUpdate[LCD_LINES];
 signed 	 char LCDCharIndex[LCD_LINES];
 unsigned char LCDLineIndex;
 unsigned char LCDLineAddress[4] = {0x00, 0x40, 0x14, 0x54};
-
-
-//-------------------------------------------------------------------------------------------------
-// Bezwzględny zapis rozkazu
-//-------------------------------------------------------------------------------------------------
-void LCD_JustWriteCommand( unsigned char commandToWrite )
-{
-	LCD_RS_PORT &= ~LCD_RS;
-	_LCD_Write( commandToWrite );
-}
-//-------------------------------------------------------------------------------------------------
-// Bezwzględny zapis danych
-//-------------------------------------------------------------------------------------------------
-void LCD_JustWriteData( unsigned char dataToWrite )
-{
-	LCD_RS_PORT |= LCD_RS;
-	_LCD_Write( dataToWrite );
-}
-//-------------------------------------------------------------------------------------------------
-// Sprawdzenie zajętości sterownika
-//-------------------------------------------------------------------------------------------------
-unsigned char LCD_NotBusy( void )
-{
-	if( LCD_ReadStatus() != 0x80 )
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
 
 //-------------------------------------------------------------------------------------------------
 // Wywoływane funkcje zewnętrzne :
@@ -502,15 +468,15 @@ void LCDUpdateTask( void )
 {
 	if( LCDNeedUpdate[LCDLineIndex] )
 	{
-		if( LCD_NotBusy() )
+		if( LCD_ReadStatus() != 0x80 )
 		{
 			if( LCDCharIndex[LCDLineIndex] == -1 )
 			{
-				LCD_JustWriteCommand( 0x80 | LCDLineAddress[LCDLineIndex] );
+				LCD_WriteCommand( 0x80 | LCDLineAddress[LCDLineIndex] );
 				LCDCharIndex[LCDLineIndex]++;
 				return;
 			}
-			LCD_JustWriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );
+			LCD_WriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );
 			if( LCDCharIndex[LCDLineIndex] == ( LCD_CHARSPERLINE - 1 ) )
 			{
 				LCDCharIndex[LCDLineIndex] 		= -1;

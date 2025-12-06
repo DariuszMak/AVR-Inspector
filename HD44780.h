@@ -132,10 +132,6 @@ unsigned char _LCD_InNibble( void );
 #endif
 void _LCD_Write( unsigned char );
 #if BUFFERING == 1
-void _LCD_JustWrite( unsigned char );
-void LCD_JustWriteCommand( unsigned char );
-void LCD_JustWriteData( unsigned char );
-unsigned char LCD_NotBusy( void );
 int LCDWriteToBuffer( unsigned char, unsigned char, char * );
 void LCDClearBuffer( void );
 void LCDUpdateTask( void );
