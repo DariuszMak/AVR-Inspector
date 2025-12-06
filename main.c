@@ -10,7 +10,6 @@ const int liczbaPodprogramow = 6;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
 int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
-uint16_t zwiekszanie = 1; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
@@ -20,9 +19,9 @@ int	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
 
 
 
-void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
+void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    switch ( men )
+    switch ( menu )
     {
     case 0:
         LCD_EraseAll();
@@ -314,7 +313,7 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
         LCD_Int( zwiekszanie );
     }
     delay_ms_var_double( 500 );
-    wysw(menu);
+    wysw();
 }
 
 void step_increase(void)
@@ -463,11 +462,11 @@ void show_list_of_frames (uint8_t row, int8_t number)
 }
 
 
-void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
+void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 {
     buzzer();
 
-    switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
+    switch( menu )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
     {
 
     case 0:
@@ -671,11 +670,11 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             pilot_on();
             break;
         }
-        wysw( *men );
+        wysw();
         break;
     case 1:
         LCD_Displaying( com );
-        if ( com != 100 ) wysw( *men );
+        if ( com != 100 ) wysw();
         break;
     case 2:
         switch( com )
@@ -690,7 +689,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             {
                 buzzer_time(0.4);
                 ++t;
-                wysw ( *men );
+                wysw ();
                 delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
             }
             while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
@@ -711,7 +710,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
                     delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
                     pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                     cyfra = w;
-                    wysw ( *men );
+                    wysw ();
                     buzzer_time(0.8);
                 }
                 --t;
@@ -719,7 +718,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             t++;//przywrócenie efektu z ostatniej tury
             if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
             u = -1;//tryb wyświetlania
-            wysw( *men );
+            wysw();
             //cy1 = 8;
 
             break;
@@ -741,7 +740,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             cyfra = 0;
             pozycja = 0;
             u = -1;
-            wysw( *men );
+            wysw();
             break;
         case 55:
             wysw_skok( 1000 );
@@ -782,7 +781,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             }
             break;
         }
-        wysw( *men );
+        wysw();
         break;
     case 3:
         switch ( com )
@@ -804,7 +803,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             break;
 
         }
-        wysw( *men );
+        wysw();
         break;
 
 
@@ -830,7 +829,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             u = 8;
             break;
         }
-        wysw( *men );
+        wysw();
         break;
 
     case 5:
@@ -839,7 +838,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
         case 59:
             break;
         }
-        wysw( *men );
+        wysw();
         break;
 
     case 6:
@@ -866,7 +865,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
             break;
         }
 
-        wysw( *men );
+        wysw();
         break;
     }
 
@@ -886,7 +885,7 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
         LCD_PageUpScreen();
         LCD_PageDownScreen();
         LCD_Clear();
-        wysw( *men );
+        wysw();
         break;
     case 34:
         LCD_ShiftRightScreen();
@@ -924,22 +923,22 @@ void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedz
 
 // funkcja obsługująca menu dwupoziomowe
 
-void pilot( uint8_t * const men , int com, int tog )//
+void pilot( int com, int tog )//
 {
     if(pilot_state == 1) pilot_off();
-    if( *men == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
+    if( menu == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
     {
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
         if( com > 0 && com <= liczbaPodprogramow )//jeśli komenda była z zakresu numerów podprogramów
         {
-            *men = com;//przypisanie zmiennej menu nowej wartości
-            wybor( *men );
+            menu = com;//przypisanie zmiennej menu nowej wartości
+            wybor( menu );
 
-            switch( *men )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
+            switch( menu )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
             {
             case 1:
-                wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
 
             case 2:
@@ -947,7 +946,7 @@ void pilot( uint8_t * const men , int com, int tog )//
                 u = -1;//wymuszenie wykonania animacji z kreskami
                 t = 0;
                 TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-                wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
 
             case 3:
@@ -956,42 +955,43 @@ void pilot( uint8_t * const men , int com, int tog )//
                 TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
                 checking_lockers_state = 1;
                 u = PCF8583_recognise_type_of_alarm();
-                wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 4:
                 PCF8583_get_wall_time();
                 u = 0;
                 w = 1;//wymuszenie wyświetlenia komunikatu
                 s = 0;
-                czynnosc( men, 52, tog );
+                czynnosc( 52, tog );
                 //wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 5:
                 //czynnosc( men, 50, tog );
 
-                wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 6:
                 //czynnosc( men, 50, tog );
                 lockers_find_latest_data();
                 u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
-                wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             }
         }
     }
 
-    if( !start ) czynnosc( men, com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+    if( !start ) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
     {
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
-        *men = 0;//
+        menu = 0;//
+        zwiekszanie = 1;
         checking_lockers_state = 0;
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
         TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
-        wybor( *men );
-        wysw ( *men );// wyświetlenie ekranu
+        wybor( menu );
+        wysw ();// wyświetlenie ekranu
 
     }
     if(pilot_state == 1) pilot_on();
@@ -1003,7 +1003,7 @@ void zczytaj_komende( void )
 {
     if( interr && (menu == 3))
     {
-        wysw(menu);
+        wysw();
         interr = 0;
         cnt = 0;
     }
@@ -1011,7 +1011,7 @@ void zczytaj_komende( void )
     if ( stop_button())
     {
         delay_ms_var_double(30);
-        if (stop_button()) pilot( &menu, 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
+        if (stop_button()) pilot( 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
         delay_ms_var_double(100);
     }
 
@@ -1031,7 +1031,7 @@ void zczytaj_komende( void )
             }
             else toggle = toggle_bit;//przypisanie obecnej wartości do zmiennej "toggle"
 
-            pilot( &menu, command, t );//wywołanie funkcji pilot
+            pilot( command, t );//wywołanie funkcji pilot
             Ir_key_press_flag = 0;
             command = 0xff;
             address = 0xff;
@@ -1072,8 +1072,8 @@ int main( void )
     sei();//włącza przerwania
 
 
-    pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
-    pilot( &menu, 3, 0 );//przejście do podprogramu nr 3
+    pilot( 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
+    pilot( 3, 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;
