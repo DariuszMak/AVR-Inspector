@@ -442,10 +442,6 @@ void cube_position(uint8_t case_of_effect)
                 if (s == 3 || cyfra == 0) cy4 = 10;
             }
         }
-
-
-
-
     }
     else if(case_of_effect == 1)
     {
@@ -466,214 +462,247 @@ void cube_position(uint8_t case_of_effect)
 }
 
 
-
-void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
+void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if( menu == 0 )
-    {
-        LCD_EraseAll();
-        LCD_GoTo( 0, 0 );
-        LCD_WriteText( "Wybierz:" );
-        LCD_GoTo( 0, 1 );
-        LCD_WriteText( "1 - " );
-        LCD_Int(liczbaPodprogramow);
+    LCD_EraseAll();
+    LCD_GoTo( 0, 0 );
+    LCD_WriteText( "Wybierz:" );
+    LCD_GoTo( 0, 1 );
+    LCD_WriteText( "1 - " );
+    LCD_Int(liczbaPodprogramow);
 
-        //LCDWriteToBuffer( 0, 0, "napis" );
-        //LCD_WriteText ( "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
-        //LCD_WriteText ( "Drugi" );
-    }
-    else if( menu == 1 )
-    {
-        LCD_EraseAll();
-        LCD_GoTo( 0, 0 );
-        LCD_Int( command );
-        LCD_GoTo( 6, 0 );
-        LCD_Int( address );
-        LCD_GoTo( 0, 1 );
-        LCD_Int( toggle_bit );
-    }
-    else if( menu == 2 )
-    {
+    //LCDWriteToBuffer( 0, 0, "napis" );
+    //LCD_WriteText ( "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
+    //LCD_WriteText ( "Drugi" );
+}
 
-        /*if ( cyfry >= 10000 ) cyfry = 10000;
+void wysw1( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    LCD_EraseAll();
+    LCD_GoTo( 0, 0 );
+    LCD_Int( command );
+    LCD_GoTo( 6, 0 );
+    LCD_Int( address );
+    LCD_GoTo( 0, 1 );
+    LCD_Int( toggle_bit );
+}
+
+void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    /*if ( cyfry >= 10000 ) cyfry = 10000;
         else if( cyfry <= -10000 ) cyfry = -10000;*/
-        //OCR0 = cyfry;//zmienna przepełnienia Timera 0
-        LCD_EraseAll();
-        //d_led_Int( cyfry );
+    //OCR0 = cyfry;//zmienna przepełnienia Timera 0
+    LCD_EraseAll();
+    //d_led_Int( cyfry );
 
 
-        //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
+    //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
 
 
 
-        /*if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
-        {
-            LCD_GoTo(4,0);
-            LCD_Int((int) (t * 100 / 250));
-            LCD_WriteText("%");
-        }*/
-        LCD_GoTo(0,0);
-        LCD_Int( cyfra );
-
-    }
-    else if( menu == 3 )
+    /*if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
     {
-        moveStep=0;
-        PCF8583_get_wall_time();
-        LCD_EraseAll();
-        LCD_GoTo(11,0);
-        if(pilot_state == 0) LCD_WriteText("!");
-        else if(pilot_state == 1) LCD_WriteText("|");
+        LCD_GoTo(4,0);
+        LCD_Int((int) (t * 100 / 250));
+        LCD_WriteText("%");
+    }*/
+    LCD_GoTo(0,0);
+    LCD_Int( cyfra );
+}
 
-        show_time_format();
+void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    moveStep=0;
+    PCF8583_get_wall_time();
+    LCD_EraseAll();
+    LCD_GoTo(11,0);
+    if(pilot_state == 0) LCD_WriteText("!");
+    else if(pilot_state == 1) LCD_WriteText("|");
 
-        PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
+    show_time_format();
 
-        moveStep=21;
+    PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
 
-        if(u != 0)
-        {
-            LCD_GoTo(18, 0);
-            LCD_WriteText("|");
+    moveStep=21;
 
-            LCD_GoTo(18, 1);
-            LCD_WriteText("|");
-        }
-
-        LCD_GoTo( 0 + moveStep, 1 );
-
-        show_alarm_format(u);
-
-
-        LCD_GoTo(12, 0);
-        LCD_Double(ds18b20_temperature(),1);
-
-        //LCD_Int( pwm1 );
-        //LCD_Int( pwm2 );
-        //OCR0 = pwm1;//zmienna przepełnienia Timera 0
-    }
-    else if( menu == 4 )
+    if(u != 0)
     {
+        LCD_GoTo(18, 0);
+        LCD_WriteText("|");
 
-        check_step_value(0, u);
+        LCD_GoTo(18, 1);
+        LCD_WriteText("|");
+    }
+
+    LCD_GoTo( 0 + moveStep, 1 );
+
+    show_alarm_format(u);
+
+
+    LCD_GoTo(12, 0);
+    LCD_Double(ds18b20_temperature(),1);
+
+    //LCD_Int( pwm1 );
+    //LCD_Int( pwm2 );
+    //OCR0 = pwm1;//zmienna przepełnienia Timera 0
+}
+
+void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    check_step_value(0, u);
+    LCD_EraseAll();
+
+    if (u < 0) u = 0;
+
+    if(u == end_of_settings(0))
+    {
+        PCF8583_set_time(godz,min,sek,hsek);
+        PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
+        refresh_screen = 0;
+        LCD_Clear();
+        LCD_WriteText("ZAPISANO GODZINE");
+        delay_ms_var(500);
         LCD_EraseAll();
+        start = 1;
+    }
 
-        if (u < 0) u = 0;
+    if( w == 1 && start != 1)
+    {
+        LCD_GoTo(moveStep, 0);
+        setting_information(0, u);
+        delay_ms_var(400);
+        w = 0;
+        LCD_EraseAll();
+    }
 
-        if(u == end_of_settings(0))
+
+
+    if( s != 0 )
+    {
+        set_appropriate_values_of_time(0, u, s);
+
+        s = 0;
+    }
+
+    correction_of_time();
+
+    correction_of_date(0);
+
+    moveStep = 0;
+    show_time_format();
+}
+
+void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    if (u < -1) u = -1;
+    if(u == -1)
+    {
+        LCD_EraseAll();
+        if(c < -1) c = 3;
+        else if(c > 3) c = -1;
+        show_list(c, 3);
+    }
+    else
+    {
+        check_step_value(c, u);
+        LCD_EraseAll();
+        if(u == end_of_settings(c) || c == 0 || c == -1)
         {
-            PCF8583_set_time(godz,min,sek,hsek);
-            PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
-            refresh_screen = 0;
-            LCD_Clear();
-            LCD_WriteText("ZAPISANO GODZINE");
-            delay_ms_var(500);
-            LCD_EraseAll();
             start = 1;
+            if(c != -1)
+            {
+                if(c == 0) PCF8583_alarm_off();
+                else if(c == 1)
+                {
+                    PCF8583_alarm_every_day();
+                    PCF8583_set_alarm_time(godz,min,sek,hsek);
+                }
+                else if(c == 2)
+                {
+                    PCF8583_alarm_weekly();
+                    PCF8583_set_weekly_alarm(miesiac,godz,min,sek,hsek);
+                }
+                else if(c == 3)
+                {
+                    PCF8583_alarm_monthly();
+                    PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
+                }
+                refresh_screen = 0;
+                LCD_Clear();
+                LCD_WriteText("ZAPISANO ALARM");
+                delay_ms_var(500);
+                LCD_EraseAll();
+            }
         }
 
         if( w == 1 && start != 1)
         {
             LCD_GoTo(moveStep, 0);
-            setting_information(0, u);
-            delay_ms_var(400);
+            setting_information(c, u);
             w = 0;
+            delay_ms_var(400);
             LCD_EraseAll();
         }
 
-
-
         if( s != 0 )
         {
-            set_appropriate_values_of_time(0, u, s);
+            set_appropriate_values_of_time(c, u, s);
 
             s = 0;
         }
 
         correction_of_time();
 
-        correction_of_date(0);
+        correction_of_date(c);
 
         moveStep = 0;
-        show_time_format();
+        show_alarm_format(c);
+
+    }
+}
+
+void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    LCD_EraseAll();
+    if(zwiekszanie > 10) wysw_skok(10);
+
+    if(u < -1) u = lockers_number_of_frames() - 1;
+    else if(u > lockers_number_of_frames() - 1) u = -1;
+    show_list(u, lockers_number_of_frames() -1);
+}
+
+
+
+void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
+{
+    if( menu == 0 )
+    {
+wysw0();
+    }
+    else if( menu == 1 )
+    {
+wysw1();
+    }
+    else if( menu == 2 )
+    {
+wysw2();
+    }
+    else if( menu == 3 )
+    {
+wysw3();
+    }
+    else if( menu == 4 )
+    {
+        wysw4();
     }
     else if( menu == 5 )
     {
+wysw5();
 
-        if (u < -1) u = -1;
-        if(u == -1)
-        {
-            LCD_EraseAll();
-            if(c < -1) c = 3;
-            else if(c > 3) c = -1;
-            show_list(c, 3);
-        }
-        else
-        {
-            check_step_value(c, u);
-            LCD_EraseAll();
-            if(u == end_of_settings(c) || c == 0 || c == -1)
-            {
-                start = 1;
-                if(c != -1)
-                {
-                    if(c == 0) PCF8583_alarm_off();
-                    else if(c == 1)
-                    {
-                        PCF8583_alarm_every_day();
-                        PCF8583_set_alarm_time(godz,min,sek,hsek);
-                    }
-                    else if(c == 2)
-                    {
-                        PCF8583_alarm_weekly();
-                        PCF8583_set_weekly_alarm(miesiac,godz,min,sek,hsek);
-                    }
-                    else if(c == 3)
-                    {
-                        PCF8583_alarm_monthly();
-                        PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
-                    }
-                    refresh_screen = 0;
-                    LCD_Clear();
-                    LCD_WriteText("ZAPISANO ALARM");
-                    delay_ms_var(500);
-                    LCD_EraseAll();
-                }
-            }
-
-            if( w == 1 && start != 1)
-            {
-                LCD_GoTo(moveStep, 0);
-                setting_information(c, u);
-                w = 0;
-                delay_ms_var(400);
-                LCD_EraseAll();
-            }
-
-            if( s != 0 )
-            {
-                set_appropriate_values_of_time(c, u, s);
-
-                s = 0;
-            }
-
-            correction_of_time();
-
-            correction_of_date(c);
-
-            moveStep = 0;
-            show_alarm_format(c);
-
-        }
     }
     else if( menu == 6 )
     {
-        LCD_EraseAll();
-        if(zwiekszanie > 10) wysw_skok(10);
-
-        if(u < -1) u = lockers_number_of_frames() - 1;
-        else if(u > lockers_number_of_frames() - 1) u = -1;
-        show_list(u, lockers_number_of_frames() -1);
+wysw6();
     }
 }
 

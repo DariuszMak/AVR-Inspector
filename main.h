@@ -89,7 +89,23 @@ void show_frame( int8_t number);
 
 void show_list(int16_t current_index, int16_t max_index);
 
+void cube_position(uint8_t case_of_effect);
+
 void wysw( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw0( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw1( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw2( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw3( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw4( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw5( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+void wysw6( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
 void czynnosc( int com, int tog ); //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 
