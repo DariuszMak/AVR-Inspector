@@ -876,6 +876,8 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if(u == end_of_settings())
     {
+        if(dzien % 2 == 0) rano_wieczor = 1;
+        else rano_wieczor = 0;
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
         refresh_screen = 0;
         LCD_Clear();
@@ -1856,7 +1858,7 @@ int main( void )
     PCF8583_alarm_flag_off();
     PCF8583_timer_flag_off();
 
-    PCF8583_24h_format();
+    PCF8583_12h_format();
 
     RGB_init();
 

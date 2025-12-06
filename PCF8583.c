@@ -266,7 +266,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
     time_f.minutes=bin2bcd(min);
-    time_f.hours=(bin2bcd(hour) & 0b00111111) | (AM_PM & 0b01000000) | (PCF8583_read(0x04) & 0b10000000);
+    time_f.hours=(bin2bcd(hour) & 0b00111111) | ((AM_PM << 6) & 0b01000000) | (PCF8583_read(0x04) & 0b10000000);
     time_f.days = (bin2bcd(day) & 0b00111111) | ( ( (uint8_t)year & 0x03) << 6 );
     time_f.months = (bin2bcd(month) & 0b00011111) | ( ( day_of_week & 0x07) << 5 );
 
@@ -319,12 +319,14 @@ void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *
 */
 void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer, uint8_t AM_PM)
 {
+    AM_PM = 1;
     uint8_t type_of_alarm = PCF8583_recognise_type_of_alarm();
     struct time_frame time_f;
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
     time_f.minutes=bin2bcd(min);
-    time_f.hours=(bin2bcd(hour) & 0b00111111) | (AM_PM & 0b01000000);
+    time_f.hours=(bin2bcd(hour) & 0b00111111) | ((AM_PM << 6)  & 0b01000000);
+    time_f.hours = (PCF8583_is_12h_24h_format() << 7) | (time_f.hours & 0b01111111);
 
     if(type_of_alarm == 2)
     {
