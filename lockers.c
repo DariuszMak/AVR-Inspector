@@ -451,8 +451,7 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
                 else
                 {
                     lockers_print_latest_data();
-
-
+                    lockers_save_frame(lockers_tail(), i);
                 }
             }
             else lockers_save_frame(lockers_tail(), i);

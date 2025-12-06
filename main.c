@@ -31,7 +31,7 @@ void backlight(int8_t state)
     else if(state == 1) backlight_of_lcd = -1;
     else if(state == 2)
     {
-        buzzer_time(10);
+        buzzer_time(3);
         backlight_of_lcd = 50;
     }
 }
@@ -90,7 +90,7 @@ void step_decrease(void)
 void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 {
     refresh_screen = 0;
-    if(start_program == 0)
+    if(start_program != 1)
     {
         LCD_Clear();
         LCD_WriteText( "Program: " );
@@ -1197,6 +1197,7 @@ void zczytaj_komende( void )
         if(start_program == 1)
         {
             buzzer();
+            backlight(2);
         }
         else
         {
@@ -1218,10 +1219,6 @@ void zczytaj_komende( void )
                 lockers_print_latest_data();
                 PCF8583_alarm_flag_off();
             }
-
-            if(backlight_of_lcd > 0) --backlight_of_lcd;
-            if(backlight_of_lcd == 0) LCD_BacklightOff();
-            else LCD_BacklightOn();
         }
 
 
@@ -1230,6 +1227,9 @@ void zczytaj_komende( void )
             lockers_check_events();
             refresh_screen = 1;
         }
+        if(backlight_of_lcd > 0) --backlight_of_lcd;
+        if(backlight_of_lcd == 0) LCD_BacklightOff();
+        else LCD_BacklightOn();
 
 
     }
