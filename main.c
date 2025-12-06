@@ -34,7 +34,7 @@ void send_all_screen(void)
     for( t = 0; t < rozmiar; ++t )
     {
         if((LCD_CHARSPERLINE - temp_position + t) % rozmiar < LCD_REAL_CHARSPERLINE) printf("#");
-        else printf(".");
+        else printf(",");
     }
 
     printf("\n");
@@ -77,21 +77,21 @@ void send_all_screen(void)
         uart_putc( buffer_table[1][t] );
     }
 
-    for ( t = 0; t < 2; ++t )
-    {
-        free( buffer_table[t] );
-    }
-    free( buffer_table );
-
     printf("\n");
 
     for( t = 0; t < rozmiar; ++t )
     {
         if((LCD_CHARSPERLINE - temp_position + t) % rozmiar < LCD_REAL_CHARSPERLINE) printf("#");
-        else printf(".");
+        else printf("'");
     }
 
     printf("\n\n");
+
+    for ( t = 0; t < 2; ++t )
+    {
+        free( buffer_table[t] );
+    }
+    free( buffer_table );
 }
 
 /*void set_time_by_uart(void)
@@ -511,7 +511,7 @@ void show_alarm_format(uint8_t case_of_format)
             }
             else
             {
-                LCD_WriteText(".");
+                LCD_WriteText("_");
             }
         }
         LCD_WriteText("|");
@@ -1365,11 +1365,10 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     {
                         PCF8583_timer_alarm_on();
                     }
-
-                    correction_of_date();
-                    moveStep = 0;
-                    show_timer_alarm_format();
                 }
+                correction_of_date();
+                moveStep = 0;
+                show_timer_alarm_format();
             }
         }
     }
@@ -2383,7 +2382,7 @@ void sczytaj_komende( void )
     else
     {
         temp_char = uart_getc();
-        if(start_program == 3 && temp_char != 0)
+        if(start_program == 3 && temp_char != 0 && temp_char != 't' && temp_char != 'T')
         {
             if(temp_char == 'r') reset_variable = 1;
             else pilot(-1, 0);
@@ -2433,7 +2432,7 @@ void sczytaj_komende( void )
                 if(temp_char == 'T')
                 {
                     lockers_flag_bit_on(2);
-                    printf("\nTRYB HYBRYDOWY\n");
+                    printf("\nTRYB RC5 & TERMINAL\n");
                 }
             }
         }
