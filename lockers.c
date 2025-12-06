@@ -210,7 +210,6 @@ void lockers_read_frame(uint8_t index)
     eeprom_read_block( &frame, (const void *)temp_address, SIZE_OF_FRAME);
 
     temp_address += SIZE_OF_FRAME;
-
 }
 
 void lockers_print_entire_frame(void)

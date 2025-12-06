@@ -153,7 +153,7 @@ void show_time_format(void)
 {
     show_time_only_format();
 
-    LCD_GoTo( 0 + moveStep, 1 );
+    LCD_GoTo(moveStep, 1 );
     if(dzien < 10) LCD_Int(0);
     LCD_Int(dzien);
     LCD_WriteText(":");
@@ -170,7 +170,9 @@ void show_time_format(void)
 
 void show_timer_alarm_format(void)
 {
-    LCD_GoTo( 0 + moveStep, 0 );
+    LCD_GoTo(moveStep, 0 );
+    if(timer < 10) LCD_Int(0);
+    LCD_Int(timer);
 }
 
 void show_alarm_format(uint8_t case_of_format)
@@ -512,22 +514,31 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     show_time_format();
 
+    if(u != 0 || w != 0) PCF8583_get_wall_alarm();
+
     if(u != 0)
     {
-        PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
-
-        moveStep=21;
-        LCD_GoTo(18, 0);
+        moveStep=19;
+        LCD_GoTo(moveStep - 2, 0);
         LCD_WriteText("|");
 
-        LCD_GoTo(18, 1);
+        LCD_GoTo(moveStep - 2, 1);
         LCD_WriteText("|");
-        LCD_GoTo( 0 + moveStep, 1 );
+        LCD_GoTo(moveStep, 1 );
         show_alarm_format(u);
     }
 
-    moveStep = 35;
-    show_timer_alarm_format();
+    if(w != 0)
+    {
+        moveStep = 37;
+        LCD_GoTo(moveStep - 2, 0);
+        LCD_WriteText("|");
+
+        LCD_GoTo(moveStep - 2, 1);
+        LCD_WriteText("|");
+        show_timer_alarm_format();
+    }
+
     LCD_GoTo(12, 0);
     LCD_Double(ds18b20_temperature(),1);
 
@@ -706,6 +717,7 @@ void czynnosc0( int com, int tog )
 //                checking_lockers_state = 1;
 
             u = PCF8583_recognise_type_of_alarm();
+            w = PCF8583_recognise_type_of_timer_alarm();
             //czynnosc( 100, tog );
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
         }
@@ -1272,7 +1284,6 @@ void zczytaj_komende( void )
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
     {
-
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         u = menu;
         menu = 0;
