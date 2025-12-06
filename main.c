@@ -114,7 +114,7 @@ int main( void )
 
     }
 
-    void show_time_format(void)
+    void show_time_only_format(void)
     {
         LCD_GoTo( 0 + moveStep, 0 );
         if(godz < 10) LCD_Int(0);
@@ -129,6 +129,11 @@ int main( void )
         if(hsek < 10) LCD_Int(0);
         LCD_Int(hsek);
 
+    }
+
+    void show_time_format(void)
+    {
+        show_time_only_format();
 
         LCD_GoTo( 0 + moveStep, 1 );
         if(dzien < 10) LCD_Int(0);
@@ -141,6 +146,29 @@ int main( void )
 
         LCD_GoTo(13,1);
         show_day_of_week(dzien_tygodnia);
+    }
+
+    void show_list_of_frames (uint8_t row)
+    {
+        LCD_GoTo( 0, row );
+        if(frame.hours < 10) LCD_Int(0);
+        LCD_Int(frame.hours);
+        LCD_WriteText(":");
+        if(frame.minutes < 10) LCD_Int(0);
+        LCD_Int(frame.minutes);
+        LCD_WriteText(":");
+        if(frame.seconds < 10) LCD_Int(0);
+        LCD_Int(frame.seconds);
+        LCD_WriteText(" ");
+
+        if(frame.day < 10) LCD_Int(0);
+        LCD_Int(frame.day);
+        LCD_WriteText(":");
+        if(frame.month < 10) LCD_Int(0);
+        LCD_Int(frame.month);
+        LCD_WriteText(":");
+        LCD_Int(frame.year);
+
     }
 
     void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -383,8 +411,29 @@ int main( void )
             break;
         case 6:
             LCD_EraseAll();
+            if(u == 0)
+            {
+                lockers_read_frame(u);
+                show_list_of_frames(1);
+                LCD_EraseUp();
 
+            }
+            else if (u >= lockers_number_of_frames())
+            {
+                u = lockers_number_of_frames();
+                lockers_read_frame(u-1);
+                show_list_of_frames(0);
 
+                LCD_EraseDown();
+
+            }
+            else
+            {
+                lockers_read_frame(u);
+                show_list_of_frames(1);
+                lockers_read_frame(u - 1);
+                show_list_of_frames(0);
+            }
             break;
         }
     }
@@ -789,7 +838,14 @@ int main( void )
             {
             case 59:
                 break;
+            case 32:
+                u += 1;
+                break;
+            case 33:
+                u -= 1;
+                break;
             }
+
             wysw( *men );
             break;
         }
@@ -890,7 +946,8 @@ int main( void )
                     break;
                 case 6:
                     //czynnosc( men, 50, tog );
-
+                    lockers_find_latest_data();
+                    u = lockers_convert_address_to_index_of_frame(lockers_address_of_frame);
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 }

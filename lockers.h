@@ -26,7 +26,17 @@
 void lockers_init();
 void lockers_beginning_actions(void);
 
-struct frame;
+struct frame
+{
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+
+    uint8_t day;
+    uint8_t month;
+    uint16_t year;
+    uint8_t information;
+} frame; //8
 
 uint8_t lockers_address_of_frame;
 
@@ -47,6 +57,12 @@ uint8_t lockers_number_of_frames(void);
 void lockers_check_events(void);
 
 void lockers_save_events(void);
+
+void lockers_read_frame(uint8_t );
+
+uint8_t lockers_convert_address_to_index_of_frame(uint8_t );
+
+
 
 void buzzer();
 
