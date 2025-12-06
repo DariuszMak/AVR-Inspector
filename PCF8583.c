@@ -91,7 +91,7 @@ void PCF8583_start(void)
 
 uint8_t PCF8583_is_clock_counting(void)
 {
-    return (PCF8583_read(0x00) & (1 << 7)) >> 7;
+    return ((~PCF8583_read(0x00) | ~(1 << 7)) & (1 << 7)) >> 7;
 }
 
 uint8_t PCF8583_timer_mode(void)
@@ -396,7 +396,7 @@ void PCF8583_set_type_of_alarm(uint8_t type_of_alarm)
 
 uint8_t PCF8583_recognise_type_of_alarm(void)
 {
-    return ((PCF8583_read(0x08) & 0b00110000) >> 4);
+    return (PCF8583_read(0x08) & 0b00110000) >> 4;
 }
 
 uint8_t PCF8583_recognise_type_of_timer_alarm(void)

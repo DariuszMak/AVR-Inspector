@@ -10,7 +10,6 @@ volatile uint8_t rc5cnt;
 
 void pilot_off(void)
 {
-
     TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
     //Ir_key_press_flag = 0;
 }
@@ -118,7 +117,7 @@ ISR( TIMER1_CAPT_vect )
 
 void pilot_reset(void)
 {
-    //Ir_key_press_flag = 0;
+    Ir_key_press_flag = 0;
     //uint8_t command_temp = command;
     //command = 0xff;
     address = 0xff;
