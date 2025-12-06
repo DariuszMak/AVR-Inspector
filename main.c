@@ -22,6 +22,7 @@ int main( void )
     const int liczbaPodprogramow = 3;
 
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
+    int s;//zminna dodatkowa (pomocnicza)
     int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
     int u; //inna (dodatkowa) zmienna pomocnicza
     int w; //inna (dodatkowa) zmienna pomocnicza
@@ -87,11 +88,11 @@ int main( void )
             LCD_Int( toggle_bit );
             break;
         case 2:
-            if ( cyfry >= 10000 ) cyfry = 10000;
-            else if( cyfry <= -10000 ) cyfry = -10000;
+            /*if ( cyfry >= 10000 ) cyfry = 10000;
+            else if( cyfry <= -10000 ) cyfry = -10000;*/
             //OCR0 = cyfry;//zmienna przepełnienia Timera 0
             LCD_EraseAll();
-            d_led_Int( cyfry );
+            //d_led_Int( cyfry );
             LCD_GoTo( 0, 0 );
             LCD_Int( cyfry );
             break;
@@ -100,7 +101,7 @@ int main( void )
             LCD_GoTo( 0, 0 );
             //LCD_Int( pwm1 );
             LCD_GoTo( 0, 1 );
-           //LCD_Int( pwm2 );
+            //LCD_Int( pwm2 );
             //OCR0 = pwm1;//zmienna przepełnienia Timera 0
             break;
         }
@@ -132,6 +133,7 @@ int main( void )
             {
             case 41:
                 LCD_Clear();
+                rozmiar = LCD_CHARSPERLINE;
                 char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
 
                 char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
@@ -348,7 +350,36 @@ int main( void )
 
                     for(w = 1; w <= u; ++w)
                     {
+
+
                         _delay_ms((2+1500/t)/(7-w));
+                        rozmiar = 4;
+                        s = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
+                        char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
+                        for(cyfry = 0; cyfry < rozmiar; ++cyfry)
+                        {
+                            if(cyfry == s) tablicaTemp[cyfry] = 1;
+                            else tablicaTemp[cyfry] = 0;
+                        }
+
+                        for(cyfry = 0; cyfry < rozmiar; ++cyfry)
+                        {
+                            if(tablicaTemp[cyfry])
+                            {
+                                if (cyfry == 0) cy1 = w;
+                                if (cyfry == 1) cy2 = w;
+                                if (cyfry == 2) cy3 = w;
+                                if (cyfry == 3) cy4 = w;
+                            }
+                            else
+                            {
+                                if (cyfry == 0) cy1 = 10;
+                                if (cyfry == 1) cy2 = 10;
+                                if (cyfry == 2) cy3 = 10;
+                                if (cyfry == 3) cy4 = 10;
+                            }
+                        }
+                        free(tablicaTemp);
                         cyfry = w;
                         wysw ( *men );
                         buzzer();
@@ -357,7 +388,7 @@ int main( void )
                 }
                 _delay_ms((2+1500/t)/(7-w));
                 wysw( *men );
-                cy1 = 8;
+                //cy1 = 8;
                 buzzer();
                 _delay_ms(750);
                 break;
@@ -600,7 +631,7 @@ int main( void )
 
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
 
-    pwm_led_init();//inicjaliacja diod pwm
+    //pwm_led_init();//inicjaliacja diod pwm
     LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
