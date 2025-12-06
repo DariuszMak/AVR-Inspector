@@ -134,7 +134,7 @@ void show_time_format(void)
 void show_alarm_format(uint8_t case_of_format)
 {
 
-    show_time_only_format();
+    if(case_of_format != 0) show_time_only_format();
     LCD_GoTo(moveStep,1);
     if(case_of_format == 2)
     {
@@ -516,8 +516,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
             LCD_GoTo(18, 1);
             LCD_WriteText("|");
-
-            show_time_only_format();
         }
 
         LCD_GoTo( 0 + moveStep, 1 );
@@ -542,13 +540,13 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             PCF8583_set_time(godz,min,sek,hsek);
             PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
             LCD_Clear();
-            LCD_GoTo(0,0);
-            LCD_WriteText("ZAPISANO!");
+            LCD_WriteText("ZAPISANO GODZINE");
             delay_ms_var(500);
+            LCD_EraseAll();
             start = 1;
         }
 
-        if( w == 1 )
+        if( w == 1 && start != 1)
         {
             LCD_GoTo(moveStep, 0);
             setting_information(0, u);
@@ -582,13 +580,13 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             else if(c > 3) c = -1;
             show_list(c, 3);
         }
-
         else
         {
 
-            if(u == end_of_settings(c))
+            if(u == end_of_settings(c) || c == 0 || c == -1)
             {
-                if(c != 0)
+                start = 1;
+                if(c != -1)
                 {
                     if(c == 0) PCF8583_alarm_off();
                     else if(c == 1)
@@ -606,18 +604,16 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
                         PCF8583_alarm_monthly();
                         PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
                     }
-
-
                     LCD_Clear();
-                    LCD_GoTo(0,0);
                     LCD_WriteText("ZAPISANO ALARM!");
                     delay_ms_var(500);
-                }
+                                LCD_EraseAll();
 
-                start = 1;
+                }
             }
 
-            if( w == 1 )
+
+            if( w == 1 && start != 1)
             {
                 LCD_GoTo(moveStep, 0);
                 setting_information(c, u);
@@ -1266,8 +1262,7 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-    PCF8583_alarm_weekly();
-    PCF8583_set_weekly_alarm(0b11111101,5,30,45,25);
+
     //PCF8583_alarm_monthly();
 
     sei();//włącza przerwania
