@@ -7,6 +7,7 @@
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
 const int liczbaPodprogramow = 6;
+uint8_t refresh_screen = 0;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
 int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
@@ -55,7 +56,7 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
         LCD_Int( zwiekszanie );
     }
     delay_ms_var_double( 500 );
-    wysw();
+    refresh_screen = 1;
 }
 
 void step_increase(void)
@@ -540,7 +541,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
     else if( menu == 4 )
     {
 
-
+        check_step_value(0, u);
         LCD_EraseAll();
 
         if (u < 0) u = 0;
@@ -565,7 +566,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             LCD_EraseAll();
         }
 
-        check_step_value(0, u);
+
 
         if( s != 0 )
         {
@@ -584,17 +585,18 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
     else if( menu == 5 )
     {
 
-
-        LCD_EraseAll();
         if (u < -1) u = -1;
         if(u == -1)
         {
+            LCD_EraseAll();
             if(c < -1) c = 3;
             else if(c > 3) c = -1;
             show_list(c, 3);
         }
         else
         {
+            check_step_value(c, u);
+            LCD_EraseAll();
             if(u == end_of_settings(c) || c == 0 || c == -1)
             {
                 start = 1;
@@ -631,8 +633,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
                 delay_ms_var(400);
                 LCD_EraseAll();
             }
-
-            check_step_value(c, u);
 
             if( s != 0 )
             {
@@ -869,12 +869,12 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             LCD_ScreenOn();
             pilot_on();
         }
-        wysw();
+        refresh_screen = 1;
     }
     else if( menu == 1 )
     {
         LCD_Displaying( com );
-        if ( com != 100 ) wysw();
+        if ( com != 100 ) refresh_screen = 1;
     }
     else if( menu == 2 )
     {
@@ -890,7 +890,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             {
                 buzzer_time(0.4);
                 ++t;
-                wysw ();
+                refresh_screen = 1;
                 delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
             }
             while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
@@ -911,7 +911,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
                     delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
                     pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                     cyfra = w;
-                    wysw ();
+                    refresh_screen = 1;
                     buzzer_time(0.8);
                 }
                 --t;
@@ -919,7 +919,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             t++;//przywrócenie efektu z ostatniej tury
             if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
             u = -1;//tryb wyświetlania
-            wysw();
+refresh_screen = 1;
             //cy1 = 8;
         }
         if ( com == 59 )
@@ -927,7 +927,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             cyfra = 0;
             pozycja = 0;
             u = -1;
-            wysw();
+        refresh_screen = 1;
         }
         if ( com == 55 )
         {
@@ -977,7 +977,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
             }
         }
-        wysw();
+       refresh_screen = 1;
     }
     else if( menu == 3 )
     {
@@ -996,7 +996,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
                 pilot_state = 1;
             }
         }
-        wysw();
+       refresh_screen = 1;
     }
 
     else if( menu == 4 )
@@ -1023,7 +1023,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         {
             u = end_of_settings(0);
         }
-        wysw();
+       refresh_screen = 1;
     }
 
     else if( menu == 5 )
@@ -1053,7 +1053,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             u = end_of_settings(c);
 
         }
-        wysw();
+        refresh_screen = 1;
     }
     else if( menu == 6 )
     {
@@ -1083,7 +1083,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
         }
 
-        wysw();
+      refresh_screen = 1;
     }
 
 
@@ -1102,7 +1102,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_PageUpScreen();
         LCD_PageDownScreen();
         LCD_Clear();
-        wysw();
+        refresh_screen = 1;
     }
     if ( com == 46 )
     {
@@ -1159,7 +1159,7 @@ void pilot( int com, int tog )//
 
             if ( menu == 1 )
             {
-                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 2 )
             {
@@ -1167,16 +1167,16 @@ void pilot( int com, int tog )//
                 u = -1;//wymuszenie wykonania animacji z kreskami
                 t = 0;
                 TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 3 )
             {
                 //czynnosc( men, 50, tog );
                 lockers_beginning_actions();
-                TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
+                //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
                 checking_lockers_state = 1;
                 u = PCF8583_recognise_type_of_alarm();
-                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 4 )
             {
@@ -1185,7 +1185,7 @@ void pilot( int com, int tog )//
                 s = 0;
                 PCF8583_get_wall_time();
                 //czynnosc( 52, tog );
-                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 5 )
             {
@@ -1195,14 +1195,14 @@ void pilot( int com, int tog )//
                 w = 1;//wymuszenie wyświetlenia komunikatu
                 s = 0;
                 c = PCF8583_recognise_type_of_alarm();
-                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 6 )
             {
                 //czynnosc( men, 50, tog );
                 //lockers_find_latest_data();
                 u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
-                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
         }
     }
@@ -1216,9 +1216,9 @@ void pilot( int com, int tog )//
         zwiekszanie = 1;
         checking_lockers_state = 0;
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
-        TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
+        //TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera preskaler 1024, timer do odświeżania
         wybor( menu );
-        wysw ();// wyświetlenie ekranu
+        refresh_screen = 1;// wyświetlenie ekranu
 
     }
     if(pilot_state == 1) pilot_on();
@@ -1228,12 +1228,7 @@ void pilot( int com, int tog )//
 
 void zczytaj_komende( void )
 {
-    if( interr && (menu == 3))
-    {
-        wysw();
-        interr = 0;
-        cnt = 0;
-    }
+
 
     if ( stop_button())
     {
@@ -1291,6 +1286,8 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
+
+    TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
 
     //PCF8583_alarm_monthly();
 

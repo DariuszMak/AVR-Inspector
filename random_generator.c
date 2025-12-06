@@ -16,4 +16,13 @@ ISR( _VECTOR( 4 ) )
 {
     if( cnt == 20) interr = 1;
     ++cnt;
+
+    if( interr == 1 && (refresh_screen == 1 || menu == 3))
+    {
+        refresh_screen = 0;
+        interr = 0;
+        cnt = 0;
+        wysw();
+    }
+
 }

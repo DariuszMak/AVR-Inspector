@@ -46,6 +46,8 @@ int8_t w; //inna (dodatkowa) zmienna pomocnicza
 int8_t s;//inna (dodatowa zmienna)
 int8_t c;//inna (dodatowa zmienna)
 
+uint8_t refresh_screen;
+
 
 int main( void );
 
