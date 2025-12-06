@@ -22,7 +22,8 @@ int main( void )
     const int liczbaPodprogramow = 3;
 
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
-    int s;//zminna dodatkowa (pomocnicza)
+    int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję na wyświetlaczu
+    int s;//inna (dodatowa zmienna)
     int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
     int u; //inna (dodatkowa) zmienna pomocnicza
     int w; //inna (dodatkowa) zmienna pomocnicza
@@ -95,6 +96,56 @@ int main( void )
             //d_led_Int( cyfry );
             LCD_GoTo( 0, 0 );
             LCD_Int( cyfry );
+
+            char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
+
+            for(s = 0; s < rozmiar; ++s)
+            {
+                if(s == pozycja) tablicaTemp[s] = '1';
+                else tablicaTemp[s] = '0';
+            }
+
+            if( u > 0 || u == -1 )
+            {
+                for(s = 0; s < rozmiar; ++s)
+                {
+                    if(tablicaTemp[s] == '1')
+                    {
+                        if (s == 0) cy1 = cyfry;
+                        if (s == 1) cy2 = cyfry;
+                        if (s == 2) cy3 = cyfry;
+                        if (s == 3) cy4 = cyfry;
+                    }
+                    else
+                    {
+                        if (s == 0) cy1 = 10;
+                        if (s == 1) cy2 = 10;
+                        if (s == 2) cy3 = 10;
+                        if (s == 3) cy4 = 10;
+                    }
+                }
+                if ( u == -1 )
+                {
+                    for(s = 0; s < rozmiar; ++s)
+                    {
+                        if(tablicaTemp[s] == '0' || cyfry == 0 )
+                        {
+                            if ( s == 0 ) cy1 = 11;
+                            if ( s == 1 ) cy2 = 11;
+                            if ( s == 2 ) cy3 = 11;
+                            if ( s == 3 ) cy4 = 11;
+                            buzzer();
+                            _delay_ms(100);
+                        }
+                    }
+                    u = 0;
+
+                }
+            }
+
+            free(tablicaTemp);
+
+
             break;
         case 3:
             LCD_EraseAll();
@@ -335,71 +386,36 @@ int main( void )
             switch( com )
             {
             case 100:
-                t = 0;
+            case 41:
+                t = 1;
 
-                while (stop_button() && t != 250)
+                do
                 {
                     buzzer_time(0.4);
                     ++t;
-                    _delay_ms(500/t+15);
+                    _delay_ms(750/t+10);
                 }
-                rozmiar = 4;
-                char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
+                while (stop_button() && t != 250);
 
-
-                while (t != 0)
+                while ( t != 1 )
                 {
                     u=rand()%6 + 1;
 
                     for(w = 1; w <= u; ++w)
                     {
-                        _delay_ms((2+1500/t)/(7-w));
-                        s = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
-                        for(cyfry = 0; cyfry < rozmiar; ++cyfry)
-                        {
-                            if(cyfry == s) tablicaTemp[cyfry] = 1;
-                            else tablicaTemp[cyfry] = 0;
-                        }
-
-                        for(cyfry = 0; cyfry < rozmiar; ++cyfry)
-                        {
-                            if(tablicaTemp[cyfry])
-                            {
-                                if (cyfry == 0) cy1 = w;
-                                if (cyfry == 1) cy2 = w;
-                                if (cyfry == 2) cy3 = w;
-                                if (cyfry == 3) cy4 = w;
-                            }
-                            else
-                            {
-                                if (cyfry == 0) cy1 = 10;
-                                if (cyfry == 1) cy2 = 10;
-                                if (cyfry == 2) cy3 = 10;
-                                if (cyfry == 3) cy4 = 10;
-                            }
-                        }
+                        _delay_ms((1+2000/t)/(7-w));
+                        pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                         cyfry = w;
                         wysw ( *men );
                         buzzer();
                     }
                     --t;
                 }
-                _delay_ms((2+1500/t)/(7-w));
+                if( w < 7 )_delay_ms((1+2000/t)/(7-w));
+                u = -1;
                 wysw( *men );
                 //cy1 = 8;
-                for(t = 0; t < rozmiar; ++t)
-                {
-                    if(!tablicaTemp[t])
-                    {
-                        if ( t == 0 ) cy1 = 11;
-                        if ( t == 1 ) cy2 = 11;
-                        if ( t == 2 ) cy3 = 11;
-                        if ( t == 3 ) cy4 = 11;
-                    }
-                    buzzer();
-                    _delay_ms(100);
-                }
-                free(tablicaTemp);
+
                 break;
             case 59:
                 d_led_Int ( 9000 );
@@ -549,11 +565,8 @@ int main( void )
 
                 case 2:
                     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-                    cyfry = 0;
-                    cy1 = 11;
-                    cy2 = 11;
-                    cy3 = 11;
-                    cy4 = 11;
+                    rozmiar = 4;
+                    u = -1;//wymuszenie wykonania animacji
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 

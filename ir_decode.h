@@ -1,7 +1,7 @@
 #ifndef IR_DECODE_H_
 #define IE_DECODE_H_
 
-#define IR_DIR		DDRD
+#define IR_DIR DDRD
 #define IR_PORT	PORTD
 #define IR_PIN PIND
 #define IR_IN (1 << PD6)
