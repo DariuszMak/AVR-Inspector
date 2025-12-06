@@ -95,6 +95,8 @@ void lockers_print_entire_frame(void);
 
 void lockers_print_all_memory(void);
 
+void lockers_print_latest_data(void);
+
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
 {
     uint8_t seconds;

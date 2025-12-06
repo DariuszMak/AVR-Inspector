@@ -222,16 +222,28 @@ void lockers_print_entire_frame(void)
     printf("\n");
 }
 
-void lockers_print_all_memory(void)
+void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 {
-    //uint16_t temp = 0;
     uint8_t index_of_frame = 0;
-    for(; index_of_frame < lockers_number_of_frames(); ++ index_of_frame)
+    for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
     {
         lockers_read_frame(index_of_frame);
         printf("%d. ", index_of_frame + 1);
         lockers_print_entire_frame();
     }
+}
+
+void lockers_print_all_memory(void)
+{
+    //uint16_t temp = 0;
+    lockers_print_amount_of_first_frames(lockers_number_of_frames());
+
+}
+
+void lockers_print_latest_data(void)
+{
+    lockers_print_amount_of_first_frames(lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL)));
+    PCF8583_write_word(PCF8583_CELL, 0);//po wygenerowaniu małego raportu zapis będzie generowany od nowa
 }
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane

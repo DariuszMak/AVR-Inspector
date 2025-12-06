@@ -1176,27 +1176,33 @@ void zczytaj_komende( void )
         cnt = 0;
         interr = 0;
 
-        if(USART_Recieve_without_waiting() == 'r') lockers_print_all_memory();
+        uint8_t temp_char = USART_Recieve_without_waiting();
+
+        if(temp_char == 'R') lockers_print_all_memory();
+        else if(temp_char == 'r') lockers_print_latest_data();
 
 
         if( menu == 2 )
         {
             lockers_check_events();
             refresh_screen = 1;
+            if(PCF8583_is_alarm_set() == 1)
+            {
+                buzzer();
+                lockers_print_latest_data();
+                PCF8583_alarm_flag_off();
+            }
         }
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
         else LCD_BacklightOn();
-        if(PCF8583_is_alarm_set() == 1) buzzer();
+
     }
 
     if(refresh_screen == 1 )
     {
-
         refresh_screen = 0;
-
         wysw();
-
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
