@@ -19,35 +19,59 @@ void i2cSetBitrate(uint16_t bitrateKHz)
 /**
     Procedura transmisji sygnału START
 */
- void i2cStart(void)
+void i2cStart(void)
 {
-    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-    while (!(TWCR & (1<<TWINT)));
+    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTA);
+    while (!(TWCR&(1<<TWINT)));
 }
 /**
     Procedura transmisji sygnału STOP
 */
- void i2cStop(void)
+void i2cStop(void)
 {
     TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
-    while ((TWCR & (1<<TWSTO)));
+    while ( (TWCR&(1<<TWSTO)) );
 }
+
 /**
     Procedura transmisji bajtu danych
 */
- void i2cWrite(char data)
+void i2cWrite(uint8_t bajt)
 {
-    TWDR = data;
-    TWCR = (1<<TWINT) | (1<<TWEN);
-    while (!(TWCR & (1<<TWINT)));
+    TWDR = bajt;
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while ( !(TWCR&(1<<TWINT)));
 }
 /**
     Procedura odczytu bajtu danych
 */
- char i2cRead(char ack)
+uint8_t i2cRead(uint8_t ack)
 {
-    TWCR = ack ? ((1 << TWINT) | (1 << TWEN) | (1 << TWEA)) : ((1 << TWINT) | (1 << TWEN)) ;
-    while (!(TWCR & (1<<TWINT)));
+    TWCR = (1<<TWINT)|(ack<<TWEA)|(1<<TWEN);
+    while ( !(TWCR & (1<<TWINT)));
     return TWDR;
 }
 
+#if buffer == 1
+
+void TWI_write_buf( uint8_t SLA, uint8_t adr, uint8_t len, uint8_t *buf )
+{
+    i2cStart();
+    i2cWrite(SLA);
+    i2cWrite(adr);
+    while (len--) i2cWrite(*buf++);
+    i2cStop();
+}
+
+void TWI_read_buf(uint8_t SLA, uint8_t adr, uint8_t len, uint8_t *buf)
+{
+    i2cStart();
+    i2cWrite(SLA);
+    i2cWrite(adr);
+    i2cStart();
+    i2cWrite(SLA + 1);
+    while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
+    i2cStop();
+}
+
+#endif // buffer
