@@ -52,17 +52,8 @@ ISR( TIMER0_COMP_vect )
 
 void d_led_Int ( int dana )
 {
-	if ( dana >= 10000 || dana <= -10000 )
-	{
-		cy1 = 10;
-		cy2 = 10;
-		cy3 = 10;
-		cy4 = 10;
-		return;
-	};
-
-
-	int dana_temp = abs( dana );
+	if ( dana >= 10000 || dana <= -10000 ) dana = 0;
+    int dana_temp = abs( dana );
 
 	int d = 1;
 	int g = 10;
