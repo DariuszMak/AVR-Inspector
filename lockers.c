@@ -142,8 +142,8 @@ void lockers_check_events()
         if( state != states_table[i] )//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
         {
             action = 1;//akcja będzie podjęta
-            if (state == 1) save_info_table[i] = 2;//szafka zamknięta
-            else if(state == 0) save_info_table[i] = 1;//szafka otwarta
+            if (state == 1) save_info_table[i] = 2;//szafka otwarta
+            else if(state == 0) save_info_table[i] = 1;//szafka zamknięta
         }
         else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
         states_table[i] = state;
@@ -380,102 +380,52 @@ void lockers_queue_dequeue(void)
 
 uint8_t locker_1_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_1_BUTTON_PIN & LOCKER_1_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_1_BUTTON_PIN & LOCKER_1_BUTTON_IN) >> LOCKER_1_BUTTON_PLACE;
 }
 
 uint8_t locker_2_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_2_BUTTON_PIN & LOCKER_2_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_2_BUTTON_PIN & LOCKER_2_BUTTON_IN) >> LOCKER_2_BUTTON_PLACE;
 }
 
 uint8_t locker_3_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_3_BUTTON_PIN & LOCKER_3_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_3_BUTTON_PIN & LOCKER_3_BUTTON_IN) >> LOCKER_3_BUTTON_PLACE;
 }
 
 uint8_t locker_4_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_4_BUTTON_PIN & LOCKER_4_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_4_BUTTON_PIN & LOCKER_4_BUTTON_IN) >> LOCKER_4_BUTTON_PLACE;
 }
 
 uint8_t locker_5_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_5_BUTTON_PIN & LOCKER_5_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_5_BUTTON_PIN & LOCKER_5_BUTTON_IN) >> LOCKER_5_BUTTON_PLACE;
 }
 
 uint8_t locker_6_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_6_BUTTON_PIN & LOCKER_6_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_6_BUTTON_PIN & LOCKER_6_BUTTON_IN) >> LOCKER_6_BUTTON_PLACE;
 }
 
 uint8_t locker_7_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_7_BUTTON_PIN & LOCKER_7_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_7_BUTTON_PIN & LOCKER_7_BUTTON_IN) >> LOCKER_7_BUTTON_PLACE;
 }
 
 uint8_t locker_8_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_8_BUTTON_PIN & LOCKER_8_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_8_BUTTON_PIN & LOCKER_8_BUTTON_IN) >> LOCKER_8_BUTTON_PLACE;
 }
 
 uint8_t locker_9_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_9_BUTTON_PIN & LOCKER_9_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_9_BUTTON_PIN & LOCKER_9_BUTTON_IN) >> LOCKER_9_BUTTON_PLACE;
 }
 
 uint8_t locker_10_button(void)//przycisk fizycznie umieszczony na płytce
 {
-    state_temp = 0;
-    if(!( LOCKER_10_BUTTON_PIN & LOCKER_10_BUTTON_IN ))
-    {
-        state_temp = 1;
-    }
-    return state_temp;
+    return (LOCKER_10_BUTTON_PIN & LOCKER_10_BUTTON_IN) >> LOCKER_10_BUTTON_PLACE;
 }
 
 void lockers_clear_all_memory(void)
