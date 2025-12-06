@@ -635,34 +635,44 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    if( menu == 0 )
+    if(start_program == 1)
     {
-        wysw0();
+        LCD_EraseAll();
+        LCD_WriteText("Sprawdz");
+        LCD_GoTo(0, 1);
+        LCD_WriteText("przechwytywanie USB");
     }
-    else if( menu == 1 )
+    else
     {
-        wysw1();
-    }
-    else if( menu == 2 )
-    {
-        wysw2();
-    }
-    else if( menu == 3 )
-    {
-        wysw3();
-    }
-    else if( menu == 4 )
-    {
-        wysw4();
-    }
-    else if( menu == 5 )
-    {
-        wysw5();
+        if( menu == 0 )
+        {
+            wysw0();
+        }
+        else if( menu == 1 )
+        {
+            wysw1();
+        }
+        else if( menu == 2 )
+        {
+            wysw2();
+        }
+        else if( menu == 3 )
+        {
+            wysw3();
+        }
+        else if( menu == 4 )
+        {
+            wysw4();
+        }
+        else if( menu == 5 )
+        {
+            wysw5();
 
-    }
-    else if( menu == 6 )
-    {
-        wysw6();
+        }
+        else if( menu == 6 )
+        {
+            wysw6();
+        }
     }
 }
 
@@ -687,8 +697,8 @@ void czynnosc0( int com, int tog )
 //                checking_lockers_state = 1;
 
             u = PCF8583_recognise_type_of_alarm();
-            czynnosc( 100, tog );
-            //refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+            //czynnosc( 100, tog );
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
         }
         else if ( menu == 3 )
         {
@@ -1219,7 +1229,6 @@ void zczytaj_komende( void )
             }
         }
 
-
         if( menu == 2 )
         {
             lockers_check_events();
@@ -1228,8 +1237,6 @@ void zczytaj_komende( void )
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
         else LCD_BacklightOn();
-
-
     }
 
     if(refresh_screen == 1 )
