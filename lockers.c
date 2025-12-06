@@ -65,6 +65,7 @@ void lockers_init()
     {
         PCF8583_write_word(PCF8583_TAIL, lockers_convert_index_of_frame_to_address(0));
         lockers_queue_empty();
+        printf("BLEDNE WARTOSCI ADRESU KOLEJKI!!!\n");
         buzzer_time(1000);
     }
 
@@ -218,7 +219,7 @@ void lockers_print_entire_frame(void)
 
     if(number != 0)
     {
-        printf(" SZAFKA NR: %d ",number);
+        printf(" OBIEKT NR: %d ",number);
         uint8_t t = frame.information / 100;
         if(t == 1) printf("OTWARCIE");
         else if(t == 2) printf("ZAMKNIECIE");
