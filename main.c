@@ -525,23 +525,19 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     show_time_format();
 
-    PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
-
-    moveStep=21;
-
     if(u != 0)
     {
+        PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
+
+        moveStep=21;
         LCD_GoTo(18, 0);
         LCD_WriteText("|");
 
         LCD_GoTo(18, 1);
         LCD_WriteText("|");
+        LCD_GoTo( 0 + moveStep, 1 );
+        show_alarm_format(u);
     }
-
-    LCD_GoTo( 0 + moveStep, 1 );
-
-    show_alarm_format(u);
-
     LCD_GoTo(12, 0);
     LCD_Double(ds18b20_temperature(),1);
 
@@ -643,6 +639,11 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         if( w == 1 )
         {
+            if(c == 0)//specjalny warunek do poprawnego wyświetlenia ustawienia alarmu
+            {
+                c = 1;
+                u = end_of_settings(c);
+            }
             setting_information(c, u);
             w = 0;
         }
