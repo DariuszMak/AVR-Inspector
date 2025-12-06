@@ -26,6 +26,8 @@
 
 #define PCF8583_SAFETY_CELL 251
 
+#define PCF8583_TEMPERATURE_CELLS 248
+
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
 #define LOCKER_1_BUTTON_DIR DDRD

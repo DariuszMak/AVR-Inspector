@@ -340,7 +340,7 @@ void LCD_MoveLeft ( unsigned int freq, unsigned int step, unsigned int way )
 #if USE_LCD_Erase == 1
 void LCD_Erase ( unsigned int row )
 {
-    int temp;
+    uint8_t temp;
     if ( row == 0 || row == 1 )
     {
         LCD_GoTo( 0, 0 );

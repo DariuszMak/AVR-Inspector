@@ -23,6 +23,23 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
+double round_double(float number, uint8_t precision)
+{
+    uint32_t ten = 1;
+    for(t = 0; t < precision; ++ t)
+    {
+        ten *= 10;
+    }
+    double value = number * ten;
+
+    double val1;
+    if (value < 0.0)
+        val1 = value - 0.5;
+    else
+        val1 = value + 0.5;
+    return ((int32_t)val1) / (double)ten;
+}
+
 
 uint8_t number_of_digits(int32_t number)
 {
@@ -41,9 +58,10 @@ uint8_t number_of_digits(int32_t number)
 
 void show_double(double number, uint8_t approximation)
 {
-    struct double_format temp_double_format = get_double_format(number, approximation);
+    struct double_format temp_double_format = set_double_format(number, approximation);
     LCD_Int (temp_double_format.integer_number);
     LCD_WriteText(".");
+    for(t = 0; t < approximation - number_of_digits(temp_double_format.decimal_number); ++t) LCD_WriteText("0");
     LCD_Int (temp_double_format.decimal_number);
 }
 
@@ -52,8 +70,9 @@ double get_double_form_double_format(struct double_format temp_double_format)//f
     return temp_double_format.integer_number + temp_double_format.decimal_number / 100.0;
 }
 
-struct double_format get_double_format( double value, uint8_t approximation)
+struct double_format set_double_format( double value, uint8_t approximation)
 {
+    value = round_double(value,approximation);
     struct double_format double_format_temp;
     if((int16_t) abs(value) > 300)
     {
@@ -67,38 +86,38 @@ struct double_format get_double_format( double value, uint8_t approximation)
 
     uint16_t value_temp = abs(value);
     uint16_t ten = 1;
-    uint8_t d  = 0;
-    for(; d < approximation; ++d)
+    //uint8_t d  = 0;
+    for(t = 0; t < approximation; ++t)
     {
         ten *= 10;
     }
-    value *= ten;
+    value *= ten;//liczba przesunięta o liczbę miejsc
     //printf("%lf, ", value);
-    value = abs(value);
+    value = abs(value);//liczba na pewno jest dodatnia
     //printf("%lf\n", value);
 
-    value -= ten * value_temp;
+    value -= ten * value_temp;//usuniecie czesci dużej liczby, zostaje liczba po przecinku, tylko w formie całkowitej
     //if(approximation)//wyświetlanie liczb po przecinku
     //{
 
 
-    d = number_of_digits((uint16_t)value);
+    //d = number_of_digits((uint16_t)value);//liczba cyfr powstałej liczby
 
-    uint8_t f = number_of_digits(ten);
+    //uint8_t f = number_of_digits(ten);//liczba cyfr
 
     /*for(a = 1; (int16_t)a < (int16_t)(f-d); ++a)
     {
         LCD_Int(0);
     }*/
 
-    ten = 1;
+    /*ten = 1;
 
-    for(t = 0; t < f - d - 1 ; ++t)
+    for(t = 0; t < approximation - d - 1 ; ++t)
     {
         ten *= 10;
-    }
+    }*/
 
-    double_format_temp.decimal_number = ((uint8_t) value) * (ten);
+    double_format_temp.decimal_number = (uint8_t) value /* * (ten)*/;
 
     return double_format_temp;
 
@@ -307,7 +326,7 @@ void show_time_format(void)
     LCD_WriteText(":");
     for(t = 0; t < 4 - number_of_digits(rok); ++t)
     {
-        LCD_WriteText(" ");
+        LCD_WriteText("_");
     }
     LCD_Int(rok);
     LCD_WriteText("|");
@@ -803,7 +822,7 @@ void show_frame( int16_t number )
     LCD_WriteText(".");
     for(t = 0; t < 4 - number_of_digits(frame.year); ++t)
     {
-        LCD_WriteText(" ");
+        LCD_WriteText("_");
     }
     LCD_Int(frame.year);
     LCD_WriteText(":");
@@ -1285,9 +1304,9 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         if(lockers_is_safety_bit() == 1)
         {
             LCD_EraseAll();
-            LCD_WriteText("Sprawdz przech-");
+            LCD_WriteText("USB - Potwierdz");
             LCD_GoTo(0, 1);
-            LCD_WriteText("wytywanie USB");
+            LCD_WriteText("przechwytywanie");
         }
         else if(lockers_is_safety_bit() == 0)
         {
@@ -1940,12 +1959,12 @@ void sczytaj_komende( void )
 
         if(start_program == 0)
         {
-            printf("\nPrzechwytywanie rozpoczete... ");
+            printf("\nPrzechwytywanie USB potwierdzone... ");
             lockers_print_date_of_report();
 
             if(lockers_is_queue_full() == 1 )
             {
-                printf("UWAGA!!! Dane niekompletne!!!\n");
+                printf("UWAGA!!! STARSZE DANE PRZEPADLY!!!\n");
                 lockers_print_latest_data();
             }
             start_program = 2;
@@ -1974,8 +1993,10 @@ void sczytaj_komende( void )
                         PCF8583_timer_flag_off();
                     }
 
-                    double current_temp_temperature = get_double_form_double_format( get_double_format(termometer_temperature, 2));
-                    double maximum_temp_temperature = get_double_form_double_format( maximum_temperature );
+                    struct double_format double_format_temp_from_pcf;
+                    i2c_read_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&double_format_temp_from_pcf);
+                    double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
+                    double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
 
                     if( PCF8583_is_alarm_flag_set() == 1 || current_temp_temperature > maximum_temp_temperature)
                     {
@@ -2098,7 +2119,7 @@ int main( void )
 
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
-    printf("Inicjalizacja w toku...\n");
+    printf("\nInicjalizacja w toku...\n");
 
     //PCF8583_alarm_monthly();
 
@@ -2111,16 +2132,20 @@ int main( void )
 
     start_program = 1;
 
-    /*double test_of_double = -310.0;
+    double test_of_double = -310.0;
 
     while(test_of_double < 310.0)
     {
         LCD_Clear();
 
         show_double(test_of_double, 2);
+        LCD_GoTo(0,1);
+        show_double(test_of_double, 1);
+        struct double_format temp_doub = set_double_format(test_of_double,2);
+        printf("%d.%02d\n", temp_doub.integer_number, temp_doub.decimal_number);
         test_of_double += 0.11;
-        delay_ms_var(2);
-    }*/
+        //delay_ms_var(2);
+    }
 
 
     LCD_WriteText("AVR INSPECTOR");
@@ -2144,8 +2169,14 @@ int main( void )
 
     lockers_beginning_actions();
 
-    maximum_temperature.integer_number = 27;
+    struct double_format maximum_temperature;
+
+    maximum_temperature.integer_number = 26;
     maximum_temperature.decimal_number = 15;
+
+    i2c_write_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&maximum_temperature);
+
+    printf("Inicjalizacja zakonczona.\n");
 
     sei();//włącza przerwania
 
