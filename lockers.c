@@ -1,18 +1,18 @@
 #include "lockers.h"
 
-void lockers_safety_bit_on(void)
+void lockers_flag_bit_on(uint8_t move)
 {
-    PCF8583_write(PCF8583_SAFETY_CELL,PCF8583_read(PCF8583_SAFETY_CELL) | (1 << 0));
+    PCF8583_write(PCF8583_FLAGS_CELL,PCF8583_read(PCF8583_FLAGS_CELL) | (1 << move));
 }
 
-void lockers_safety_bit_off(void)
+void lockers_flag_bit_off(uint8_t move)
 {
-    PCF8583_write(PCF8583_SAFETY_CELL,PCF8583_read(PCF8583_SAFETY_CELL) & ~(1 << 0));
+    PCF8583_write(PCF8583_FLAGS_CELL,PCF8583_read(PCF8583_FLAGS_CELL) & ~(1 << move));
 }
 
-uint8_t lockers_is_safety_bit(void)
+uint8_t lockers_is_flag_bit(uint8_t move)
 {
-    return (PCF8583_read(PCF8583_SAFETY_CELL) & (1 << 0)) >> 0;
+    return (PCF8583_read(PCF8583_FLAGS_CELL) & (1 << move)) >> move;
     //return 0;//usunąć, gdy będzie PCF8563
 }
 
@@ -257,7 +257,7 @@ void lockers_print_temperature()
     printf("\nTEMPERATURA. ");
     lockers_print_date_of_report();
     struct double_format temp_double_format = set_double_format(termometer_temperature, 2);
-    printf("%d.%02d stopni Celcjusza\n", temp_double_format.integer_number, temp_double_format.decimal_number);
+    printf("%d.%02d stopni Celsjusza\n", temp_double_format.integer_number, temp_double_format.decimal_number);
 }
 
 void lockers_print_all_memory(void)

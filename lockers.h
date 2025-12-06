@@ -24,7 +24,7 @@
 
 #define PCF8583_HEAD 252//komórka głowy
 
-#define PCF8583_SAFETY_CELL 251
+#define PCF8583_FLAGS_CELL 251
 
 #define PCF8583_TEMPERATURE_CELLS 248
 
@@ -107,11 +107,11 @@ uint8_t USART_Recieve(FILE *stream);
 
 uint8_t USART_Recieve_without_waiting(void);
 
-void lockers_safety_bit_on(void);
+void lockers_flag_bit_on(uint8_t);
 
-void lockers_safety_bit_off(void);
+void lockers_flag_bit_off(uint8_t);
 
-uint8_t lockers_is_safety_bit(void);
+uint8_t lockers_is_flag_bit(uint8_t);
 
 void lockers_init();//inicjalizacja wejść
 

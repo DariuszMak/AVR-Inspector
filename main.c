@@ -1367,14 +1367,14 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 {
     if(start_program == 3)
     {
-        if(lockers_is_safety_bit() == 1)
+        if(lockers_is_flag_bit(0) == 1)
         {
             LCD_EraseAll();
             LCD_WriteText("USB - Potwierdz");
             LCD_GoTo(0, 1);
             LCD_WriteText("przechwytywanie");
         }
-        else if(lockers_is_safety_bit() == 0)
+        else if(lockers_is_flag_bit(0) == 0)
         {
             LCD_EraseAll();
             LCD_WriteText("RESTART");
@@ -1994,7 +1994,7 @@ void pilot( int com, int tog )//
 //    if(pilot_state == 1) pilot_off();
     if(backlight_of_lcd >= 0) backlight(2);
 
-    if( start_program == 3 && lockers_is_safety_bit() == 1)
+    if( start_program == 3 && lockers_is_flag_bit(0) == 1)
     {
         start_program = 0;
         backlight(2);
@@ -2026,7 +2026,7 @@ void sczytaj_komende( void )
 
         if(start_program == 3 && temp == 0)
         {
-            if(lockers_is_safety_bit() == 1)
+            if(lockers_is_flag_bit(0) == 1)
             {
                 buzzer();
                 backlight(2);
@@ -2037,14 +2037,14 @@ void sczytaj_komende( void )
                 if(temp_char == 'r')
                 {
                     printf("\nOczekiwanie na restart.");
-                    lockers_safety_bit_off();
+                    lockers_flag_bit_off(0);
                     backlight(1);
                     temp = 1;
                 }
             }
-            else if(lockers_is_safety_bit() == 0)
+            else if(lockers_is_flag_bit(0) == 0)
             {
-                lockers_safety_bit_on();
+                lockers_flag_bit_on(0);
                 start_program = 0;
             }
         }
