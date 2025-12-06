@@ -212,7 +212,7 @@ void setting_information()
 {
     refresh_screen = 0;
     LCD_EraseAll();
-    LCD_GoTo(moveStep, 0);
+    LCD_GoTo(0, 0);
     if( e == 0)
     {
         if(u == end_of_settings())
@@ -256,7 +256,15 @@ void setting_information()
     }
     else if(e == 1)
     {
-        if(u == 0) LCD_WriteText("TIMER");
+        if(u == end_of_settings())
+        {
+            if(d == 0) LCD_WriteText("ALARM T. WYL.");
+            else if(d == 1) LCD_WriteText("ALARM T. WL.");
+        }
+        else
+        {
+            if(u == 0) LCD_WriteText("TIMER");
+        }
     }
     delay_ms_var(400);
     pilot_reset();
@@ -336,6 +344,10 @@ void set_appropriate_values_of_time()
         else if(e == 1)
         {
             if(u == -1) d -= temp;
+            else
+            {
+                if(u == 0) timer += temp;
+            }
         }
     }
 
@@ -692,15 +704,21 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     if (u < -2) u = -2;
     if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
     {
+        if(u == -2)
+        {
+            PCF8583_get_wall_alarm();
+            d = PCF8583_recognise_type_of_timer_alarm();
+            c = PCF8583_recognise_type_of_alarm();//zmienna odpowiedzialna za typ alarmu
+        }
         if( u == -1 && e < 0) u -= 1;
-        else if( u == 0 && (c < 0 || d < 0)) u -= 1;
+        else if( u == 0 && e == 0 && (c < 0)) u -= 1;
+        else if( u == 0 && e == 1 && (d < 0)) u -= 1;
     }
     check_step_value();//zrobic
     LCD_EraseAll();
     if( s != 0 )
     {
         set_appropriate_values_of_time();
-
         s = 0;
     }
 
@@ -722,13 +740,15 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             }
             else
             {
-                if(u == end_of_settings() || c == 0 || c == -1)
+                if(u == end_of_settings() || c == 0)
                 {
                     start = 1;
                     w = 1;
                     if(c != -1)
                     {
-                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,c);
+                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                        PCF8583_set_type_of_alarm(c);
+
                         if(c == 0)
                         {
                             PCF8583_alarm_flag_off();
@@ -754,7 +774,29 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 else if(d > 1) d = -1;
                 show_list(d, 1);
             }
+            else
+            {
+                if(u == end_of_settings() || d == 0)
+                {
+                    start = 1;
+                    w = 1;
+                    if(d == 0)
+                    {
+                        PCF8583_timer_alarm_off();
 
+                    }
+                    else if(d == 1)
+                    {
+                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                        PCF8583_timer_alarm_on();
+                    }
+                }
+                else
+                {
+                    moveStep = 0;
+                    show_timer_alarm_format();
+                }
+            }
         }
     }
 
@@ -824,7 +866,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void czynnosc0( int com, int tog )
 {
-
     //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
     if( com == 59 )//wybieramy środkowy przycisk
@@ -867,14 +908,13 @@ void czynnosc0( int com, int tog )
         }
         else if ( menu == 5 )
         {
-            PCF8583_get_wall_alarm();
             //czynnosc( men, 50, tog );
             u = -2;//przechodzenie przez poziomy w prawo w lewo
             w = 1;//wymuszenie wyświetlenia komunikatu
             s = 0;//
             e = 0;//zmienna odpowiedzialna za wybór ustawiania albo alarmu alarmu albo alarmu timera
-            d = PCF8583_recognise_type_of_timer_alarm();
-            c = PCF8583_recognise_type_of_alarm();//zmienna odpowiedzialna za typ alarmu
+            d = 0;
+            c = 0;//zmienna odpowiedzialna za typ alarmu
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
         }
         else if ( menu == 6 )

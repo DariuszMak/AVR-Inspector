@@ -322,16 +322,14 @@ void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer, uint8_t type_of_alarm)
+void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer)
 {
+    uint8_t type_of_alarm = PCF8583_recognise_type_of_alarm();
     struct time_frame time_f;
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
     time_f.minutes=bin2bcd(min);
     time_f.hours=bin2bcd(hour);
-
-    PCF8583_set_type_of_alarm(type_of_alarm);
-
 
     if(type_of_alarm == 2)
     {
