@@ -25,7 +25,7 @@ int main( void )
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
     const int liczbaPodprogramow = 4;
-    int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
+    uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
     unsigned int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
@@ -34,12 +34,12 @@ int main( void )
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 //zmienne spełniające określone funkcje
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
-    int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
+    int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
     //inne zmienne pomocnicze do wykorzystywania w innch podprogramach (wymaga to wcześniejszego zapoznania się z kodem)
 
-    int u; //inna (dodatkowa) zmienna pomocnicza
-    int w; //inna (dodatkowa) zmienna pomocnicza
-    int s;//inna (dodatowa zmienna)
+    int8_t u; //inna (dodatkowa) zmienna pomocnicza
+    int8_t w; //inna (dodatkowa) zmienna pomocnicza
+    int8_t s;//inna (dodatowa zmienna)
 
 
 //definicje funkcji
@@ -198,7 +198,9 @@ int main( void )
 
             break;
         case 3:
+            u = PCF8583_recognise_type_of_alarm();
             LCD_EraseAll();
+
             int moveStep=0;
             PCF8583_get_wall_time();
 
@@ -236,10 +238,10 @@ int main( void )
             LCD_GoTo(18, 1);
             LCD_WriteText("|");
 
-            PCF8583_get_wall_alarm();
+            PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
             moveStep=22;
 
-            if(PCF8583_recognise_type_of_alarm())
+            if(u != 0)
             {
                 LCD_GoTo( 0 + moveStep, 0 );
                 if(godz < 10) LCD_Int(0);
@@ -253,23 +255,27 @@ int main( void )
                 LCD_WriteText(":");
                 if(hsek < 10) LCD_Int(0);
                 LCD_Int(hsek);
+                LCD_GoTo( 0 + moveStep, 1 );
+                if(u == 2)
+                {
+                    for(w = 0; w < 7; ++w)
+                    {
+                        if(miesiac & (1 << w))
+                        {
+                            LCD_Int(w+1);
+                        }
+                        LCD_WriteText("|");
+                    }
+                }
+                else if ( u == 3)
+                {
+                    if(dzien < 10) LCD_Int(0);
+                    LCD_Int(dzien);
+                    LCD_WriteText(":");
+                    if(miesiac < 10) LCD_Int(0);
+                    LCD_Int(miesiac);
+                }
             }
-
-
-
-            LCD_WriteText(":");
-            LCD_Int(dzien_tygodnia);
-            LCD_GoTo( 0 + moveStep, 1 );
-            if(dzien < 10) LCD_Int(0);
-            LCD_Int(dzien);
-            LCD_WriteText(":");
-            if(miesiac < 10) LCD_Int(0);
-            LCD_Int(miesiac);
-            LCD_WriteText(" ");
-            LCD_Int(PCF8583_recognise_type_of_alarm());
-
-
-
             LCD_GoTo(12, 0);
             LCD_Double(ds18b20_temperature(),1);
 
@@ -285,7 +291,7 @@ int main( void )
         }
     }
 
-    void czynnosc( const int * const men, int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
+    void czynnosc( const uint8_t * const men, int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
     {
         buzzer();
 
@@ -675,7 +681,7 @@ int main( void )
 
 // funkcja obsługująca menu dwupoziomowe
 
-    void pilot( int * const men , int com, int tog )//
+    void pilot( uint8_t * const men , int com, int tog )//
     {
         TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
 
@@ -803,6 +809,7 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
+    PCF8583_alarm_monthly();
 
     sei();//włącza przerwania
 
