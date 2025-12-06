@@ -66,13 +66,13 @@ void send_all_screen(void)
     printf("\n\n");
 }
 
-void set_time_by_uart(void)
-{
+/*void set_time_by_uart(void)
+{*/
     /*int8_t godz, min, sek, hsek;
     int8_t dzien,dzien_tygodnia, miesiac, timer,rano_wieczor;
     int16_t rok;*/
 
-    printf("Ustawienia czasu\n");
+    /*printf("Ustawienia czasu\n");
 
     printf("Godziny\n");
     godz = uart_getint();
@@ -110,7 +110,7 @@ void set_time_by_uart(void)
     printf("Zapisano!\n");
 
     lockers_print_date_of_report();
-}
+}*/
 
 double round_double(float number, uint8_t precision)
 {
@@ -2218,7 +2218,7 @@ void sczytaj_komende( void )
 
                     if(temp_char == 'R') lockers_print_all_memory();
                     else if(temp_char == 'r') lockers_print_latest_data();
-                    else if(temp_char == 'u') set_time_by_uart();
+                    //else if(temp_char == 'u') set_time_by_uart();
                     if(temp_char != 0) refresh_screen = 1;
 
                     if(PCF8583_is_timer_flag_set() == 1)
@@ -2321,6 +2321,8 @@ void sczytaj_komende( void )
         }
     }
 
+
+
     if( Ir_key_press_flag )
     {
         if( !address )
@@ -2331,6 +2333,27 @@ void sczytaj_komende( void )
             pilot( command, t );//wywołanie funkcji pilot
             pilot_reset();
         }
+    }
+    else
+    {
+        char temp_char = uart_getc();
+
+        if(temp_char == 'e') pilot(59, 0);
+        else if(temp_char == 'w') pilot(32, 0);
+        else if(temp_char == 's') pilot(33, 0);
+        else if(temp_char == 'd') pilot(16, 0);
+        else if(temp_char == 'a') pilot(17, 0);
+        else if(temp_char == 'q') pilot(14, 0);
+        else if(temp_char == 'Q') pilot(14, 1);
+        else if(temp_char == 'k') pilot(32, 0);
+        else if(temp_char == 'p') pilot(15, 0);
+        else if(temp_char == 'P') pilot(15, 1);
+        else if(temp_char == 't') pilot(12, 0);
+        else if(temp_char == '[') pilot(46, 0);
+        else if(temp_char == ']') pilot(34, 0);
+        else if(temp_char == '{') pilot(36, 0);
+        else if(temp_char == '}') pilot(35, 0);
+        else if(temp_char == '!') pilot(41, 0);
     }
 }
 

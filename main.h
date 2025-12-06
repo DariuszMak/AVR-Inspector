@@ -65,17 +65,17 @@ struct double_format maximum_temperature;
 
 int main( void );
 
+//funkcje wyświetlające "wtrącające się" w cykl pojedynczej akcji
+
 void wysw_skok( uint16_t number ); // funkcja wyświetlająca numer kroku o danej wartości
 
 void wybor( int number ); //funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 
-
-
-
+//koniec funkcji wyświetlających "wtrącających się" w cykl pojedynczej akcji
 
 void send_all_screen(void);
 
-void set_time_by_uart(void);
+//void set_time_by_uart(void);
 
 double round_double(float number, uint8_t precision);
 
