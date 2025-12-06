@@ -61,7 +61,8 @@ uint8_t USART_Recieve_without_waiting(void)
 
 void lockers_init()
 {
-    if(lockers_head() > lockers_number_of_frames() || lockers_tail() > lockers_number_of_frames())
+    int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1 + EXTERNAL_EEPROM_MAX_INDEX + 1;
+    if(PCF8583_read_word( PCF8583_HEAD) > temp || PCF8583_read_word(PCF8583_TAIL) > temp )
     {
         PCF8583_write_word(PCF8583_TAIL, 0);
         lockers_queue_empty();
@@ -207,33 +208,13 @@ void lockers_read_frame(uint8_t index)
     uint16_t temp_address = SIZE_OF_FRAME * index;
     if(lockers_convert_address_to_index_of_frame(temp_address) < lockers_number_of_frames_exteral_EEPROM())
     {
-        frame.seconds = EEPROM_read(temp_address++);
-
-        frame.minutes = EEPROM_read(temp_address++);
-
-        frame.hours = EEPROM_read(temp_address++);
-
-        frame.day = EEPROM_read(temp_address++);
-
-        frame.month = EEPROM_read(temp_address++);
-
-        frame.year = EEPROM_read_word(temp_address++);
-        temp_address++;
-
-        frame.information = EEPROM_read(temp_address++);
+        EEPROM_read_buf(temp_address, 8, (uint8_t*)&frame);
+        temp_address += SIZE_OF_FRAME;
     }
     else
     {
         temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
         eeprom_busy_wait();
-
-        /*uint8_t table[SIZE_OF_FRAME];
-        uint8_t i = 0;
-
-        for(; i < SIZE_OF_FRAME; ++i)
-        {
-            table[i] = temp_address++;
-        }*/
 
         eeprom_read_block( &frame, (const void *)temp_address, SIZE_OF_FRAME);
 
@@ -348,23 +329,8 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 
     if(overflow_flag == 0)
     {
-        EEPROM_write(temp_address++,sek);
-
-        EEPROM_write(temp_address++,min);
-
-        EEPROM_write(temp_address++,godz);
-
-        EEPROM_write(temp_address++,dzien);
-
-        EEPROM_write(temp_address++,miesiac);
-
-        EEPROM_write_word(temp_address++, rok);
-
-        temp_address++;
-
-        uint8_t information = (uint8_t)save_info_table[i] * 100;
-        information += i + 1;
-        EEPROM_write(temp_address++,information);
+        EEPROM_write_buf(temp_address, 8, (uint8_t*)&frame);
+        temp_address += SIZE_OF_FRAME;
     }
     else if(overflow_flag == 1)
     {
@@ -560,11 +526,14 @@ void lockers_clear_all_memory(void)
 
     i = 0;
 
+
     for(; i <= INTERNAL_EEPROM_MAX_INDEX; ++i)
     {
         eeprom_busy_wait();
-        eeprom_write_byte((uint8_t*)i, 0);
+        eeprom_update_byte((uint8_t*)i, 0);
     }
+
+
 
     lockers_queue_empty();
 }

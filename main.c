@@ -1325,6 +1325,8 @@ int main( void )
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
 
+    //PCF8583_write_word(PCF8583_HEAD, 3000);
+
 
 
     ds18b20_temperature();//zmierzenie temperatury

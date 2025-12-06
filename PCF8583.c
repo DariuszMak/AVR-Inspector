@@ -42,7 +42,7 @@ uint8_t bin2bcd(uint8_t bin)
 */
 void PCF8583_write(uint8_t address,uint8_t data)
 {
-     PCF8583_write_buf(address, 1, &data );
+    PCF8583_write_buf(address, 1, &data );
 }
 
 /**

@@ -12,7 +12,7 @@
 */
 void EEPROM_write(uint8_t address,uint8_t data)
 {
-     EEPROM_write_buf(address, 1, &data );
+    EEPROM_write_buf(address, 1, &data );
 }
 
 /**
@@ -35,9 +35,11 @@ void EEPROM_write_buf(uint8_t adr, uint8_t len, uint8_t *buf )
     while (len--)
     {
         i2cWrite(*buf++);
+
         delay_ms_var(5);
     }
     i2cStop();
+        delay_ms_var(5);
 }
 
 void EEPROM_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
