@@ -1243,9 +1243,10 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         w = 0;
         if (u < 0) u = 0;
-        check_step_value();
         if(u != end_of_settings()) setting_information();
     }
+
+    check_step_value();
 
     if( s != 0 )
     {
@@ -1253,6 +1254,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         s = 0;
     }
+
     LCD_EraseAll();
 
     if(u == end_of_settings())
@@ -1260,18 +1262,15 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
         refresh_screen = 0;
         w = 1;
-        setting_information();
         start = 1;
     }
-    else
-    {
-        correction_of_time();
 
-        correction_of_date();
+    correction_of_time();
 
-        moveStep = 0;
-        show_time_format();
-    }
+    correction_of_date();
+
+    moveStep = 0;
+    show_time_format();
 }
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -1280,7 +1279,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         w = 0;
         if (u < -2) u = -2;
-        check_step_value();
 
         if( (u == -1 && e < 0) || (u == 0 && c < 0))
         {
@@ -1288,6 +1286,8 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
         else if( u >= -1 && u != end_of_settings() ) setting_information();
     }
+
+    check_step_value();
 
     if( s != 0 )
     {
@@ -1327,22 +1327,18 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
                     PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
                     PCF8583_set_type_of_alarm(c);
-                    setting_information();
 
                     if(c == 0)
                     {
                         PCF8583_alarm_flag_off();
                     }
                 }
-                else
-                {
-                    correction_of_time();
+                correction_of_time();
 
-                    correction_of_date();
+                correction_of_date();
 
-                    moveStep = 0;
-                    show_alarm_format(c);
-                }
+                moveStep = 0;
+                show_alarm_format(c);
             }
         }
         else if( e == 1)
@@ -1371,10 +1367,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     {
                         PCF8583_timer_alarm_on();
                     }
-                    setting_information();
-                }
-                else
-                {
+
                     correction_of_date();
                     moveStep = 0;
                     show_timer_alarm_format();
@@ -1391,7 +1384,6 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         w = 0;
 
         if (u < -2) u = -2;
-        check_step_value();
 
         if( (u == -1 && e < 0) || (u == 0 && c < 0) )
         {
@@ -1399,6 +1391,8 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
         else if( u >= -1 && u != end_of_settings() ) setting_information();
     }
+
+    check_step_value();
 
     if( s != 0 )
     {
@@ -1477,7 +1471,7 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 if(c == 0) PCF8583_timer_interrupt_off();
                 else if(c == 1) PCF8583_timer_interrupt_on();
             }
-            setting_information();
+            //setting_information();
         }
     }
 }
@@ -1488,9 +1482,10 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         w = 0;
         if (u < 0) u = 0;
-        check_step_value();
         if(u != end_of_settings()) setting_information();
     }
+
+    check_step_value();
 
     if( s != 0 )
     {
@@ -1505,16 +1500,8 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         refresh_screen = 0;
         w = 1;
         start = 1;
-        setting_information();
     }
-    else
-    {
-        correction_of_temperature();
 
-        moveStep = 0;
-
-        show_double(maximum_temperature,2);
-    }
 }
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -2348,6 +2335,7 @@ void sczytaj_komende( void )
     {
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         LCD_ScreenOn();
+        if(menu >= 4 && menu <= 7) setting_information();
         u = menu;
         menu = 0;
         switch_menu = menu;
