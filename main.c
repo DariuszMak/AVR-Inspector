@@ -414,6 +414,59 @@ void show_list(int16_t current_index, int16_t max_index)
     }
 }
 
+void cube_position(uint8_t case_of_effect)
+{
+    char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomocnicza do umiejscowienia cyfry
+
+    for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
+    {
+        if(s == pozycja) tablicaTemp[s] = '1';
+        else tablicaTemp[s] = '0';
+    }
+    if(case_of_effect == 0)
+    {
+        for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
+        {
+            if(tablicaTemp[s] == '1')
+            {
+                if (s == 0) cy1 = cyfra;
+                if (s == 1) cy2 = cyfra;
+                if (s == 2) cy3 = cyfra;
+                if (s == 3) cy4 = cyfra;
+            }
+            else
+            {
+                if (s == 0 || cyfra == 0) cy1 = 10;
+                if (s == 1 || cyfra == 0) cy2 = 10;
+                if (s == 2 || cyfra == 0) cy3 = 10;
+                if (s == 3 || cyfra == 0) cy4 = 10;
+            }
+        }
+
+
+
+
+    }
+    else if(case_of_effect == 1)
+    {
+        for(s = 0; s < rozmiar; ++s)
+        {
+            if(tablicaTemp[s] == '0' || cyfra == 0 )
+            {
+                if ( s == 0 ) cy1 = 11;
+                if ( s == 1 ) cy2 = 11;
+                if ( s == 2 ) cy3 = 11;
+                if ( s == 3 ) cy4 = 11;
+                buzzer();
+                delay_ms_var_double(100);
+            }
+        }
+    }
+    free(tablicaTemp);
+}
+
+
+
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if( menu == 0 )
@@ -447,24 +500,20 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         //OCR0 = cyfry;//zmienna przepełnienia Timera 0
         LCD_EraseAll();
         //d_led_Int( cyfry );
-        LCD_GoTo( 0, 0 );
-        LCD_Int( cyfra );
+
 
         //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
 
 
 
-        if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
+        /*if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
         {
             LCD_GoTo(4,0);
             LCD_Int((int) (t * 100 / 250));
             LCD_WriteText("%");
-        }
-
-
-
-
-
+        }*/
+        LCD_GoTo(0,0);
+        LCD_Int( cyfra );
 
     }
     else if( menu == 3 )
@@ -854,7 +903,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
             t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
             u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
-            char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
+
             do
             {
                 buzzer_time(0.4);
@@ -880,32 +929,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
                     delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
                     pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                     cyfra = w;
-                    for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
-                    {
-                        if(s == pozycja) tablicaTemp[s] = '1';
-                        else tablicaTemp[s] = '0';
-                    }
-
-
-                    for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
-                    {
-                        if(tablicaTemp[s] == '1')
-                        {
-                            if (s == 0) cy1 = cyfra;
-                            if (s == 1) cy2 = cyfra;
-                            if (s == 2) cy3 = cyfra;
-                            if (s == 3) cy4 = cyfra;
-                        }
-                        else
-                        {
-                            if (s == 0 || cyfra == 0) cy1 = 10;
-                            if (s == 1 || cyfra == 0) cy2 = 10;
-                            if (s == 2 || cyfra == 0) cy3 = 10;
-                            if (s == 3 || cyfra == 0) cy4 = 10;
-                        }
-                    }
-
-                    refresh_screen = 1;
+                    cube_position(0);
                     buzzer_time(0.8);
                 }
                 --t;
@@ -914,35 +938,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
             u = -1;//tryb wyświetlania
 
+            cube_position(1);
 
-            for(s = 0; s < rozmiar; ++s)
-            {
-                if(tablicaTemp[s] == '0' || cyfra == 0 )
-                {
-                    if ( s == 0 ) cy1 = 11;
-                    if ( s == 1 ) cy2 = 11;
-                    if ( s == 2 ) cy3 = 11;
-                    if ( s == 3 ) cy4 = 11;
-                    buzzer();
-                    delay_ms_var_double(100);
-                }
-            }
             u = 0;
             refresh_screen = 1;
-            free(tablicaTemp);
-
-
-
-
-
-
-
-
-
-            free(tablicaTemp);
-
-
-
 
 
             //cy1 = 8;
@@ -1253,6 +1252,20 @@ void pilot( int com, int tog )//
 void zczytaj_komende( void )
 {
 
+
+    if( interr == 1 && menu == 3 )
+    {
+        interr = 0;
+        cnt = 0;
+        wysw();
+    }
+
+    if(refresh_screen == 1 )
+    {
+        refresh_screen = 0;
+        wysw();
+
+    }
 
     if ( stop_button())
     {
