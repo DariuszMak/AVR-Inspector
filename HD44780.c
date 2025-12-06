@@ -9,7 +9,6 @@
 // Mikrokontroler : Atmel AVR
 // Kompilator : avr-gcc
 //-------------------------------------------------------------------------------------------------
-const int LCD_CHARSPERLINE = 40;// liczba znaków w pojedynczej linii bufora wyświetlacza
 
 void delay_ms_var( uint16_t count )
 {

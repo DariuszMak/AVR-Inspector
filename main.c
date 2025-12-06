@@ -124,45 +124,91 @@ int main( void )
             {
             case 41:
                 LCD_Clear();
-                LCD_WriteText( "ATmega32 program" );
+                /*char* original_text = ( char* ) malloc( LCD_CHARSPERLINE * sizeof *original_text * 2);//utworzenie tymczasowej tablicy na dane
+
+                original_text = "ATmega32 program                        Dariusz M. proj.                        ";
+
+                for( t = 0; t < LCD_CHARSPERLINE * 2; ++t )
+                {
+                    LCD_WriteData( original_text[t] );
+                }*/
+
+                char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
+
+                for ( t = 0; t < 2; ++t )
+                {
+                    original_text[t] = ( char* ) malloc ( LCD_CHARSPERLINE * sizeof ( *original_text ) );
+                }
+
+                original_text[0] = "ATmega32 program                        ";
+                original_text[1] = "Dariusz M. proj.                        ";
+
+                for( t = 0; t < LCD_CHARSPERLINE; ++t )
+                {
+                    LCD_WriteData( original_text[0][t] );
+                }
+
                 LCD_GoTo( 0, 1 );
-                LCD_WriteText( "Dariusz M. proj." );
+
+                for( t = 0; t < LCD_CHARSPERLINE; ++t )
+                {
+                    LCD_WriteData( original_text[1][t] );
+                }
+
+
+
+                for ( t = 0; t < 2; ++t )
+                {
+                    free( original_text[t] );
+                }
+                free( original_text );
+
 
                 rozmiar = 16;
 
                 while( 1 )
                 {
-                    char * j =  ( char* ) malloc( rozmiar * sizeof * j * 2 );
+
+                    char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablica dwuwymiarowa z testowym napisem
+
+                    for ( t = 0; t < 2; ++t )
+                    {
+                        buffer_table[t] = ( char* ) malloc ( rozmiar * sizeof ( *buffer_table ) );
+                    }
 
                     LCD_Home();
 
                     for( t = 0; t < rozmiar; ++t )
                     {
-                        j[t] = LCD_ReadData();
+                        buffer_table[0][t] = LCD_ReadData();
                     }
 
                     LCD_GoTo( 0, 1 );
 
-                    for( t = rozmiar; t < 2 * rozmiar; ++t )
+                    for( t = 0; t < rozmiar; ++t )
                     {
-                        j[t] = LCD_ReadData();
+                        buffer_table[1][t] = LCD_ReadData();
                     }
 
                     LCD_Clear();
 
                     for( t = 0; t < rozmiar; ++t )
                     {
-                        LCD_WriteData( j[t] );
-
+                        LCD_WriteData( buffer_table[0][t] );
                     }
 
                     LCD_GoTo( 0, 1 );
 
-                    for( t = rozmiar; t < 2 * rozmiar; ++t )
+                    for( t = 0; t < rozmiar; ++t )
                     {
-                        LCD_WriteData( j[t] );
+                        LCD_WriteData( buffer_table[1][t] );
                     }
-                    free( j );
+
+                    for ( t = 0; t < 2; ++t )
+                    {
+                        free( buffer_table[t] );
+                    }
+                    free( buffer_table );
                 }
                 break;
             case 12:
@@ -202,7 +248,7 @@ int main( void )
 
                 rozmiar = 6;
 
-                char * i =  ( char* ) malloc( rozmiar * sizeof * i );
+                char * i =  ( char* ) malloc( rozmiar * sizeof (*i) );
 
                 void pisz( void )
                 {
