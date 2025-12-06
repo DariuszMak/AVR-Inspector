@@ -23,7 +23,7 @@ unsigned char ds18b20_ConvertT(void)
 
 /***********************************************************/
 
-int ds18b20_Read(unsigned char scratchpad[])
+int ds18b20_Read()
 {
     unsigned char i;
 
@@ -32,7 +32,7 @@ int ds18b20_Read(unsigned char scratchpad[])
     OneWireWriteByte(0xcc); // SKIP ROM
     OneWireWriteByte(0xbe); // READ SCRATCHPAD
 
-    for(i=0; i<2; i++) scratchpad[i] = OneWireReadByte();
+    for(i=0; i<2; i++) ds18b20_pad[i] = OneWireReadByte();
 
     return 1;
 }
@@ -149,6 +149,8 @@ double ds18b20_temperature(void)
            dzielona jest przez 16 */
         temp = ((ds18b20_pad[1] << 8) + ds18b20_pad[0]) / 16.0 ;
         /* Formułuje komunikat w tablicy 'str' */
+        int i = 0;
+        for(; i<2; i++) ds18b20_pad[i] = 0;
 
     }
     return temp;

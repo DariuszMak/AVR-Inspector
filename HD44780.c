@@ -276,7 +276,28 @@ void LCD_Double( double value, unsigned int approximation)
     if(approximation)
     {
         LCD_WriteText(".");
-        if ((int) value == 0) for( a = 1; a < approximation;++a) LCD_Int((int)value);
+        uint16_t ten2 = 10;
+
+        int d = 1;
+        while ( (int)value >= ten2 )
+        {
+            d += 1;
+            ten2 *= 10;
+        }
+
+
+        ten2 = 10;
+        int f = 1;
+        while ( ten >= ten2 )
+        {
+            f += 1;
+            ten2 *= 10;
+        }
+        for(a = 1; a < f-d; ++a)
+        {
+            LCD_Int(0);
+        }
+
         LCD_Int((int)value);
     }
 }
