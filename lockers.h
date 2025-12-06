@@ -9,11 +9,9 @@
 
 #define AMOUNT_OF_LOCKERS 2//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
-#define PCF8583_SAVED_ADDRESS_CELL 255
-
 #define EEPROM_MAX_ADDRESS 255
 
-#define SIZE_OF_FRAME 8
+#define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
 #define LOCKER_1_BUTTON_DIR DDRD
 #define LOCKER_1_BUTTON_PORT PORTD
@@ -30,6 +28,8 @@ void lockers_beginning_actions(void);
 
 struct frame;
 
+uint8_t lockers_address_of_frame;
+
 uint8_t states_table[AMOUNT_OF_LOCKERS];
 uint8_t save_info_table[AMOUNT_OF_LOCKERS];
 
@@ -39,6 +39,8 @@ int locker_2_button(void);//przycisk fizycznie umieszczony na płytce
 void lockers_find_latest_data(void);//funkcja zwracająca adres gotowy do zapisania nowych danych
 
 int lockers_state_of_single_button( int );
+
+uint8_t lockers_number_of_frames(void);
 
 void lockers_check_events(void);
 

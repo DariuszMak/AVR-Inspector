@@ -70,15 +70,40 @@ void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milise
 
 void lockers_find_latest_data(void)
 {
-    PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, 0);
+    lockers_address_of_frame = 0;
+}
+
+uint8_t lockers_number_of_frames(void)
+{
+    return ((EEPROM_MAX_ADDRESS + 1) / SIZE_OF_FRAME);
+}
+
+void lockers_read_frame(uint8_t index)
+{
+    uint8_t temp_address = SIZE_OF_FRAME * index;
+    frame.seconds = EEPROM_read(temp_address);
+    ++temp_address;
+    frame.minutes = EEPROM_read(temp_address);
+    ++temp_address;
+    frame.hours = EEPROM_read(temp_address);
+    ++temp_address;
+    frame.day = EEPROM_read(temp_address);
+    ++temp_address;
+    frame.month = EEPROM_read(temp_address);
+    ++temp_address;
+    frame.year = EEPROM_read_word(temp_address);
+    ++temp_address;
+    ++temp_address;
+    frame.information = EEPROM_read(temp_address);
+    ++temp_address;
 }
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     delay_ms_var(1000);
-    uint8_t temp_address = PCF8583_read(PCF8583_SAVED_ADDRESS_CELL);//pobranie adresu z zegara RTC
+    uint8_t temp_address = lockers_address_of_frame;//pobranie ostatniego adresu
 
-    if((EEPROM_ADDRESS - temp_address) < SIZE_OF_FRAME) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+    if((EEPROM_ADDRESS - temp_address) < SIZE_OF_FRAME - 1) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
     int i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
@@ -99,7 +124,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             ++temp_address;
             EEPROM_write(temp_address,miesiac);
             ++temp_address;
-            EEPROM_write_word(temp_address,sek);
+            EEPROM_write_word(temp_address, rok);
             ++temp_address;
             ++temp_address;
             uint8_t information = (uint8_t)save_info_table[i] * 100;
@@ -108,7 +133,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             ++temp_address;
         }
     }
-    PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, temp_address);
+    lockers_address_of_frame = temp_address;
 }
 
 
