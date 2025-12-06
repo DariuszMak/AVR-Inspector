@@ -42,10 +42,9 @@ void lockers_check_events()
         state = (uint8_t)lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
         if( state != states_table[i] )//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
         {
-
             action = 1;//akcja będzie podjęta
-            if (state) save_info_table[i] = 2;//szafka zamknięta
-            else save_info_table[i] = 1;//szafka otwarta
+            if (state == 1) save_info_table[i] = 2;//szafka zamknięta
+            else if(state == 0) save_info_table[i] = 1;//szafka otwarta
         }
         else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
         states_table[i] = state;

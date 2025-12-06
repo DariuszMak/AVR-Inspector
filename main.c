@@ -13,7 +13,7 @@ int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glown
 int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
-uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
+//uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
 int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -657,9 +657,9 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_EraseAll();
     if(zwiekszanie > 10) wysw_skok(10);
 
-    if(u < -1) u = lockers_number_of_frames() - 1;
-    else if(u > lockers_number_of_frames() - 1) u = -1;
-    show_list(u, lockers_number_of_frames() -1);
+    if(c < -1) c = lockers_number_of_frames() - 1;
+    else if(c > lockers_number_of_frames() - 1) c = -1;
+    show_list(c, lockers_number_of_frames() -1);
 }
 
 
@@ -1110,20 +1110,20 @@ void czynnosc6( int com, int tog )
         {
             EEPROM_clear_all_memory();
             PCF8583_write_word(PCF8583_CELL, 0);
-            u = 0;
+            c = 0;
         }
     }
     if ( com == 32 )
     {
-        u -= zwiekszanie;
+        c -= zwiekszanie;
     }
     if ( com == 33 )
     {
-        u += zwiekszanie;
+        c += zwiekszanie;
     }
     if ( com == 59 )
     {
-        u = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+        c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
     }
 
     refresh_screen = 1;
@@ -1255,7 +1255,7 @@ void pilot( int com, int tog )//
                 //czynnosc( men, 50, tog );
                 lockers_beginning_actions();
                 //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
-                checking_lockers_state = 1;
+//                checking_lockers_state = 1;
                 u = PCF8583_recognise_type_of_alarm();
                 refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
@@ -1282,7 +1282,7 @@ void pilot( int com, int tog )//
             {
                 //czynnosc( men, 50, tog );
                 //lockers_find_latest_data();
-                u = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+                c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
                 refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
         }
@@ -1301,6 +1301,7 @@ void zczytaj_komende( void )
     {
         interr = 0;
         cnt = 0;
+        lockers_check_events();
         wysw();
     }
 
@@ -1319,7 +1320,7 @@ void zczytaj_komende( void )
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         menu = 0;//
         zwiekszanie = 1;
-        checking_lockers_state = 0;
+//        checking_lockers_state = 0;
         delay_ms_var(10);//chwilowe odczekanie na wygaszenie się wyświetlacza
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
         //TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera preskaler 1024, timer do odświeżania
@@ -1408,7 +1409,6 @@ int main( void )
     while( 1 )
     {
         zczytaj_komende();
-        if( checking_lockers_state == 1) lockers_check_events();
     }
 
     return 0;
