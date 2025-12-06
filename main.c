@@ -13,7 +13,7 @@ uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
 int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
-uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
+//uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 int8_t backlight_of_lcd = 0;
 uint8_t reset_variable = 0;
 //uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
@@ -432,6 +432,62 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         LCD_Clear();
     }
     pilot_reset();
+    //refresh_screen = 1;
+}
+
+void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte w bitach stanu
+{
+    uint8_t d = LCD_position;
+
+    LCD_Home();
+    LCD_Clear();
+
+    if(lockers_is_flag_bit(number) == 1)
+    {
+        if(number == 1)
+        {
+            LCD_WriteText("TEMPERATURA");
+            LCD_GoTo(0,1);
+            LCD_WriteText("KRYTYCZNA!!!");
+            buzzer_time(10);
+            backlight(2);
+            lockers_print_temperature();
+        }
+        if(number == 2) LCD_WriteText("RC5 & TERMINAL");
+        if(number == 3)
+        {
+            LCD_WriteText("PILOT ON");
+            green_colors_RGB();
+            pilot_on();
+            backlight(2);
+        }
+    }
+    else
+    {
+        if(number == 1)
+        {
+            LCD_WriteText("TEMPERATURA");
+            LCD_GoTo(0, 1);
+            LCD_WriteText("USTABILIZOWANA!");
+            buzzer();
+            backlight(2);
+            lockers_print_temperature();
+        }
+        if(number == 2) LCD_WriteText("RC5");
+        if(number == 3)
+        {
+            LCD_WriteText("PILOT OFF");
+            blue_colors_RGB();
+            buzzer_time(500);
+            pilot_off();
+            backlight(0);
+        }
+    }
+
+    send_all_screen();
+    delay_ms_var_double( 500 );
+    pilot_reset();
+    LCD_set_appropiate_position(d);
     refresh_screen = 1;
 }
 
@@ -1180,8 +1236,8 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     PCF8583_get_wall_time();
     LCD_Clear();
     LCD_GoTo(11,0);
-    if(pilot_state == 0) LCD_WriteText("!");
-    else if(pilot_state == 1) LCD_WriteText("|");
+    if(lockers_is_flag_bit(3) == 0) LCD_WriteText("!");
+    else LCD_WriteText("|");
 
     show_time_format();
 
@@ -2151,23 +2207,19 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     }
     if ( com == 100 )
     {
-        if(pilot_state == 1)
+        if(lockers_is_flag_bit(3) == 1)
         {
-            pilot_state = 0;
-            blue_colors_RGB();
-            buzzer_time(500);
-            pilot_off();
-            backlight(0);
-            printf("\nPilot OFF\n");
+            lockers_flag_bit_off(3);
+
+            //printf("\nPilot OFF\n");
         }
-        else if(pilot_state == 0)
+        else
         {
-            pilot_state = 1;
-            green_colors_RGB();
-            pilot_on();
-            backlight(2);
-            printf("\nPilot ON\n");
+            lockers_flag_bit_on(3);
+
+            //printf("\nPilot ON\n");
         }
+        show_properties(3);
     }
 }
 
@@ -2310,22 +2362,18 @@ void sczytaj_komende( void )
                     {
                         if(lockers_is_flag_bit(1) == 0 || beginning_raport == 0)
                         {
-                            buzzer_time(10);
-                            backlight(2);
-                            printf("\nUWAGA!!! PRZEKROCZONO TEMPERATURE KRYTYCZNA!!!");
-                            lockers_print_temperature();
+
+
                             lockers_flag_bit_on(1);
+                            show_properties(1);
                         }
                     }
                     else
                     {
                         if(lockers_is_flag_bit(1) == 1)
                         {
-                            buzzer();
-                            backlight(2);
-                            printf("\nTEMPERATURA USTABILIZOWANA!");
-                            lockers_print_temperature();
                             lockers_flag_bit_off(1);
+                            show_properties(1);
                         }
                     }
 
@@ -2423,7 +2471,6 @@ void sczytaj_komende( void )
 
             if(lockers_is_flag_bit(2) == 1)
             {
-
                 if(temp_char == 'e') pilot(59, 0);
                 else if(temp_char == 'w') pilot(32, 0);
                 else if(temp_char == 's') pilot(33, 0);
@@ -2460,14 +2507,16 @@ void sczytaj_komende( void )
                 if(lockers_is_flag_bit(2) == 1)
                 {
                     lockers_flag_bit_off(2);
-                    printf("\nTRYB RC5\n");
+
+                    // printf("\nTRYB RC5\n");
                 }
                 else
                 {
                     lockers_flag_bit_on(2);
-                    printf("\nTRYB RC5 & TERMINAL\n");
-                    refresh_screen = 1;
+                    //printf("\nTRYB RC5 & TERMINAL\n");
+                    //refresh_screen = 1;
                 }
+                show_properties(2);
             }
             //else if(temp_char == 'R') lockers_print_all_memory();
             //else if(temp_char == 'r') lockers_print_latest_data();
@@ -2523,11 +2572,20 @@ int main( void )
 
     uart_init(57600);//inicjalizacja uart'u
 
+    if(lockers_is_flag_bit(3) == 1) pilot_on();
+    else pilot_off();
+
     sei();//włącza przerwania
+
+    /*    for(t = 1; t < 4; ++t)
+    {
+        show_properties(t);
+    }*/
+
 
     //uart_puts("co wyszlo:\r\n");
 
-    printf("\nInicjalizacja w toku...\n");
+    //printf("\nInicjalizacja w toku...\n");
 
 
     //printf("%d", number_of_digits(-3276777));
@@ -2549,8 +2607,8 @@ int main( void )
 
     //eeprom_write_word((uint16_t*)257,5);
 
-    pilot_on();
-    pilot_state = 1;
+    //pilot_on();
+//    pilot_state = 1;
 
     //backlight(1);
 
@@ -2571,11 +2629,12 @@ int main( void )
         delay_ms_var(2);
     }*/
 
-
     LCD_WriteText("AVR INSPECTOR");
+    //send_all_screen();
     delay_ms_var(1500);
     LCD_GoTo(6,1);
     LCD_WriteText("Dariusz M.");
+    send_all_screen();
     delay_ms_var(1000);
     LCD_PageUpScreen();
     LCD_Home();
@@ -2594,7 +2653,7 @@ int main( void )
 
     lockers_beginning_actions();
 
-    printf("Inicjalizacja zakonczona.\n");
+    //printf("Inicjalizacja zakonczona.\n");
 
 
     while( 1 )
