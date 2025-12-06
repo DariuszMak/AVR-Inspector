@@ -2385,7 +2385,7 @@ void sczytaj_komende( void )
         {
             if(menu != 4 && menu != 5)
             {
-                lockers_check_events();
+                lockers_save_events();
             }
             else
             {

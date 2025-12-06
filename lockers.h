@@ -126,7 +126,7 @@ uint8_t lockers_is_queue_empty(void);
 
 uint8_t lockers_queue_number_of_records(void);
 
-void lockers_save_frame(uint8_t index, uint8_t i);
+//void lockers_save_frame(uint8_t index, uint8_t i);
 
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
 {
@@ -157,11 +157,13 @@ uint8_t locker_10_button(void);//przycisk fizycznie umieszczony na płytce
 
 uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan poszczególnych wejść do szafek (zwraca 0 albo 1)
 
-void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian i nakazuje zapis
+void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian
+
+void lockers_save_events(void);//funkcja zapisująca wszystkie dane na podstawie tablicy
 
 uint8_t lockers_is_queue_full(void);
 
-void lockers_queue_enque(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
+void lockers_queue_enque(uint8_t *);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
 
 void lockers_queue_dequeue(void);
 

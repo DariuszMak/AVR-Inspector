@@ -18,6 +18,12 @@ uint8_t lockers_is_flag_bit(uint8_t move)
 
 void lockers_init()
 {
+    int i = 0;
+    for(; i < AMOUNT_OF_LOCKERS; ++i)
+    {
+        save_info_table[i] = 0;//przypisanie wartości początkowych
+    }
+
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
     uint16_t tail_word = PCF8583_read_word(PCF8583_TAIL);
     uint16_t head_word = PCF8583_read_word(PCF8583_HEAD);
@@ -99,29 +105,44 @@ uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przy
 void lockers_check_events(void)
 {
     int i = 0;//zmienna pmocnicza w pętlach
-    int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
-    uint8_t state = 0;//stan przycisku z danej chwili
+    //int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
+    uint8_t state;//stan przycisku z danej chwili
     for(; i < AMOUNT_OF_LOCKERS; ++i)//sprawdzanie stanów przycisków i odpowiednie wypełnianie tablicy
     {
-        state = (uint8_t)lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
-        if( state != states_table[i] )//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
+        state = lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
+        if( state != states_table[i] && save_info_table[i] == 0)//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
         {
-            action = 1;//akcja będzie podjęta
             if (state == 1) save_info_table[i] = 2;//szafka otwarta
             else if(state == 0) save_info_table[i] = 1;//szafka zamknięta
         }
-        else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
+        //else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
         states_table[i] = state;
     }
+}
+
+void lockers_save_events(void)
+{
+    int i = 0;//zmienna pmocnicza w pętlach
+    uint8_t action = 0;
+
+    uint8_t * dynamically_temp_table = ( uint8_t* ) malloc ( AMOUNT_OF_LOCKERS * sizeof ( *dynamically_temp_table ) );
+
+    for(; i < AMOUNT_OF_LOCKERS; ++i)//przepisanie zawartości tabeli
+    {
+        dynamically_temp_table[i] = save_info_table[i];
+        save_info_table[i] = 0;//przypisanie wartości początkowych
+        if(dynamically_temp_table[i]) action = 1;
+    }
+
     if(action)
     {
         blue_colors_RGB();
         show_properties(8);
         //refresh_screen = 1;
         buzzer_time(300);
-        lockers_queue_enque();
+        lockers_queue_enque(dynamically_temp_table);
         change_color_RGB();
-    }
+    }else free(dynamically_temp_table);
 }
 
 uint8_t lockers_number_of_frames(void)
@@ -263,41 +284,6 @@ uint8_t lockers_queue_number_of_records(void)
     else return lockers_tail() - lockers_head();
 }
 
-void lockers_save_frame(uint8_t index, uint8_t i)
-{
-    frame.seconds = sek;
-    frame.minutes = min;
-    frame.hours = godz;
-    frame.day = dzien;
-    frame.month = miesiac;
-    frame.year = rok;
-    frame.information = (uint8_t)save_info_table[i] * 100;
-    frame.information += i + 1;
-    uint16_t temp_address = lockers_convert_index_of_frame_to_address(index);//pobranie ostatniego adresu
-
-
-    /*if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
-    {
-        buzzer_time(500);
-        temp_address = INTERNAL_EEPROM_MIN_INDEX;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
-    }*/
-
-    eeprom_busy_wait();
-
-    eeprom_update_block( &frame, (void*)temp_address, SIZE_OF_FRAME);
-
-    temp_address += SIZE_OF_FRAME;
-
-    if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
-    {
-        buzzer_time(500);
-        temp_address = lockers_convert_index_of_frame_to_address(0);//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
-    }
-
-    PCF8583_write_word(PCF8583_TAIL, temp_address);
-    delay_ms_var(1);
-    buzzer_time(5);
-}
 
 uint8_t lockers_is_queue_full(void)
 {
@@ -318,7 +304,7 @@ uint8_t lockers_is_queue_full(void)
     return 0;
 }
 
-void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
+void lockers_queue_enque(uint8_t * temp_save_table)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
 
@@ -326,7 +312,7 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
-        if(save_info_table[i])
+        if(temp_save_table[i])
         {
             //printf("%d %d %d \n",lockers_tail(), lockers_head(), lockers_number_of_frames());
 
@@ -345,10 +331,42 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
                     //lockers_save_frame(lockers_tail(), i);
                 }
             }
-            lockers_save_frame(lockers_tail(), i);
+            frame.seconds = sek;
+            frame.minutes = min;
+            frame.hours = godz;
+            frame.day = dzien;
+            frame.month = miesiac;
+            frame.year = rok;
+            frame.information = (uint8_t)save_info_table[i] * 100;
+            frame.information += i + 1;
+            uint16_t temp_address = lockers_convert_index_of_frame_to_address(lockers_tail());//pobranie ostatniego adresu
+
+
+            /*if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
+            {
+                buzzer_time(500);
+                temp_address = INTERNAL_EEPROM_MIN_INDEX;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+            }*/
+
+            eeprom_busy_wait();
+
+            eeprom_update_block( &frame, (void*)temp_address, SIZE_OF_FRAME);
+
+            temp_address += SIZE_OF_FRAME;
+
+            if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
+            {
+                buzzer_time(500);
+                temp_address = lockers_convert_index_of_frame_to_address(0);//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+            }
+
+            PCF8583_write_word(PCF8583_TAIL, temp_address);
+            delay_ms_var(1);
+            buzzer_time(5);
         }
     }
     backlight(2);
+    free(temp_save_table);
 }
 
 void lockers_queue_dequeue(void)
