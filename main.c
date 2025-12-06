@@ -187,41 +187,50 @@ int main( void )
 
             break;
         case 3:
-            PCF8583_get_time( &godz, &min, &sek, &hsek );
-            PCF8583_get_date( &dzien, &miesiac, &rok );
-            LCD_EraseAll();
-            LCD_GoTo( 0, 0 );
-            LCD_Int(godz);
-            LCD_GoTo( 3, 0 );
-            LCD_Int(min);
-            LCD_GoTo( 6, 0 );
-            LCD_Int(sek);
-            LCD_GoTo( 9, 0 );
-            LCD_Int(hsek);
-            LCD_GoTo( 0, 1 );
-            LCD_Int(dzien);
-            LCD_GoTo( 3, 1 );
-            LCD_Int(miesiac);
-            LCD_GoTo( 6, 1 );
-            LCD_Int(rok);
+                            LCD_EraseAll();
 
-            PCF8583_get_alarm_time(&godz, &min, &sek, &hsek);
-            PCF8583_get_alarm_date( &dzien, &miesiac );
+            for(t = 0; t < 2; ++t)
+            {
+                int moveStep=0;
+                if(t==0)
+                {
+                    PCF8583_get_time( &godz, &min, &sek, &hsek );
+                    PCF8583_get_date( &dzien, &miesiac, &rok );
+                    moveStep=0;
+                }
+                else if (t==1)
+                {
+                    PCF8583_get_alarm_time(&godz, &min, &sek, &hsek);
+                    PCF8583_get_alarm_date( &dzien, &miesiac );
+                    moveStep=16;
+                }
+                LCD_GoTo( 0 + moveStep, 0 );
+                if(godz < 10) LCD_Int(0);
+                LCD_Int(godz);
+                LCD_WriteText(":");
+                if(min < 10) LCD_Int(0);
+                LCD_Int(min);
+                LCD_WriteText(":");
+                if(sek < 10) LCD_Int(0);
+                LCD_Int(sek);
+                LCD_WriteText(":");
+                if(hsek < 10) LCD_Int(0);
+                LCD_Int(hsek);
+                LCD_GoTo( 0 + moveStep, 1 );
+                if(dzien < 10) LCD_Int(0);
+                LCD_Int(dzien);
+                LCD_WriteText(":");
+                if(miesiac < 10) LCD_Int(0);
+                LCD_Int(miesiac);
+                LCD_WriteText(":");
+                LCD_Int(rok);
 
-            int moveStep = 16;
+            }
 
-            LCD_GoTo( 0 + moveStep, 0 );
-            LCD_Int(godz);
-            LCD_GoTo( 3 + moveStep, 0 );
-            LCD_Int(min);
-            LCD_GoTo( 6 + moveStep, 0 );
-            LCD_Int(sek);
-            LCD_GoTo( 9 + moveStep, 0 );
-            LCD_Int(hsek);
-            LCD_GoTo( 0 + moveStep, 1 );
-            LCD_Int(dzien);
-            LCD_GoTo( 3 + moveStep, 1 );
-            LCD_Int(miesiac);
+
+
+
+
 
             //LCD_Int( pwm1 );
             //LCD_Int( pwm2 );
@@ -564,6 +573,11 @@ int main( void )
                 PCF8583_alarm_flag_off();
                 break;
 
+            case 41:
+                PCF8583_set_time( 1, 2, 3, 4 );
+                PCF8583_set_date( 5, 6, 2007 );
+                break;
+
                 break;
             case 17:
 //                pwm1 -= zwiekszanie;
@@ -733,8 +747,6 @@ int main( void )
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
-    PCF8583_set_time( 1, 2, 3, 4 );
-    PCF8583_set_date( 5, 6, 2007 );
 
     PCF8583_set_alarm_time(1,2,15,4);//dwadzieścia sekund czasu do alarmu
     PCF8583_set_alarm_date(5,6);
