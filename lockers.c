@@ -154,8 +154,8 @@ void lockers_read_frame(uint8_t index)
 
 void lockers_print_entire_frame(void)
 {
-
-    printf("%d:%d:%d %d:%d:%d", frame.hours, frame.minutes, frame.seconds, frame.day, frame.month, frame.year);
+    buzzer_time(0.5);
+    printf("%02d:%02d:%02d %02d:%02d:%d", frame.hours, frame.minutes, frame.seconds, frame.day, frame.month, frame.year);
 
     uint8_t number = frame.information % 100;
 
