@@ -2474,6 +2474,16 @@ void sczytaj_komende( void )
                         //refresh_screen = 1;
                     }
                     show_properties(2);
+
+                    if(lockers_is_flag_bit(2) == 1)
+                    {
+                        buzzer();
+                    }
+                    else
+                    {
+                        buzzer_time(100);
+                    }
+
                 }
                 //else if(temp_char == 'R') lockers_print_all_memory();
                 //else if(temp_char == 'r') lockers_print_latest_data();
