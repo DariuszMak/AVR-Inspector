@@ -22,8 +22,8 @@ void uart_init(uint16_t baud)
     UCSRC = (1<<URSEL)|(1<<UCSZ0)|(1<<UCSZ1);
     UCSRB |= (1<<RXEN)|(1<<TXEN)|(1<<RXCIE);
 
-    DDRD &= ~(1<<PD2);
-    PORTD |= (1<<PD2);//PD2 - wejście + pull-up
+    //DDRD &= ~(1<<PD2);
+    //PORTD |= (1<<PD2);//PD2 - wejście + pull-up
 
     /* Tworzy strumienia danych o nazwie 'mystdout' połączony
     z funkcją 'USART_Transmit' */

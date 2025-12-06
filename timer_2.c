@@ -35,7 +35,7 @@ void refreshing_interrupt_off()
 ISR( _VECTOR( 4 ) )
 {
     timer_cycle_overflow = 1;
-    if( overflow_timer_2 == 0 ) interr = 1;
+    if( overflow_timer_2 > 1500 ) interr = 1;
     if( cnt >= RGB_Red ) RGB_R_PORT |= RGB_R;
     else RGB_R_PORT &= ~RGB_R;
     if( cnt >= RGB_Green ) RGB_G_PORT |= RGB_G;
