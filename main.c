@@ -2376,6 +2376,10 @@ void sczytaj_komende( void )
                 show_properties(12);
                 lockers_print_latest_data();
             }
+            else
+            {
+                lockers_print_latest_data();
+            }
             start_program = 2;
         }
 
