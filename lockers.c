@@ -164,7 +164,11 @@ void lockers_check_events()
         else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
         states_table[i] = state;
     }
-    if(action) lockers_queue_enque();
+    if(action)
+    {
+        lockers_queue_enque();
+        refresh_screen = 1;
+    }
 }
 
 
@@ -223,24 +227,17 @@ void lockers_read_frame(uint8_t index)
         temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
         eeprom_busy_wait();
 
-        frame.seconds = eeprom_read_byte((uint8_t*)temp_address++);
-        //_EEGET(frame.seconds,temp_address);
+        /*uint8_t table[SIZE_OF_FRAME];
+        uint8_t i = 0;
 
-        frame.minutes = eeprom_read_byte((uint8_t*)temp_address++);
+        for(; i < SIZE_OF_FRAME; ++i)
+        {
+            table[i] = temp_address++;
+        }*/
 
-        frame.hours = eeprom_read_byte((uint8_t*)temp_address++);
+        eeprom_read_block( &frame, (const void *)temp_address, SIZE_OF_FRAME);
 
-        frame.day = eeprom_read_byte((uint8_t*)temp_address++);
-
-        frame.month = eeprom_read_byte((uint8_t*)temp_address++);
-
-//        uint8_t temp;
-        //_EEGET(frame.year,temp_address);
-        frame.year = eeprom_read_word((uint16_t*)temp_address++);
-
-        temp_address++;
-
-        frame.information = eeprom_read_byte((uint8_t*)temp_address++);
+        temp_address += SIZE_OF_FRAME;
     }
 }
 
@@ -324,6 +321,14 @@ uint8_t lockers_queue_number_of_records(void)
 
 void lockers_save_frame(uint8_t index, uint8_t i)
 {
+    frame.seconds = sek;
+    frame.minutes = min;
+    frame.hours = godz;
+    frame.day = dzien;
+    frame.month = miesiac;
+    frame.year = rok;
+    frame.information = (uint8_t)save_info_table[i] * 100;
+    frame.information += i + 1;
     uint16_t temp_address = SIZE_OF_FRAME * index;//pobranie ostatniego adresu
     uint8_t overflow_flag = 0;//jeśli == 1 - bramka zmieści się na "styk"
 
@@ -366,30 +371,10 @@ void lockers_save_frame(uint8_t index, uint8_t i)
         temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
 
         eeprom_busy_wait();
-        //_EEPUT(temp_address, sek);
-        eeprom_write_byte((uint8_t*)temp_address++,sek);
-        eeprom_busy_wait();
-        //_EEPUT(temp_address, min);
-        eeprom_write_byte((uint8_t*)temp_address++,min);
-        //_EEPUT(temp_address, godz);
-        eeprom_busy_wait();
-        eeprom_write_byte((uint8_t*)temp_address++,godz);
-        eeprom_busy_wait();
-        //_EEPUT(temp_address, dzien);
-        eeprom_write_byte((uint8_t*)temp_address++,dzien);
-        eeprom_busy_wait();
-        //_EEPUT(temp_address, miesiac);
-        eeprom_write_byte((uint8_t*)temp_address++,miesiac);
-        eeprom_busy_wait();
-        //_EEPUT(temp_address, rok);
-        eeprom_write_word((uint16_t*)temp_address++, rok);
-        temp_address++;
 
-        uint8_t information = (uint8_t)save_info_table[i] * 100;
-        information += i + 1;
-        //_EEPUT(temp_address, information);
-        eeprom_busy_wait();
-        eeprom_write_byte((uint8_t*)temp_address++,information);
+        eeprom_update_block( &frame, (void*)temp_address, SIZE_OF_FRAME);
+
+        temp_address += SIZE_OF_FRAME;
     }
 
     /*if(overflow_flag == 1)

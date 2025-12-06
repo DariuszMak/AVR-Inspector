@@ -124,10 +124,10 @@ ISR( TIMER1_CAPT_vect )
 
 void pilot_reset(void)
 {
- Ir_key_press_flag = 0;
-            //uint8_t command_temp = command;
-            command = 0xff;
-            address = 0xff;
+    Ir_key_press_flag = 0;
+    //uint8_t command_temp = command;
+    command = 0xff;
+    address = 0xff;
 }
 
 int stop_button()//przycisk fizycznie umieszczony na płytce

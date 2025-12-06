@@ -1208,6 +1208,12 @@ void pilot( int com, int tog )//
 
 void zczytaj_komende( void )
 {
+    if(refresh_screen == 1 )
+    {
+        refresh_screen = 0;
+        wysw();
+    }
+
     if( interr == 1 )
     {
         cnt = 0;
@@ -1241,19 +1247,15 @@ void zczytaj_komende( void )
             }
         }
 
+        if(menu != 4 && menu != 5) lockers_check_events();
+
         if( menu == 2 )
         {
-            lockers_check_events();
             refresh_screen = 1;
         }
+
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
-    }
-
-    if(refresh_screen == 1 )
-    {
-        refresh_screen = 0;
-        wysw();
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
@@ -1287,7 +1289,6 @@ void zczytaj_komende( void )
         {
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
             toggle_action();
-
             pilot( command, t );//wywołanie funkcji pilot
             pilot_reset();
 
