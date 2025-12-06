@@ -220,7 +220,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
-    *min=bcd2bin(time_f.minuts);
+    *min=bcd2bin(time_f.minutes);
     *hour=bcd2bin(time_f.hours);
     *day=bcd2bin(time_f.days & 0b00111111);
     *month=bcd2bin(time_f.months & 0b00011111);
@@ -249,7 +249,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
     uint8_t year_table[2];
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
-    time_f.minuts=bin2bcd(min);
+    time_f.minutes=bin2bcd(min);
     time_f.hours=bin2bcd(hour);
     time_f.days = bin2bcd(day) | ( ( (uint8_t)year & 0x03) << 6 );
     time_f.months = bin2bcd(month) | ( ( (uint8_t)day_of_week & 0x07) << 5 );
@@ -277,7 +277,7 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
-    *min=bcd2bin(time_f.minuts);
+    *min=bcd2bin(time_f.minutes);
     *hour=bcd2bin(time_f.hours);
     *day = bcd2bin(time_f.days);
 
@@ -301,7 +301,7 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     struct time_frame time_f;
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
-    time_f.minuts=bin2bcd(min);
+    time_f.minutes=bin2bcd(min);
     time_f.hours=bin2bcd(hour);
 
     if(type_of_alarm == 0)
@@ -327,6 +327,13 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     PCF8583_write_buf(0x09, 6, (uint8_t*)&time_f);
 }
 
+/**
+ Wyłącza alarm
+*/
+void PCF8583_alarm_off(void)
+{
+    PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
+}
 
 /**
  Załącza alarm codzienny
@@ -374,13 +381,7 @@ uint8_t PCF8583_is_alarm_set(void)
     else return 0;
 }
 
-/**
- Wyłącza alarm
-*/
-void PCF8583_alarm_off(void)
-{
-    PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
-}
+
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
 {

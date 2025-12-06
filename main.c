@@ -163,7 +163,7 @@ void show_time_format(void)
     LCD_WriteText(":");
     LCD_Int(rok);
 
-    LCD_GoTo(13,1);
+    LCD_GoTo(9,1);
     show_day_of_week(dzien_tygodnia);
 }
 

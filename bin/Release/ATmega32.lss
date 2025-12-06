@@ -2284,7 +2284,7 @@ Disassembly of section .text:
     1356:	90 91 b1 03 	lds	r25, 0x03B1
     135a:	0e 94 b8 01 	call	0x370	; 0x370 <LCD_Int>
     135e:	61 e0       	ldi	r22, 0x01	; 1
-    1360:	8d e0       	ldi	r24, 0x0D	; 13
+    1360:	89 e0       	ldi	r24, 0x09	; 9
     1362:	0e 94 5c 01 	call	0x2b8	; 0x2b8 <LCD_GoTo>
     1366:	80 91 b2 03 	lds	r24, 0x03B2
     136a:	0c 94 0a 09 	jmp	0x1214	; 0x1214 <show_day_of_week>
@@ -3374,7 +3374,7 @@ Disassembly of section .text:
     1dca:	40 91 af 03 	lds	r20, 0x03AF
     1dce:	60 91 a0 03 	lds	r22, 0x03A0
     1dd2:	80 91 9f 03 	lds	r24, 0x039F
-    1dd6:	0e 94 97 18 	call	0x312e	; 0x312e <PCF8583_set_alarm_time>
+    1dd6:	0e 94 32 18 	call	0x3064	; 0x3064 <PCF8583_set_alarm_time>
     1dda:	0e 94 e0 16 	call	0x2dc0	; 0x2dc0 <PCF8583_alarm_flag_off>
     1dde:	1e c0       	rjmp	.+60     	; 0x1e1c <wysw5+0x11a>
     1de0:	c1 30       	cpi	r28, 0x01	; 1
@@ -3399,7 +3399,7 @@ Disassembly of section .text:
     1e0c:	40 91 af 03 	lds	r20, 0x03AF
     1e10:	60 91 a0 03 	lds	r22, 0x03A0
     1e14:	80 91 9f 03 	lds	r24, 0x039F
-    1e18:	0e 94 97 18 	call	0x312e	; 0x312e <PCF8583_set_alarm_time>
+    1e18:	0e 94 32 18 	call	0x3064	; 0x3064 <PCF8583_set_alarm_time>
     1e1c:	40 91 ac 03 	lds	r20, 0x03AC
     1e20:	44 23       	and	r20, r20
     1e22:	41 f0       	breq	.+16     	; 0x1e34 <wysw5+0x132>
@@ -3495,7 +3495,7 @@ Disassembly of section .text:
     1f14:	82 30       	cpi	r24, 0x02	; 2
     1f16:	39 f4       	brne	.+14     	; 0x1f26 <czynnosc0+0x30>
     1f18:	0e 94 38 07 	call	0xe70	; 0xe70 <lockers_beginning_actions>
-    1f1c:	0e 94 2a 18 	call	0x3054	; 0x3054 <PCF8583_recognise_type_of_alarm>
+    1f1c:	0e 94 89 18 	call	0x3112	; 0x3112 <PCF8583_recognise_type_of_alarm>
     1f20:	80 93 b7 03 	sts	0x03B7, r24
     1f24:	39 c0       	rjmp	.+114    	; 0x1f98 <czynnosc0+0xa2>
     1f26:	83 30       	cpi	r24, 0x03	; 3
@@ -3519,7 +3519,7 @@ Disassembly of section .text:
     1f5a:	81 e0       	ldi	r24, 0x01	; 1
     1f5c:	80 93 85 03 	sts	0x0385, r24
     1f60:	10 92 ac 03 	sts	0x03AC, r1
-    1f64:	0e 94 2a 18 	call	0x3054	; 0x3054 <PCF8583_recognise_type_of_alarm>
+    1f64:	0e 94 89 18 	call	0x3112	; 0x3112 <PCF8583_recognise_type_of_alarm>
     1f68:	90 e0       	ldi	r25, 0x00	; 0
     1f6a:	90 93 9d 03 	sts	0x039D, r25
     1f6e:	80 93 9c 03 	sts	0x039C, r24
@@ -4686,7 +4686,7 @@ Disassembly of section .text:
     2aec:	19 f0       	breq	.+6      	; 0x2af4 <zczytaj_komende+0x84>
     2aee:	81 e0       	ldi	r24, 0x01	; 1
     2af0:	80 93 79 03 	sts	0x0379, r24
-    2af4:	0e 94 89 18 	call	0x3112	; 0x3112 <PCF8583_is_alarm_set>
+    2af4:	0e 94 e8 18 	call	0x31d0	; 0x31d0 <PCF8583_is_alarm_set>
     2af8:	81 30       	cpi	r24, 0x01	; 1
     2afa:	31 f4       	brne	.+12     	; 0x2b08 <zczytaj_komende+0x98>
     2afc:	0e 94 ca 07 	call	0xf94	; 0xf94 <buzzer>
@@ -5268,223 +5268,223 @@ Disassembly of section .text:
     3000:	af 90       	pop	r10
     3002:	08 95       	ret
 
-00003004 <PCF8583_alarm_every_day>:
+00003004 <PCF8583_alarm_off>:
     3004:	88 e0       	ldi	r24, 0x08	; 8
     3006:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
     300a:	68 2f       	mov	r22, r24
-    300c:	60 61       	ori	r22, 0x10	; 16
+    300c:	6f 7c       	andi	r22, 0xCF	; 207
     300e:	88 e0       	ldi	r24, 0x08	; 8
-    3010:	0e 94 2a 16 	call	0x2c54	; 0x2c54 <PCF8583_write>
+    3010:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
+
+00003014 <PCF8583_alarm_every_day>:
     3014:	88 e0       	ldi	r24, 0x08	; 8
     3016:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
     301a:	68 2f       	mov	r22, r24
-    301c:	6f 7d       	andi	r22, 0xDF	; 223
+    301c:	60 61       	ori	r22, 0x10	; 16
     301e:	88 e0       	ldi	r24, 0x08	; 8
-    3020:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
-
-00003024 <PCF8583_alarm_weekly>:
+    3020:	0e 94 2a 16 	call	0x2c54	; 0x2c54 <PCF8583_write>
     3024:	88 e0       	ldi	r24, 0x08	; 8
     3026:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
     302a:	68 2f       	mov	r22, r24
-    302c:	6f 7e       	andi	r22, 0xEF	; 239
+    302c:	6f 7d       	andi	r22, 0xDF	; 223
     302e:	88 e0       	ldi	r24, 0x08	; 8
-    3030:	0e 94 2a 16 	call	0x2c54	; 0x2c54 <PCF8583_write>
+    3030:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
+
+00003034 <PCF8583_alarm_weekly>:
     3034:	88 e0       	ldi	r24, 0x08	; 8
     3036:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
     303a:	68 2f       	mov	r22, r24
-    303c:	60 62       	ori	r22, 0x20	; 32
+    303c:	6f 7e       	andi	r22, 0xEF	; 239
     303e:	88 e0       	ldi	r24, 0x08	; 8
-    3040:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
-
-00003044 <PCF8583_alarm_monthly>:
+    3040:	0e 94 2a 16 	call	0x2c54	; 0x2c54 <PCF8583_write>
     3044:	88 e0       	ldi	r24, 0x08	; 8
     3046:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
     304a:	68 2f       	mov	r22, r24
-    304c:	60 63       	ori	r22, 0x30	; 48
+    304c:	60 62       	ori	r22, 0x20	; 32
     304e:	88 e0       	ldi	r24, 0x08	; 8
     3050:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
 
-00003054 <PCF8583_recognise_type_of_alarm>:
+00003054 <PCF8583_alarm_monthly>:
     3054:	88 e0       	ldi	r24, 0x08	; 8
     3056:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
-    305a:	80 73       	andi	r24, 0x30	; 48
-    305c:	82 95       	swap	r24
-    305e:	8f 70       	andi	r24, 0x0F	; 15
-    3060:	08 95       	ret
+    305a:	68 2f       	mov	r22, r24
+    305c:	60 63       	ori	r22, 0x30	; 48
+    305e:	88 e0       	ldi	r24, 0x08	; 8
+    3060:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
 
-00003062 <PCF8583_get_alarm_time>:
-    3062:	6f 92       	push	r6
-    3064:	7f 92       	push	r7
-    3066:	8f 92       	push	r8
-    3068:	9f 92       	push	r9
-    306a:	af 92       	push	r10
-    306c:	bf 92       	push	r11
-    306e:	cf 92       	push	r12
-    3070:	df 92       	push	r13
-    3072:	ef 92       	push	r14
-    3074:	ff 92       	push	r15
-    3076:	0f 93       	push	r16
-    3078:	1f 93       	push	r17
-    307a:	cf 93       	push	r28
-    307c:	df 93       	push	r29
-    307e:	00 d0       	rcall	.+0      	; 0x3080 <PCF8583_get_alarm_time+0x1e>
-    3080:	00 d0       	rcall	.+0      	; 0x3082 <PCF8583_get_alarm_time+0x20>
-    3082:	00 d0       	rcall	.+0      	; 0x3084 <PCF8583_get_alarm_time+0x22>
-    3084:	cd b7       	in	r28, 0x3d	; 61
-    3086:	de b7       	in	r29, 0x3e	; 62
-    3088:	6c 01       	movw	r12, r24
-    308a:	5b 01       	movw	r10, r22
-    308c:	4a 01       	movw	r8, r20
-    308e:	39 01       	movw	r6, r18
-    3090:	ae 01       	movw	r20, r28
-    3092:	4f 5f       	subi	r20, 0xFF	; 255
-    3094:	5f 4f       	sbci	r21, 0xFF	; 255
-    3096:	66 e0       	ldi	r22, 0x06	; 6
-    3098:	89 e0       	ldi	r24, 0x09	; 9
-    309a:	0e 94 3a 16 	call	0x2c74	; 0x2c74 <PCF8583_read_buf>
-    309e:	89 81       	ldd	r24, Y+1	; 0x01
-    30a0:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
-    30a4:	f3 01       	movw	r30, r6
-    30a6:	80 83       	st	Z, r24
-    30a8:	8a 81       	ldd	r24, Y+2	; 0x02
-    30aa:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
-    30ae:	f4 01       	movw	r30, r8
-    30b0:	80 83       	st	Z, r24
-    30b2:	8b 81       	ldd	r24, Y+3	; 0x03
-    30b4:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
-    30b8:	f5 01       	movw	r30, r10
-    30ba:	80 83       	st	Z, r24
-    30bc:	8c 81       	ldd	r24, Y+4	; 0x04
-    30be:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
-    30c2:	f6 01       	movw	r30, r12
-    30c4:	80 83       	st	Z, r24
-    30c6:	8d 81       	ldd	r24, Y+5	; 0x05
-    30c8:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
-    30cc:	f8 01       	movw	r30, r16
-    30ce:	80 83       	st	Z, r24
-    30d0:	0e 94 2a 18 	call	0x3054	; 0x3054 <PCF8583_recognise_type_of_alarm>
-    30d4:	82 30       	cpi	r24, 0x02	; 2
-    30d6:	19 f4       	brne	.+6      	; 0x30de <PCF8583_get_alarm_time+0x7c>
-    30d8:	8e 81       	ldd	r24, Y+6	; 0x06
-    30da:	8f 77       	andi	r24, 0x7F	; 127
-    30dc:	03 c0       	rjmp	.+6      	; 0x30e4 <PCF8583_get_alarm_time+0x82>
-    30de:	8e 81       	ldd	r24, Y+6	; 0x06
-    30e0:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
-    30e4:	f7 01       	movw	r30, r14
-    30e6:	80 83       	st	Z, r24
-    30e8:	26 96       	adiw	r28, 0x06	; 6
-    30ea:	0f b6       	in	r0, 0x3f	; 63
-    30ec:	f8 94       	cli
-    30ee:	de bf       	out	0x3e, r29	; 62
-    30f0:	0f be       	out	0x3f, r0	; 63
-    30f2:	cd bf       	out	0x3d, r28	; 61
-    30f4:	df 91       	pop	r29
-    30f6:	cf 91       	pop	r28
-    30f8:	1f 91       	pop	r17
-    30fa:	0f 91       	pop	r16
-    30fc:	ff 90       	pop	r15
-    30fe:	ef 90       	pop	r14
-    3100:	df 90       	pop	r13
-    3102:	cf 90       	pop	r12
-    3104:	bf 90       	pop	r11
-    3106:	af 90       	pop	r10
-    3108:	9f 90       	pop	r9
-    310a:	8f 90       	pop	r8
-    310c:	7f 90       	pop	r7
-    310e:	6f 90       	pop	r6
+00003064 <PCF8583_set_alarm_time>:
+    3064:	cf 92       	push	r12
+    3066:	ef 92       	push	r14
+    3068:	ff 92       	push	r15
+    306a:	0f 93       	push	r16
+    306c:	1f 93       	push	r17
+    306e:	cf 93       	push	r28
+    3070:	df 93       	push	r29
+    3072:	cd b7       	in	r28, 0x3d	; 61
+    3074:	de b7       	in	r29, 0x3e	; 62
+    3076:	28 97       	sbiw	r28, 0x08	; 8
+    3078:	0f b6       	in	r0, 0x3f	; 63
+    307a:	f8 94       	cli
+    307c:	de bf       	out	0x3e, r29	; 62
+    307e:	0f be       	out	0x3f, r0	; 63
+    3080:	cd bf       	out	0x3d, r28	; 61
+    3082:	f8 2e       	mov	r15, r24
+    3084:	82 2f       	mov	r24, r18
+    3086:	1c 2d       	mov	r17, r12
+    3088:	4f 83       	std	Y+7, r20	; 0x07
+    308a:	68 87       	std	Y+8, r22	; 0x08
+    308c:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
+    3090:	89 83       	std	Y+1, r24	; 0x01
+    3092:	4f 81       	ldd	r20, Y+7	; 0x07
+    3094:	84 2f       	mov	r24, r20
+    3096:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
+    309a:	8a 83       	std	Y+2, r24	; 0x02
+    309c:	68 85       	ldd	r22, Y+8	; 0x08
+    309e:	86 2f       	mov	r24, r22
+    30a0:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
+    30a4:	8b 83       	std	Y+3, r24	; 0x03
+    30a6:	8f 2d       	mov	r24, r15
+    30a8:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
+    30ac:	8c 83       	std	Y+4, r24	; 0x04
+    30ae:	c1 10       	cpse	r12, r1
+    30b0:	03 c0       	rjmp	.+6      	; 0x30b8 <PCF8583_set_alarm_time+0x54>
+    30b2:	0e 94 02 18 	call	0x3004	; 0x3004 <PCF8583_alarm_off>
+    30b6:	18 c0       	rjmp	.+48     	; 0x30e8 <PCF8583_set_alarm_time+0x84>
+    30b8:	11 30       	cpi	r17, 0x01	; 1
+    30ba:	19 f4       	brne	.+6      	; 0x30c2 <PCF8583_set_alarm_time+0x5e>
+    30bc:	0e 94 0a 18 	call	0x3014	; 0x3014 <PCF8583_alarm_every_day>
+    30c0:	13 c0       	rjmp	.+38     	; 0x30e8 <PCF8583_set_alarm_time+0x84>
+    30c2:	12 30       	cpi	r17, 0x02	; 2
+    30c4:	29 f4       	brne	.+10     	; 0x30d0 <PCF8583_set_alarm_time+0x6c>
+    30c6:	0e 94 1a 18 	call	0x3034	; 0x3034 <PCF8583_alarm_weekly>
+    30ca:	8e 2d       	mov	r24, r14
+    30cc:	8f 77       	andi	r24, 0x7F	; 127
+    30ce:	0b c0       	rjmp	.+22     	; 0x30e6 <PCF8583_set_alarm_time+0x82>
+    30d0:	13 30       	cpi	r17, 0x03	; 3
+    30d2:	51 f4       	brne	.+20     	; 0x30e8 <PCF8583_set_alarm_time+0x84>
+    30d4:	0e 94 2a 18 	call	0x3054	; 0x3054 <PCF8583_alarm_monthly>
+    30d8:	80 2f       	mov	r24, r16
+    30da:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
+    30de:	8d 83       	std	Y+5, r24	; 0x05
+    30e0:	8e 2d       	mov	r24, r14
+    30e2:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
+    30e6:	8e 83       	std	Y+6, r24	; 0x06
+    30e8:	ae 01       	movw	r20, r28
+    30ea:	4f 5f       	subi	r20, 0xFF	; 255
+    30ec:	5f 4f       	sbci	r21, 0xFF	; 255
+    30ee:	66 e0       	ldi	r22, 0x06	; 6
+    30f0:	89 e0       	ldi	r24, 0x09	; 9
+    30f2:	0e 94 00 16 	call	0x2c00	; 0x2c00 <PCF8583_write_buf>
+    30f6:	28 96       	adiw	r28, 0x08	; 8
+    30f8:	0f b6       	in	r0, 0x3f	; 63
+    30fa:	f8 94       	cli
+    30fc:	de bf       	out	0x3e, r29	; 62
+    30fe:	0f be       	out	0x3f, r0	; 63
+    3100:	cd bf       	out	0x3d, r28	; 61
+    3102:	df 91       	pop	r29
+    3104:	cf 91       	pop	r28
+    3106:	1f 91       	pop	r17
+    3108:	0f 91       	pop	r16
+    310a:	ff 90       	pop	r15
+    310c:	ef 90       	pop	r14
+    310e:	cf 90       	pop	r12
     3110:	08 95       	ret
 
-00003112 <PCF8583_is_alarm_set>:
-    3112:	80 e0       	ldi	r24, 0x00	; 0
+00003112 <PCF8583_recognise_type_of_alarm>:
+    3112:	88 e0       	ldi	r24, 0x08	; 8
     3114:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
-    3118:	86 95       	lsr	r24
-    311a:	81 70       	andi	r24, 0x01	; 1
-    311c:	08 95       	ret
+    3118:	80 73       	andi	r24, 0x30	; 48
+    311a:	82 95       	swap	r24
+    311c:	8f 70       	andi	r24, 0x0F	; 15
+    311e:	08 95       	ret
 
-0000311e <PCF8583_alarm_off>:
-    311e:	88 e0       	ldi	r24, 0x08	; 8
-    3120:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
-    3124:	68 2f       	mov	r22, r24
-    3126:	6f 7c       	andi	r22, 0xCF	; 207
-    3128:	88 e0       	ldi	r24, 0x08	; 8
-    312a:	0c 94 2a 16 	jmp	0x2c54	; 0x2c54 <PCF8583_write>
-
-0000312e <PCF8583_set_alarm_time>:
-    312e:	cf 92       	push	r12
+00003120 <PCF8583_get_alarm_time>:
+    3120:	6f 92       	push	r6
+    3122:	7f 92       	push	r7
+    3124:	8f 92       	push	r8
+    3126:	9f 92       	push	r9
+    3128:	af 92       	push	r10
+    312a:	bf 92       	push	r11
+    312c:	cf 92       	push	r12
+    312e:	df 92       	push	r13
     3130:	ef 92       	push	r14
     3132:	ff 92       	push	r15
     3134:	0f 93       	push	r16
     3136:	1f 93       	push	r17
     3138:	cf 93       	push	r28
     313a:	df 93       	push	r29
-    313c:	cd b7       	in	r28, 0x3d	; 61
-    313e:	de b7       	in	r29, 0x3e	; 62
-    3140:	28 97       	sbiw	r28, 0x08	; 8
-    3142:	0f b6       	in	r0, 0x3f	; 63
-    3144:	f8 94       	cli
-    3146:	de bf       	out	0x3e, r29	; 62
-    3148:	0f be       	out	0x3f, r0	; 63
-    314a:	cd bf       	out	0x3d, r28	; 61
-    314c:	f8 2e       	mov	r15, r24
-    314e:	82 2f       	mov	r24, r18
-    3150:	1c 2d       	mov	r17, r12
-    3152:	4f 83       	std	Y+7, r20	; 0x07
-    3154:	68 87       	std	Y+8, r22	; 0x08
-    3156:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
-    315a:	89 83       	std	Y+1, r24	; 0x01
-    315c:	4f 81       	ldd	r20, Y+7	; 0x07
-    315e:	84 2f       	mov	r24, r20
-    3160:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
-    3164:	8a 83       	std	Y+2, r24	; 0x02
-    3166:	68 85       	ldd	r22, Y+8	; 0x08
-    3168:	86 2f       	mov	r24, r22
-    316a:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
-    316e:	8b 83       	std	Y+3, r24	; 0x03
-    3170:	8f 2d       	mov	r24, r15
-    3172:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
-    3176:	8c 83       	std	Y+4, r24	; 0x04
-    3178:	c1 10       	cpse	r12, r1
-    317a:	03 c0       	rjmp	.+6      	; 0x3182 <PCF8583_set_alarm_time+0x54>
-    317c:	0e 94 8f 18 	call	0x311e	; 0x311e <PCF8583_alarm_off>
-    3180:	18 c0       	rjmp	.+48     	; 0x31b2 <PCF8583_set_alarm_time+0x84>
-    3182:	11 30       	cpi	r17, 0x01	; 1
-    3184:	19 f4       	brne	.+6      	; 0x318c <PCF8583_set_alarm_time+0x5e>
-    3186:	0e 94 02 18 	call	0x3004	; 0x3004 <PCF8583_alarm_every_day>
-    318a:	13 c0       	rjmp	.+38     	; 0x31b2 <PCF8583_set_alarm_time+0x84>
-    318c:	12 30       	cpi	r17, 0x02	; 2
-    318e:	29 f4       	brne	.+10     	; 0x319a <PCF8583_set_alarm_time+0x6c>
-    3190:	0e 94 12 18 	call	0x3024	; 0x3024 <PCF8583_alarm_weekly>
-    3194:	8e 2d       	mov	r24, r14
-    3196:	8f 77       	andi	r24, 0x7F	; 127
-    3198:	0b c0       	rjmp	.+22     	; 0x31b0 <PCF8583_set_alarm_time+0x82>
-    319a:	13 30       	cpi	r17, 0x03	; 3
-    319c:	51 f4       	brne	.+20     	; 0x31b2 <PCF8583_set_alarm_time+0x84>
-    319e:	0e 94 22 18 	call	0x3044	; 0x3044 <PCF8583_alarm_monthly>
-    31a2:	80 2f       	mov	r24, r16
-    31a4:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
-    31a8:	8d 83       	std	Y+5, r24	; 0x05
-    31aa:	8e 2d       	mov	r24, r14
-    31ac:	0e 94 f6 15 	call	0x2bec	; 0x2bec <bin2bcd>
-    31b0:	8e 83       	std	Y+6, r24	; 0x06
-    31b2:	ae 01       	movw	r20, r28
-    31b4:	4f 5f       	subi	r20, 0xFF	; 255
-    31b6:	5f 4f       	sbci	r21, 0xFF	; 255
-    31b8:	66 e0       	ldi	r22, 0x06	; 6
-    31ba:	89 e0       	ldi	r24, 0x09	; 9
-    31bc:	0e 94 00 16 	call	0x2c00	; 0x2c00 <PCF8583_write_buf>
-    31c0:	28 96       	adiw	r28, 0x08	; 8
-    31c2:	0f b6       	in	r0, 0x3f	; 63
-    31c4:	f8 94       	cli
-    31c6:	de bf       	out	0x3e, r29	; 62
-    31c8:	0f be       	out	0x3f, r0	; 63
-    31ca:	cd bf       	out	0x3d, r28	; 61
-    31cc:	df 91       	pop	r29
-    31ce:	cf 91       	pop	r28
-    31d0:	1f 91       	pop	r17
-    31d2:	0f 91       	pop	r16
-    31d4:	ff 90       	pop	r15
-    31d6:	ef 90       	pop	r14
-    31d8:	cf 90       	pop	r12
+    313c:	00 d0       	rcall	.+0      	; 0x313e <PCF8583_get_alarm_time+0x1e>
+    313e:	00 d0       	rcall	.+0      	; 0x3140 <PCF8583_get_alarm_time+0x20>
+    3140:	00 d0       	rcall	.+0      	; 0x3142 <PCF8583_get_alarm_time+0x22>
+    3142:	cd b7       	in	r28, 0x3d	; 61
+    3144:	de b7       	in	r29, 0x3e	; 62
+    3146:	6c 01       	movw	r12, r24
+    3148:	5b 01       	movw	r10, r22
+    314a:	4a 01       	movw	r8, r20
+    314c:	39 01       	movw	r6, r18
+    314e:	ae 01       	movw	r20, r28
+    3150:	4f 5f       	subi	r20, 0xFF	; 255
+    3152:	5f 4f       	sbci	r21, 0xFF	; 255
+    3154:	66 e0       	ldi	r22, 0x06	; 6
+    3156:	89 e0       	ldi	r24, 0x09	; 9
+    3158:	0e 94 3a 16 	call	0x2c74	; 0x2c74 <PCF8583_read_buf>
+    315c:	89 81       	ldd	r24, Y+1	; 0x01
+    315e:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
+    3162:	f3 01       	movw	r30, r6
+    3164:	80 83       	st	Z, r24
+    3166:	8a 81       	ldd	r24, Y+2	; 0x02
+    3168:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
+    316c:	f4 01       	movw	r30, r8
+    316e:	80 83       	st	Z, r24
+    3170:	8b 81       	ldd	r24, Y+3	; 0x03
+    3172:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
+    3176:	f5 01       	movw	r30, r10
+    3178:	80 83       	st	Z, r24
+    317a:	8c 81       	ldd	r24, Y+4	; 0x04
+    317c:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
+    3180:	f6 01       	movw	r30, r12
+    3182:	80 83       	st	Z, r24
+    3184:	8d 81       	ldd	r24, Y+5	; 0x05
+    3186:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
+    318a:	f8 01       	movw	r30, r16
+    318c:	80 83       	st	Z, r24
+    318e:	0e 94 89 18 	call	0x3112	; 0x3112 <PCF8583_recognise_type_of_alarm>
+    3192:	82 30       	cpi	r24, 0x02	; 2
+    3194:	19 f4       	brne	.+6      	; 0x319c <PCF8583_get_alarm_time+0x7c>
+    3196:	8e 81       	ldd	r24, Y+6	; 0x06
+    3198:	8f 77       	andi	r24, 0x7F	; 127
+    319a:	03 c0       	rjmp	.+6      	; 0x31a2 <PCF8583_get_alarm_time+0x82>
+    319c:	8e 81       	ldd	r24, Y+6	; 0x06
+    319e:	0e 94 ed 15 	call	0x2bda	; 0x2bda <bcd2bin>
+    31a2:	f7 01       	movw	r30, r14
+    31a4:	80 83       	st	Z, r24
+    31a6:	26 96       	adiw	r28, 0x06	; 6
+    31a8:	0f b6       	in	r0, 0x3f	; 63
+    31aa:	f8 94       	cli
+    31ac:	de bf       	out	0x3e, r29	; 62
+    31ae:	0f be       	out	0x3f, r0	; 63
+    31b0:	cd bf       	out	0x3d, r28	; 61
+    31b2:	df 91       	pop	r29
+    31b4:	cf 91       	pop	r28
+    31b6:	1f 91       	pop	r17
+    31b8:	0f 91       	pop	r16
+    31ba:	ff 90       	pop	r15
+    31bc:	ef 90       	pop	r14
+    31be:	df 90       	pop	r13
+    31c0:	cf 90       	pop	r12
+    31c2:	bf 90       	pop	r11
+    31c4:	af 90       	pop	r10
+    31c6:	9f 90       	pop	r9
+    31c8:	8f 90       	pop	r8
+    31ca:	7f 90       	pop	r7
+    31cc:	6f 90       	pop	r6
+    31ce:	08 95       	ret
+
+000031d0 <PCF8583_is_alarm_set>:
+    31d0:	80 e0       	ldi	r24, 0x00	; 0
+    31d2:	0e 94 6e 16 	call	0x2cdc	; 0x2cdc <PCF8583_read>
+    31d6:	86 95       	lsr	r24
+    31d8:	81 70       	andi	r24, 0x01	; 1
     31da:	08 95       	ret
 
 000031dc <PCF8583_get_wall_alarm>:
@@ -5506,7 +5506,7 @@ Disassembly of section .text:
     31fa:	73 e0       	ldi	r23, 0x03	; 3
     31fc:	8f e9       	ldi	r24, 0x9F	; 159
     31fe:	93 e0       	ldi	r25, 0x03	; 3
-    3200:	0e 94 31 18 	call	0x3062	; 0x3062 <PCF8583_get_alarm_time>
+    3200:	0e 94 90 18 	call	0x3120	; 0x3120 <PCF8583_get_alarm_time>
     3204:	1f 91       	pop	r17
     3206:	0f 91       	pop	r16
     3208:	ff 90       	pop	r15

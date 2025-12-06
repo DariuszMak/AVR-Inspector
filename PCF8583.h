@@ -37,7 +37,7 @@ struct time_frame
 {
     uint8_t hseconds;
     uint8_t seconds;
-    uint8_t minuts;
+    uint8_t minutes;
     uint8_t hours;
     uint8_t days;
     uint8_t months;
