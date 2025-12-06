@@ -789,6 +789,7 @@ int main( void )
     while( 1 )
     {
         zczytaj_komende();
+        lockers_check_events();
     }
 
     return 0;
