@@ -280,7 +280,6 @@ uint8_t end_of_settings(uint8_t case_of_time)
     else return 0;
 }
 
-
 void show_alarm_options(uint8_t index)
 {
 
@@ -386,7 +385,7 @@ void show_list(uint16_t current_index, uint16_t max_index)
         }
         else if (menu == 5)
         {
-            show_alarm_options(current_index);
+            show_alarm_options(current_index - 1);
         }
     }
 
@@ -575,11 +574,74 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         break;
     case 5:
         LCD_EraseAll();
-        if(c < 0) c = 4;
-        else if(c > 4) c = 0;
-        show_list(c, 4);
+        if (u < -1) u = -1;
+        if(u == -1)
+        {
+            if(c < 0) c = 4;
+            else if(c > 4) c = 0;
+            show_list(c, 4);
+        }
+
+        else
+        {
+
+            if(u == end_of_settings(c))
+            {
+                if(c != 0)
+                {
+                    if(c == 0) PCF8583_alarm_off();
+                    else if(c == 1)
+                    {
+                        PCF8583_alarm_every_day();
+                        PCF8583_set_alarm_time(godz,min,sek,hsek);
+                    }
+                    else if(c == 2)
+                    {
+                        PCF8583_alarm_weekly();
+                        PCF8583_set_weekly_alarm(miesiac,godz,min,sek,hsek);
+                    }
+                    else if(c == 3)
+                    {
+                        PCF8583_alarm_monthly();
+                        PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
+                    }
 
 
+                    LCD_Clear();
+                    LCD_GoTo(0,0);
+                    LCD_WriteText("ZAPISANO ALARM!");
+                    delay_ms_var(500);
+                }
+
+                start = 1;
+            }
+
+            if( w == 1 )
+            {
+                LCD_GoTo(moveStep, 0);
+                setting_information(c, u);
+                w = 0;
+                delay_ms_var(400);
+                LCD_EraseAll();
+            }
+
+            check_step_value(c, u);
+
+            if( s != 0 )
+            {
+                set_appropriate_values_of_time(c, u, s);
+
+                s = 0;
+            }
+
+            correction_of_time();
+
+            correction_of_date(c);
+
+            moveStep = 0;
+            show_alarm_format(c);
+
+        }
         break;
     case 6:
         LCD_EraseAll();
@@ -958,12 +1020,12 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             w = 1;//wymuszenie wyświetlenia komunikatu
             break;
         case 32://zwiększenie
-            if(u != 0) s = 1;
-            u -= zwiekszanie;
+            if(u == -1) c -= zwiekszanie;
+            else s = 1;
             break;
         case 33://zmniejszenie
-            if(u != 0) s = 2;
-            u += zwiekszanie;
+            if(u == -1) c += zwiekszanie;
+            else s = 2;
             break;
         case 59:
             u = end_of_settings(c);
@@ -1101,6 +1163,9 @@ void pilot( int com, int tog )//
                 break;
             case 5:
                 //czynnosc( men, 50, tog );
+                u = -1;
+                w = 1;//wymuszenie wyświetlenia komunikatu
+                s = 0;
                 c = PCF8583_recognise_type_of_alarm();
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
@@ -1205,7 +1270,7 @@ int main( void )
     sei();//włącza przerwania
 
     pilot( 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
-    pilot( 3, 0 );//przejście do podprogramu nr 3
+    pilot( 5, 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;
