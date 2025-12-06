@@ -2248,7 +2248,7 @@ Disassembly of section .text:
     12fa:	41 30       	cpi	r20, 0x01	; 1
     12fc:	21 f4       	brne	.+8      	; 0x1306 <set_appropriate_values_of_time+0xec>
     12fe:	80 91 46 02 	lds	r24, 0x0246
-    1302:	8d 6f       	ori	r24, 0xFD	; 253
+    1302:	82 60       	ori	r24, 0x02	; 2
     1304:	4c c0       	rjmp	.+152    	; 0x139e <set_appropriate_values_of_time+0x184>
     1306:	42 30       	cpi	r20, 0x02	; 2
     1308:	09 f0       	breq	.+2      	; 0x130c <set_appropriate_values_of_time+0xf2>
@@ -2261,7 +2261,7 @@ Disassembly of section .text:
     1318:	41 30       	cpi	r20, 0x01	; 1
     131a:	21 f4       	brne	.+8      	; 0x1324 <set_appropriate_values_of_time+0x10a>
     131c:	80 91 46 02 	lds	r24, 0x0246
-    1320:	8b 6f       	ori	r24, 0xFB	; 251
+    1320:	84 60       	ori	r24, 0x04	; 4
     1322:	3d c0       	rjmp	.+122    	; 0x139e <set_appropriate_values_of_time+0x184>
     1324:	42 30       	cpi	r20, 0x02	; 2
     1326:	e9 f5       	brne	.+122    	; 0x13a2 <set_appropriate_values_of_time+0x188>
@@ -2273,7 +2273,7 @@ Disassembly of section .text:
     1334:	41 30       	cpi	r20, 0x01	; 1
     1336:	21 f4       	brne	.+8      	; 0x1340 <set_appropriate_values_of_time+0x126>
     1338:	80 91 46 02 	lds	r24, 0x0246
-    133c:	87 6f       	ori	r24, 0xF7	; 247
+    133c:	88 60       	ori	r24, 0x08	; 8
     133e:	2f c0       	rjmp	.+94     	; 0x139e <set_appropriate_values_of_time+0x184>
     1340:	42 30       	cpi	r20, 0x02	; 2
     1342:	79 f5       	brne	.+94     	; 0x13a2 <set_appropriate_values_of_time+0x188>
@@ -2285,7 +2285,7 @@ Disassembly of section .text:
     1350:	41 30       	cpi	r20, 0x01	; 1
     1352:	21 f4       	brne	.+8      	; 0x135c <set_appropriate_values_of_time+0x142>
     1354:	80 91 46 02 	lds	r24, 0x0246
-    1358:	8f 6e       	ori	r24, 0xEF	; 239
+    1358:	80 61       	ori	r24, 0x10	; 16
     135a:	21 c0       	rjmp	.+66     	; 0x139e <set_appropriate_values_of_time+0x184>
     135c:	42 30       	cpi	r20, 0x02	; 2
     135e:	09 f5       	brne	.+66     	; 0x13a2 <set_appropriate_values_of_time+0x188>
@@ -2297,7 +2297,7 @@ Disassembly of section .text:
     136c:	41 30       	cpi	r20, 0x01	; 1
     136e:	21 f4       	brne	.+8      	; 0x1378 <set_appropriate_values_of_time+0x15e>
     1370:	80 91 46 02 	lds	r24, 0x0246
-    1374:	8f 6d       	ori	r24, 0xDF	; 223
+    1374:	80 62       	ori	r24, 0x20	; 32
     1376:	13 c0       	rjmp	.+38     	; 0x139e <set_appropriate_values_of_time+0x184>
     1378:	42 30       	cpi	r20, 0x02	; 2
     137a:	99 f4       	brne	.+38     	; 0x13a2 <set_appropriate_values_of_time+0x188>
@@ -2309,7 +2309,7 @@ Disassembly of section .text:
     1388:	41 30       	cpi	r20, 0x01	; 1
     138a:	21 f4       	brne	.+8      	; 0x1394 <set_appropriate_values_of_time+0x17a>
     138c:	80 91 46 02 	lds	r24, 0x0246
-    1390:	8f 6b       	ori	r24, 0xBF	; 191
+    1390:	80 64       	ori	r24, 0x40	; 64
     1392:	05 c0       	rjmp	.+10     	; 0x139e <set_appropriate_values_of_time+0x184>
     1394:	42 30       	cpi	r20, 0x02	; 2
     1396:	29 f4       	brne	.+10     	; 0x13a2 <set_appropriate_values_of_time+0x188>
@@ -2335,7 +2335,7 @@ Disassembly of section .text:
     13be:	08 95       	ret
     13c0:	88 e0       	ldi	r24, 0x08	; 8
     13c2:	08 95       	ret
-    13c4:	85 e0       	ldi	r24, 0x05	; 5
+    13c4:	84 e0       	ldi	r24, 0x04	; 4
     13c6:	08 95       	ret
 
 000013c8 <show_alarm_options>:
@@ -2403,52 +2403,52 @@ Disassembly of section .text:
 00001456 <correction_of_date>:
     1456:	90 91 46 02 	lds	r25, 0x0246
     145a:	19 16       	cp	r1, r25
-    145c:	14 f0       	brlt	.+4      	; 0x1462 <correction_of_date+0xc>
-    145e:	9c e0       	ldi	r25, 0x0C	; 12
-    1460:	03 c0       	rjmp	.+6      	; 0x1468 <correction_of_date+0x12>
-    1462:	9d 30       	cpi	r25, 0x0D	; 13
-    1464:	1c f0       	brlt	.+6      	; 0x146c <correction_of_date+0x16>
-    1466:	91 e0       	ldi	r25, 0x01	; 1
-    1468:	90 93 46 02 	sts	0x0246, r25
-    146c:	90 91 46 02 	lds	r25, 0x0246
-    1470:	49 2f       	mov	r20, r25
-    1472:	4d 7f       	andi	r20, 0xFD	; 253
-    1474:	20 91 55 02 	lds	r18, 0x0255
-    1478:	30 91 56 02 	lds	r19, 0x0256
-    147c:	41 30       	cpi	r20, 0x01	; 1
-    147e:	d9 f0       	breq	.+54     	; 0x14b6 <correction_of_date+0x60>
-    1480:	95 30       	cpi	r25, 0x05	; 5
-    1482:	c9 f0       	breq	.+50     	; 0x14b6 <correction_of_date+0x60>
-    1484:	59 ef       	ldi	r21, 0xF9	; 249
-    1486:	59 0f       	add	r21, r25
-    1488:	52 30       	cpi	r21, 0x02	; 2
-    148a:	a8 f0       	brcs	.+42     	; 0x14b6 <correction_of_date+0x60>
-    148c:	9a 30       	cpi	r25, 0x0A	; 10
-    148e:	99 f0       	breq	.+38     	; 0x14b6 <correction_of_date+0x60>
-    1490:	9c 30       	cpi	r25, 0x0C	; 12
-    1492:	89 f0       	breq	.+34     	; 0x14b6 <correction_of_date+0x60>
-    1494:	44 30       	cpi	r20, 0x04	; 4
+    145c:	24 f0       	brlt	.+8      	; 0x1466 <correction_of_date+0x10>
+    145e:	82 30       	cpi	r24, 0x02	; 2
+    1460:	49 f0       	breq	.+18     	; 0x1474 <correction_of_date+0x1e>
+    1462:	9c e0       	ldi	r25, 0x0C	; 12
+    1464:	05 c0       	rjmp	.+10     	; 0x1470 <correction_of_date+0x1a>
+    1466:	9d 30       	cpi	r25, 0x0D	; 13
+    1468:	2c f0       	brlt	.+10     	; 0x1474 <correction_of_date+0x1e>
+    146a:	82 30       	cpi	r24, 0x02	; 2
+    146c:	19 f0       	breq	.+6      	; 0x1474 <correction_of_date+0x1e>
+    146e:	91 e0       	ldi	r25, 0x01	; 1
+    1470:	90 93 46 02 	sts	0x0246, r25
+    1474:	90 91 46 02 	lds	r25, 0x0246
+    1478:	49 2f       	mov	r20, r25
+    147a:	4d 7f       	andi	r20, 0xFD	; 253
+    147c:	20 91 55 02 	lds	r18, 0x0255
+    1480:	30 91 56 02 	lds	r19, 0x0256
+    1484:	41 30       	cpi	r20, 0x01	; 1
+    1486:	c9 f0       	breq	.+50     	; 0x14ba <correction_of_date+0x64>
+    1488:	95 30       	cpi	r25, 0x05	; 5
+    148a:	b9 f0       	breq	.+46     	; 0x14ba <correction_of_date+0x64>
+    148c:	59 ef       	ldi	r21, 0xF9	; 249
+    148e:	59 0f       	add	r21, r25
+    1490:	52 30       	cpi	r21, 0x02	; 2
+    1492:	98 f0       	brcs	.+38     	; 0x14ba <correction_of_date+0x64>
+    1494:	9a 30       	cpi	r25, 0x0A	; 10
     1496:	89 f0       	breq	.+34     	; 0x14ba <correction_of_date+0x64>
-    1498:	49 30       	cpi	r20, 0x09	; 9
+    1498:	9c 30       	cpi	r25, 0x0C	; 12
     149a:	79 f0       	breq	.+30     	; 0x14ba <correction_of_date+0x64>
-    149c:	92 30       	cpi	r25, 0x02	; 2
-    149e:	39 f4       	brne	.+14     	; 0x14ae <correction_of_date+0x58>
-    14a0:	a9 01       	movw	r20, r18
-    14a2:	43 70       	andi	r20, 0x03	; 3
-    14a4:	55 27       	eor	r21, r21
-    14a6:	45 2b       	or	r20, r21
-    14a8:	61 f0       	breq	.+24     	; 0x14c2 <correction_of_date+0x6c>
-    14aa:	81 30       	cpi	r24, 0x01	; 1
-    14ac:	41 f0       	breq	.+16     	; 0x14be <correction_of_date+0x68>
-    14ae:	88 23       	and	r24, r24
+    149c:	44 30       	cpi	r20, 0x04	; 4
+    149e:	79 f0       	breq	.+30     	; 0x14be <correction_of_date+0x68>
+    14a0:	49 30       	cpi	r20, 0x09	; 9
+    14a2:	69 f0       	breq	.+26     	; 0x14be <correction_of_date+0x68>
+    14a4:	92 30       	cpi	r25, 0x02	; 2
+    14a6:	69 f4       	brne	.+26     	; 0x14c2 <correction_of_date+0x6c>
+    14a8:	a9 01       	movw	r20, r18
+    14aa:	43 70       	andi	r20, 0x03	; 3
+    14ac:	55 27       	eor	r21, r21
+    14ae:	45 2b       	or	r20, r21
     14b0:	41 f0       	breq	.+16     	; 0x14c2 <correction_of_date+0x6c>
-    14b2:	80 e0       	ldi	r24, 0x00	; 0
-    14b4:	07 c0       	rjmp	.+14     	; 0x14c4 <correction_of_date+0x6e>
-    14b6:	8f e1       	ldi	r24, 0x1F	; 31
+    14b2:	81 11       	cpse	r24, r1
+    14b4:	06 c0       	rjmp	.+12     	; 0x14c2 <correction_of_date+0x6c>
+    14b6:	8c e1       	ldi	r24, 0x1C	; 28
     14b8:	05 c0       	rjmp	.+10     	; 0x14c4 <correction_of_date+0x6e>
-    14ba:	8e e1       	ldi	r24, 0x1E	; 30
+    14ba:	8f e1       	ldi	r24, 0x1F	; 31
     14bc:	03 c0       	rjmp	.+6      	; 0x14c4 <correction_of_date+0x6e>
-    14be:	8c e1       	ldi	r24, 0x1C	; 28
+    14be:	8e e1       	ldi	r24, 0x1E	; 30
     14c0:	01 c0       	rjmp	.+2      	; 0x14c4 <correction_of_date+0x6e>
     14c2:	8d e1       	ldi	r24, 0x1D	; 29
     14c4:	40 91 5b 02 	lds	r20, 0x025B
@@ -3022,7 +3022,7 @@ Disassembly of section .text:
     1a82:	0e 94 0d 09 	call	0x121a	; 0x121a <set_appropriate_values_of_time>
     1a86:	10 92 51 02 	sts	0x0251, r1
     1a8a:	0e 94 fa 09 	call	0x13f4	; 0x13f4 <correction_of_time>
-    1a8e:	81 e0       	ldi	r24, 0x01	; 1
+    1a8e:	80 e0       	ldi	r24, 0x00	; 0
     1a90:	0e 94 2b 0a 	call	0x1456	; 0x1456 <correction_of_date>
     1a94:	10 92 2e 02 	sts	0x022E, r1
     1a98:	df 91       	pop	r29
@@ -5560,7 +5560,7 @@ Disassembly of section .text:
     32b4:	2d e2       	ldi	r18, 0x2D	; 45
     32b6:	4e e1       	ldi	r20, 0x1E	; 30
     32b8:	65 e0       	ldi	r22, 0x05	; 5
-    32ba:	85 ef       	ldi	r24, 0xF5	; 245
+    32ba:	8d ef       	ldi	r24, 0xFD	; 253
     32bc:	0e 94 33 18 	call	0x3066	; 0x3066 <PCF8583_set_weekly_alarm>
     32c0:	78 94       	sei
     32c2:	60 e0       	ldi	r22, 0x00	; 0

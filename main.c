@@ -134,8 +134,8 @@ void show_time_format(void)
 void show_alarm_format(uint8_t case_of_format)
 {
 
-show_time_only_format();
-LCD_GoTo(moveStep,1);
+    show_time_only_format();
+    LCD_GoTo(moveStep,1);
     if(case_of_format == 2)
     {
         if(miesiac == 0)
@@ -224,34 +224,34 @@ void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
             if(s == 1) miesiac |= (1 << 0);
             else if(s == 2) miesiac &= ~(1 << 0);
         }
-        if(u == 5)
+        else if(u == 5)
         {
-            if(s == 1) miesiac |= ~(1 << 1);
+            if(s == 1) miesiac |= (1 << 1);
             else if(s == 2) miesiac &= ~(1 << 1);
         }
-        if(u == 6)
+        else if(u == 6)
         {
-            if(s == 1) miesiac |= ~(1 << 2);
+            if(s == 1) miesiac |= (1 << 2);
             else if(s == 2) miesiac &= ~(1 << 2);
         }
-        if(u == 7)
+        else if(u == 7)
         {
-            if(s == 1) miesiac |= ~(1 << 3);
+            if(s == 1) miesiac |= (1 << 3);
             else if(s == 2) miesiac &= ~(1 << 3);
         }
-        if(u == 8)
+        else if(u == 8)
         {
-            if(s == 1) miesiac |= ~(1 << 4);
+            if(s == 1) miesiac |= (1 << 4);
             else if(s == 2) miesiac &= ~(1 << 4);
         }
-        if(u == 9)
+        else if(u == 9)
         {
-            if(s == 1) miesiac |= ~(1 << 5);
+            if(s == 1) miesiac |= (1 << 5);
             else if(s == 2) miesiac &= ~(1 << 5);
         }
-        if(u == 10)
+        else if(u == 10)
         {
-            if(s == 1) miesiac |= ~(1 << 6);
+            if(s == 1) miesiac |= (1 << 6);
             else if(s == 2) miesiac &= ~(1 << 6);
         }
     }
@@ -276,7 +276,7 @@ void check_step_value(uint8_t case_of_time, uint8_t u)
 uint8_t end_of_settings(uint8_t case_of_time)
 {
     if(case_of_time == 0) return 8;
-    else if(case_of_time == 1) return 5;
+    else if(case_of_time == 1) return 4;
     else if(case_of_time == 2) return 11;
     else if(case_of_time == 3) return 6;
     else return 0;
@@ -315,17 +315,17 @@ void correction_of_time(void)
     else if(hsek > 99) hsek = 0;
 }
 
-void correction_of_date(uint8_t check_with_year)//uwzględnianie dnia miesiąca względem roku
+void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca względem roku
 {
 
-    if(miesiac < 1) miesiac = 12;
-    else if(miesiac > 12) miesiac = 1;
+    if(miesiac < 1 && case_of_time != 2) miesiac = 12;
+    else if(miesiac > 12 && case_of_time != 2) miesiac = 1;
 
     uint8_t case_of_day = 0;
     if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
     else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
-    else if (miesiac == 2 && (rok % 4) != 0 && check_with_year == 1) case_of_day = 28;
-    else if ((miesiac == 2 && (rok % 4) == 0) || check_with_year == 0) case_of_day = 29;
+    else if (miesiac == 2 && (rok % 4) != 0 && case_of_time == 0) case_of_day = 28;
+    else case_of_day = 29;
 
     if(dzien < 1) dzien = case_of_day;
     else if(dzien > case_of_day) dzien = 1;
@@ -569,7 +569,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         correction_of_time();
 
-        correction_of_date(1);
+        correction_of_date(0);
 
         moveStep = 0;
         show_time_format();
@@ -1267,7 +1267,7 @@ int main( void )
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
     PCF8583_alarm_weekly();
-    PCF8583_set_weekly_alarm(0b11110101,5,30,45,25);
+    PCF8583_set_weekly_alarm(0b11111101,5,30,45,25);
     //PCF8583_alarm_monthly();
 
     sei();//włącza przerwania
