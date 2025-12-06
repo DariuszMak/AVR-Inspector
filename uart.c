@@ -24,6 +24,21 @@ void uart_init(uint16_t baud)
 
     DDRD &= ~(1<<PD2);
     PORTD |= (1<<PD2);//PD2 - wejście + pull-up
+
+    /* Tworzy strumienia danych o nazwie 'mystdout' połączony
+    z funkcją 'USART_Transmit' */
+    static FILE mystdout = FDEV_SETUP_STREAM(uart_putc, NULL, _FDEV_SETUP_WRITE);
+
+    //static FILE mystdin = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
+
+    /* Przekierowuje standardowe wyjście do  'mystdout' */
+    stdout = &mystdout;
+}
+
+/* Wysyła znak do portu szeregowego */
+void USART_Transmit(uint8_t c, FILE *stream)
+{
+    uart_putc(c);
 }
 
 void uart_putc(char data)

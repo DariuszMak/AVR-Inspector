@@ -1,7 +1,6 @@
 #ifndef LOCKERS_H_
 #define LOCKERS_H_
 
-#include <stdio.h>
 #include <avr/io.h>
 #include "delay_lib.h"
 #include "PCF8583.h"

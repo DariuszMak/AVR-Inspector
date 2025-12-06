@@ -23,6 +23,28 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
+void send_all_screen(void)
+{
+    rozmiar = LCD_CHARSPERLINE;
+    LCD_Home();
+
+    uart_puts("|");
+    for( t = 0; t < rozmiar; ++t )
+    {
+        uart_putc(LCD_ReadData());
+    }
+
+    uart_puts("|\n|");
+
+    LCD_GoTo( 0, 1 );
+
+    for( t = 0; t < rozmiar; ++t )
+    {
+        uart_putc(LCD_ReadData());
+    }
+    uart_puts("|\n");
+}
+
 void set_time_by_uart(void)
 {
     /*int8_t godz, min, sek, hsek;
@@ -67,7 +89,6 @@ void set_time_by_uart(void)
     printf("Zapisano!\n");
 
     lockers_print_date_of_report();
-
 }
 
 double round_double(float number, uint8_t precision)
@@ -86,7 +107,6 @@ double round_double(float number, uint8_t precision)
         val1 = value + 0.5;
     return ((int32_t)val1) / (double)ten;
 }
-
 
 uint8_t number_of_digits(int32_t number)
 {
@@ -1586,7 +1606,7 @@ void czynnosc0( int com, int tog )
 
 void czynnosc1( int com, int tog )
 {
-    if ( com == 41 )
+    /*if ( com == 41 )
     {
         refresh_screen = 0;
         LCD_Clear();
@@ -1602,12 +1622,12 @@ void czynnosc1( int com, int tog )
             {
                 original_text[t][u] = rand() % 256;
             }
-        }
+        }*/
 
         /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";//błąd, bo nie działa przy powtórnym użyciu
         original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
 
-        for( t = 0; t < LCD_CHARSPERLINE; ++t )
+        /*for( t = 0; t < LCD_CHARSPERLINE; ++t )
         {
             LCD_WriteData( original_text[0][t] );
         }
@@ -1679,6 +1699,7 @@ void czynnosc1( int com, int tog )
                 free( buffer_table[t] );
             }
             free( buffer_table );
+            delay_ms_var(100);
         }
 
         for ( t = 0; t < 2; ++t )
@@ -1694,6 +1715,7 @@ void czynnosc1( int com, int tog )
         buzzer();
 
     }
+    */
     if ( com == 12 )
     {
         pilot_off();
@@ -2095,6 +2117,7 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
+        send_all_screen();
     }
 
     if( interr == 1 )

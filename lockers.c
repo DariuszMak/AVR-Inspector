@@ -16,48 +16,6 @@ uint8_t lockers_is_flag_bit(uint8_t move)
     //return 0;//usunąć, gdy będzie PCF8563
 }
 
-/* Inicjuje port szeregowy AVRa */
-void USART_init(uint16_t myubrr)
-{
-    /* Ustala prędkość transmisji */
-    UBRRH = (uint8_t)(myubrr>>8);
-    UBRRL = (uint8_t)myubrr;
-
-    /* Włącza nadajnika */
-    UCSRB = (1<<RXEN) | (1<<TXEN);
-
-    /* Format ramki: 8 bitów danych, 1 bit stopu, brak bitu parzystości */
-    UCSRC = (1<<URSEL)|(3<<UCSZ0);
-}
-
-/* Wysyła znak do portu szeregowego */
-void USART_Transmit(uint8_t c, FILE *stream)
-{
-    if (c == '\n')
-    {
-        USART_Transmit('\r', stream);
-    }
-    while(!(UCSRA & (1<<UDRE)));
-    UDR = c;
-
-}
-
-/* Odbiera znak z portu szeregowego */
-uint8_t USART_Recieve(FILE *stream)
-{
-    while(!(UCSRA & (1<<RXC)));
-    return UDR;
-}
-
-uint8_t USART_Recieve_without_waiting(void)
-{
-    if(UCSRA & (1<<RXC))
-    {
-        return UDR;
-    }
-    else return 0;
-}
-
 void lockers_init()
 {
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
@@ -102,15 +60,6 @@ void lockers_init()
 
     LOCKER_10_BUTTON_DIR  &= ~LOCKER_10_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_10_BUTTON_PORT |= LOCKER_10_BUTTON_IN;//podciągnięcie przycisku tranzystorami
-
-    /* Tworzy strumienia danych o nazwie 'mystdout' połączony
-    z funkcją 'USART_Transmit' */
-    static FILE mystdout = FDEV_SETUP_STREAM(uart_putc, NULL, _FDEV_SETUP_WRITE);
-
-    //static FILE mystdin = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
-
-    /* Przekierowuje standardowe wyjście do  'mystdout' */
-    stdout = &mystdout;
 
     /* Przekierowuje standardowe wejście do  'mystdin' */
 

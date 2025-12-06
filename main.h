@@ -65,6 +65,8 @@ struct double_format maximum_temperature;
 
 int main( void );
 
+void send_all_screen(void);
+
 void set_time_by_uart(void);
 
 double round_double(float number, uint8_t precision);
