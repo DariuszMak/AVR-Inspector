@@ -37,9 +37,9 @@ uint8_t number_of_digits(uint32_t number)
     return d;
 }
 
-void show_temperature(void)
+void show_double(double number, uint8_t approximation)
 {
-    uint8_t temp = put_double_format(termometer_temperature, 1);
+    uint8_t temp = put_double_format(number, 1);
     LCD_Int (double_format_global.integer_number);
     LCD_WriteText(".");
     for(t = 0; t < temp; ++t)
@@ -49,9 +49,9 @@ void show_temperature(void)
     LCD_Int (double_format_global.decimal_number);
 }
 
-int8_t put_double_format( double value, unsigned int approximation)
+int8_t put_double_format( double value, uint8_t approximation)
 {
-    if((int16_t) abs(value) > 300) return - 1;
+    if((int16_t) abs(value) > 300) return 0;
     if(approximation > 2) approximation = 2;
     double_format_global.integer_number = (int16_t)value;
 
@@ -972,7 +972,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     LCD_GoTo(12, 0);
-    show_temperature();
+    show_double(termometer_temperature,1);
 
     /*LCD_Double(-23.301,2);
     LCD_Double(-23.3015,2);
@@ -1895,7 +1895,8 @@ void sczytaj_komende( void )
                 lockers_safety_bit_on();
                 start_program = 0;
             }
-        }else if(temp == 1)
+        }
+        else if(temp == 1)
         {
             buzzer_time(100);
         }
@@ -2051,6 +2052,18 @@ int main( void )
     //backlight(1);
 
     start_program = 1;
+
+    /*double test_of_double = -400.0;
+
+    while(test_of_double < 400.0)
+    {
+        LCD_Clear();
+
+        show_double(test_of_double, 2);
+        test_of_double += 0.11;
+        delay_ms_var(2);
+    }*/
+
 
     LCD_WriteText("AVR INSPECTOR");
     delay_ms_var(1500);

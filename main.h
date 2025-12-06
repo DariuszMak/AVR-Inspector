@@ -62,11 +62,11 @@ struct double_format
 
 int main( void );
 
-uint8_t number_of_digits(uint32_t);
+uint8_t number_of_digits(uint32_t);//funkcja zwracjąca ilość cyfr dla danej liczby
 
-void show_temperature(void);
+void show_double(double, uint8_t);//funkcja wyświetlająca format temperatury
 
-int8_t put_double_format(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
+int8_t put_double_format(double, uint8_t);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
 
 void change_color_RGB(void);
 
