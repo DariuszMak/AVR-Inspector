@@ -3,6 +3,7 @@
 */
 #ifndef __EEPROM_H__
 #define __EEPROM_H__
+#include "delay_lib.h"
 
 #include "i2c.h"//sprzętowa obsługa magistrali TWI (I2C)
 
@@ -40,6 +41,7 @@ static void EEPROM_write(uint8_t address,uint8_t data)
     i2cWrite(address);
     i2cWrite(data);
     i2cStop();
+    _delay_ms(5);
 }
 
 

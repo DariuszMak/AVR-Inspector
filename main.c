@@ -202,13 +202,13 @@ int main( void )
                 }
                 else if (t==1)
                 {
-                    hsek = EEPROM_read(0);
-                    sek = EEPROM_read(1);
-                    min = EEPROM_read(2);
-                    godz = EEPROM_read(3);
-                    dzien = EEPROM_read(4);
-                    miesiac = EEPROM_read(5);
-                    rok = EEPROM_read_word(6);
+                    hsek = EEPROM_read(10);
+                    sek = EEPROM_read(11);
+                    min = EEPROM_read(12);
+                    godz = EEPROM_read(13);
+                    dzien = EEPROM_read(14);
+                    miesiac = EEPROM_read(15);
+                    rok = EEPROM_read_word(16);
                     moveStep=24;
                 }
                 LCD_GoTo( 0 + moveStep, 0 );
@@ -558,6 +558,24 @@ int main( void )
         case 3:
             switch ( com )
             {
+            case 1:
+                EEPROM_write(10, 0);
+                EEPROM_write(11, 0);
+                EEPROM_write(12, 0);
+                EEPROM_write(13, 0);
+                EEPROM_write(14, 0);
+                EEPROM_write(15, 0);
+                EEPROM_write_word(16, 0);
+                break;
+                case 2:
+                EEPROM_write(10, 1);
+                EEPROM_write(11, 2);
+                EEPROM_write(12, 8);
+                EEPROM_write(13, 4);
+                EEPROM_write(14, 5);
+                EEPROM_write(15, 6);
+                EEPROM_write_word(16, 1234);
+                break;
             case 55:
                 wysw_skok( 1000 );
                 PCF8583_alarm_off();
@@ -670,7 +688,6 @@ int main( void )
                     break;
 
                 case 3:
-                    czynnosc( men, 1, tog );
                     czynnosc( men, 52, tog );
                     //wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
