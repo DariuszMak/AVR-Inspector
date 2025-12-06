@@ -2278,6 +2278,13 @@ int main( void )
 
     printf("\nInicjalizacja w toku...\n");
 
+    /*uint8_t temp_table[2];
+
+    temp_table[0] = 0xFF;
+    temp_table[1] = 0xCF;
+
+    i2c_write_buf(PCF8583_address(), 0x10, 2, temp_table);*/
+
     //PCF8583_alarm_monthly();
 
     //eeprom_write_word((uint16_t*)257,5);

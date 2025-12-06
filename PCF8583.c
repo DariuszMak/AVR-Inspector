@@ -228,7 +228,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
 
     dy = (time_f.days & 0b11000000) >> 6;
     y1 = year_table[0] | ( (int16_t)year_table[1] << 8);
-    if ( ( (uint8_t) y1 & 3 ) != dy )
+    if ( ( (uint8_t) y1 & 0b00000011 ) != dy )
         PCF8583_write_word(0x10, ++y1);
     *year = y1;
     *timer= bcd2bin(time_f.timer);

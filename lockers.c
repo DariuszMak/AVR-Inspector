@@ -119,7 +119,6 @@ void lockers_init()
 
     stdin = &mystdin;
 
-
     //lockers_find_latest_data();
 }
 
@@ -131,7 +130,6 @@ void lockers_beginning_actions(void)
         states_table[i] = (uint8_t) lockers_state_of_single_button(i);//przypisanie wartości początkowych
     }
 }
-
 
 uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przycisku względem numeru indeksu
 {
