@@ -11,6 +11,8 @@
 
 #define PCF8583_SAVED_ADDRESS_CELL 255
 
+#define EEPROM_MAX_ADDRESS 255
+
 #define SIZE_OF_FRAME 8
 
 #define LOCKER_1_BUTTON_DIR DDRD
@@ -24,8 +26,6 @@
 #define LOCKER_2_BUTTON_IN (1 << PD3)
 
 void lockers_init();
-
-struct frame;
 
 uint8_t states_table[AMOUNT_OF_LOCKERS];
 uint8_t save_info_table[AMOUNT_OF_LOCKERS];

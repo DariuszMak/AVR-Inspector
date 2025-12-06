@@ -1,17 +1,5 @@
 #include "lockers.h"
 
-struct frame
-{
-    uint8_t seconds;
-    uint8_t minutes;
-    uint8_t hours;
-
-    uint8_t day;
-    uint8_t month;
-    uint16_t year;
-    uint8_t information;
-} frame; //8
-
 
 void lockers_init()
 {
@@ -21,8 +9,6 @@ void lockers_init()
 
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
-
-    delay_ms_var(1);
 
     int i = 0;
     for(; i < AMOUNT_OF_LOCKERS; ++i)
@@ -78,35 +64,36 @@ void lockers_find_latest_data(void)
 void lockers_save_events(void)
 {
     uint8_t temp_address = PCF8583_read(PCF8583_SAVED_ADDRESS_CELL);
+
+    if((EEPROM_ADDRESS - temp_address) < SIZE_OF_FRAME) temp_address = 0;
+
     int i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
         if(save_info_table[i])
         {
             PCF8583_get_wall_time();
-            PCF8583_write(temp_address,sek);
+            EEPROM_write(temp_address,sek);
             ++temp_address;
-            PCF8583_write(temp_address,min);
+            EEPROM_write(temp_address,min);
             ++temp_address;
-            PCF8583_write(temp_address,godz);
+            EEPROM_write(temp_address,godz);
             ++temp_address;
-            PCF8583_write(temp_address,dzien);
+            EEPROM_write(temp_address,dzien);
             ++temp_address;
-            PCF8583_write(temp_address,miesiac);
+            EEPROM_write(temp_address,miesiac);
             ++temp_address;
-            PCF8583_write_word(temp_address,sek);
+            EEPROM_write_word(temp_address,sek);
             ++temp_address;
             ++temp_address;
             uint8_t information = (uint8_t)save_info_table[i] * 100;
             information += i;
-            PCF8583_write(temp_address,information);
+            EEPROM_write(temp_address,information);
             ++temp_address;
         }
-
     }
     PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, temp_address);
-    delay_ms_var(50);
-
+    delay_ms_var(1000);
 }
 
 
