@@ -11,27 +11,59 @@ volatile uint8_t cy4;
 
 const uint8_t cyfry[12] PROGMEM =
 {
-    ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F ),//0
-    ~( SEG_B | SEG_C ),//1
-    ~( SEG_A | SEG_B | SEG_D | SEG_E | SEG_G ),//2
-    ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_G ),//3
-    ~( SEG_B | SEG_C | SEG_F | SEG_G ),//4
-    ~( SEG_A | SEG_C | SEG_D | SEG_F | SEG_G ),//5
-    ~( SEG_A | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G ),//6
-    ~( SEG_A | SEG_B | SEG_C | SEG_F ),//7
-    ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G ),//8
-    ~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_F | SEG_G ),//9
-    ( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G | SEG_DP ),//puste pole
-    ~( SEG_G )
+    ~( (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) ),//0
+    ~( (1<<1) | (1<<2) ),//1
+    ~( (1<<0) | (1<<1) | (1<<3) | (1<<4) | (1<<6) ),//2
+    ~( (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<6) ),//3
+    ~( (1<<1) | (1<<2) | (1<<5) | (1<<6) ),//4
+    ~( (1<<0) | (1<<2) | (1<<3) | (1<<5) | (1<<6) ),//5
+    ~( (1<<0) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) ),//6
+    ~( (1<<0) | (1<<1) | (1<<2) | (1<<5) ),//7
+    ~( (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) ),//8
+    ~( (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<5) | (1<<6) ),//9
+    ( (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) ),//puste pole
+    ~( (1<<6) )
 };
 
 void d_led_init( void )
 {
-    LED_DATA_DIR = 0xFF;
-    LED_DATA = 0xFF;
+    LED_DATA_SEG_A_DIR |= SEG_A;
+    LED_DATA_SEG_A_PORT |= SEG_A;
 
-    ANODY_DIR |= CA1 | CA2 | CA3 | CA4;
-    ANODY_PORT |= CA1 | CA2 | CA3 | CA4;
+    LED_DATA_SEG_B_DIR |= SEG_B;
+    LED_DATA_SEG_B_PORT |= SEG_B;
+
+    LED_DATA_SEG_C_DIR |= SEG_C;
+    LED_DATA_SEG_C_PORT |= SEG_C;
+
+    LED_DATA_SEG_D_DIR |= SEG_D;
+    LED_DATA_SEG_D_PORT |= SEG_D;
+
+    LED_DATA_SEG_E_DIR |= SEG_E;
+    LED_DATA_SEG_E_PORT |= SEG_E;
+
+    LED_DATA_SEG_F_DIR |= SEG_F;
+    LED_DATA_SEG_F_PORT |= SEG_F;
+
+    LED_DATA_SEG_G_DIR |= SEG_G;
+    LED_DATA_SEG_G_PORT |= SEG_G;
+
+    LED_DATA_SEG_DP_DIR |= SEG_DP;
+    LED_DATA_SEG_DP_PORT |= SEG_DP;
+
+    LED_ANODY_CA1_DIR |= CA1;
+    LED_ANODY_CA1_PORT |= CA1;
+
+    LED_ANODY_CA2_DIR |= CA2;
+    LED_ANODY_CA2_PORT |= CA2;
+
+    LED_ANODY_CA3_DIR |= CA3;
+    LED_ANODY_CA3_PORT |= CA3;
+
+    LED_ANODY_CA4_DIR |= CA4;
+    LED_ANODY_CA4_PORT |= CA4;
+
+
 
     TCCR0 |= ( 1 << WGM01 ); // tryb CTC timera 0
     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // preskaler 1024
@@ -42,19 +74,113 @@ void d_led_init( void )
 ISR( TIMER0_COMP_vect )
 {
     static uint8_t licznik = 1;
-    ANODY_PORT = ( ANODY_PORT & 0xF0 ) | ( 0x0F );
-    if( licznik == 1 ) LED_DATA = pgm_read_byte( &cyfry[cy1] );
-    else if( licznik == 2 ) LED_DATA = pgm_read_byte( &cyfry[cy2] );
-    else if( licznik == 4 ) LED_DATA = pgm_read_byte( &cyfry[cy3] );
-    else if( licznik == 8 ) LED_DATA = pgm_read_byte( &cyfry[cy4] );
-    ANODY_PORT = ( ANODY_PORT & 0xF0 ) | ( ~licznik & 0x0F );
+
+    LED_ANODY_CA1_PORT |= CA1;//wygaszenie wszystkich elementów
+    LED_ANODY_CA2_PORT |= CA2;
+    LED_ANODY_CA3_PORT |= CA3;
+    LED_ANODY_CA4_PORT |= CA4;
+
+    uint8_t temp = 0;
+
+    if( licznik == 1 ) temp = cy1;
+    else if( licznik == 2 ) temp = cy2;
+    else if( licznik == 4 ) temp = cy3;
+    else if( licznik == 8 ) temp = cy4;
+
+    uint8_t led_sign = pgm_read_byte ( &cyfry[temp] );
+
+    if ( led_sign & ( 1 << 0 ) )
+    {
+        LED_DATA_SEG_A_PORT |= SEG_A;
+    }
+    else
+    {
+        LED_DATA_SEG_A_PORT &= ~SEG_A;
+    }
+
+    if ( led_sign & ( 1 << 1 ) )
+    {
+        LED_DATA_SEG_B_PORT |= SEG_B;
+    }
+    else
+    {
+        LED_DATA_SEG_B_PORT &= ~SEG_B;
+    }
+
+    if ( led_sign & ( 1 << 2 ) )
+    {
+        LED_DATA_SEG_C_PORT |= SEG_C;
+    }
+    else
+    {
+        LED_DATA_SEG_C_PORT &= ~SEG_C;
+    }
+
+    if ( led_sign & ( 1 << 3 ) )
+    {
+        LED_DATA_SEG_D_PORT |= SEG_D;
+    }
+    else
+    {
+        LED_DATA_SEG_D_PORT &= ~SEG_D;
+    }
+
+    if ( led_sign & ( 1 << 4 ) )
+    {
+        LED_DATA_SEG_E_PORT |= SEG_E;
+    }
+    else
+    {
+        LED_DATA_SEG_E_PORT &= ~SEG_E;
+    }
+
+    if ( led_sign & ( 1 << 5 ) )
+    {
+        LED_DATA_SEG_F_PORT |= SEG_F;
+    }
+    else
+    {
+        LED_DATA_SEG_F_PORT &= ~SEG_F;
+    }
+
+    if ( led_sign & ( 1 << 6 ) )
+    {
+        LED_DATA_SEG_G_PORT |= SEG_G;
+    }
+    else
+    {
+        LED_DATA_SEG_G_PORT &= ~SEG_G;
+    }
+
+    if ( led_sign & ( 1 << 7 ) )
+    {
+        LED_DATA_SEG_DP_PORT |= SEG_DP;
+    }
+    else
+    {
+        LED_DATA_SEG_DP_PORT &= ~SEG_DP;
+    }
+
+    if(licznik == 1) LED_ANODY_CA1_PORT &= ~CA1;
+    else if(licznik == 2) LED_ANODY_CA2_PORT &= ~CA2;
+    else if(licznik == 4) LED_ANODY_CA3_PORT &= ~CA3;
+    else if(licznik == 8) LED_ANODY_CA3_PORT &= ~CA4;
+
     licznik <<= 1;
     if( licznik > 8 ) licznik = 1;
 }
 
 void d_led_Int ( int dana )
 {
-    if ( dana >= 10000 || dana <= -1000 ) dana = 0;//zakres ziennych do wyświetlania
+    if ( dana >= 10000 || dana <= -1000 )//zakres zMiennych do wyświetlania
+    {
+        cy1 = 11;
+        cy2 = 11;
+        cy3 = 11;
+        cy4 = 11;
+        return;
+    }
+
     int dana_temp = abs( dana );
 
     int d = 1;
@@ -92,7 +218,7 @@ void d_led_Int ( int dana )
         if(f == 1 )
         {
             cy3 = 10;
-            if ( dana_temp == 0 ) cy4 = 10;
+            //if ( dana_temp == 0 ) cy4 = 10;
         }
 
         if(f == 2 ) cy2 = 10;

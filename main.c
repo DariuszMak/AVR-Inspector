@@ -26,7 +26,7 @@ int main( void )
     int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
-    int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
+    unsigned int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 //zmienne zarezerwowane dla podprogramu nr 2:
     int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -53,6 +53,28 @@ int main( void )
         PORTD |= ( 1 << PD7 );
         _delay_ms( time );
         PORTD &= ~( 1 << PD7 );
+    }
+
+    void wysw_skok( unsigned int number ) // funkcja wyświetlająca numer kroku o danej wartości
+    {
+        int d = 1;
+        t = 10;
+        while ( number >= t )
+        {
+            d += 1;
+            t *= 10;
+        }
+
+        zwiekszanie = number;
+        LCD_EraseAll();
+        for ( t = 0; t < 40 - (d + 1); t += d + 3 )
+        {
+            LCD_GoTo( t, 0 );
+            LCD_Int( number );
+            LCD_GoTo( t, 1 );
+            LCD_Int( number );
+        }
+        _delay_ms( 500 );
     }
 
     void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
@@ -112,10 +134,13 @@ int main( void )
                     if(s == pozycja) tablicaTemp[s] = '1';
                     else tablicaTemp[s] = '0';
                 }
+                if(u > 0)
+                {
+                    LCD_GoTo(4,0);
+                    LCD_Int((int) (t * 100 / 250));
+                    LCD_WriteText("%");
+                }
 
-                LCD_GoTo(4,0);
-                LCD_Int((int) (t * 100 / 250));
-                LCD_WriteText("%");
                 for(s = 0; s < rozmiar; ++s)
                 {
                     if(tablicaTemp[s] == '1')
@@ -163,20 +188,6 @@ int main( void )
             //OCR0 = pwm1;//zmienna przepełnienia Timera 0
             break;
         }
-    }
-
-    void wysw_skok( int number ) // funkcja wyświetlająca numer kroku o danej wartości
-    {
-        zwiekszanie = number;
-        LCD_EraseAll();
-        for ( t = 0; t < 40; t += 8 )
-        {
-            LCD_GoTo( t, 0 );
-            LCD_Int( number );
-            LCD_GoTo( t, 1 );
-            LCD_Int( number );
-        }
-        _delay_ms( 500 );
     }
 
     void czynnosc( const int * const men, int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
@@ -400,7 +411,7 @@ int main( void )
 
                 do
                 {
-                    buzzer_time(0.2);
+                    buzzer_time(0.4);
                     ++t;
                     wysw ( *men );
                     _delay_ms(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
@@ -419,7 +430,7 @@ int main( void )
                         pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                         cyfry = w;
                         wysw ( *men );
-                        buzzer_time(0.5);
+                        buzzer_time(0.8);
                     }
                     --t;
                 }
@@ -439,11 +450,14 @@ int main( void )
                 _delay_ms( 1000 );
                 d_led_Int ( -123 );
                 _delay_ms( 1000 );
+                d_led_Int ( -3 );
+                _delay_ms( 1000 );
                 d_led_Int ( -1000 );
                 _delay_ms( 1000 );*/
                 cyfry = 0;
                 pozycja = 0;
                 u = -1;
+                wysw( *men );
                 break;
             case 55:
                 wysw_skok( 1000 );
@@ -580,10 +594,10 @@ int main( void )
                     break;
 
                 case 2:
-                    TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
                     rozmiar = 4;
-                    u = -1;//wymuszenie wykonania animacji
+                    u = -1;//wymuszenie wykonania animacji z kreskami
                     t = 0;
+                    TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 

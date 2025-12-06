@@ -40,7 +40,7 @@ void ir_init()
     TIMSK |= ( 1 << TICIE1 ); //przerwanie
     Ir_key_press_flag = 0;
 
-    STOP_BUTTON_DIR  &= STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
+    STOP_BUTTON_DIR  &= ~STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
     STOP_BUTTON_PORT |= STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
 }
 
