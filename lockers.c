@@ -92,7 +92,7 @@ uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przy
     return -1;//bląd
 }
 
-void lockers_check_events()
+void lockers_check_events(void)
 {
     int i = 0;//zmienna pmocnicza w pętlach
     int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis

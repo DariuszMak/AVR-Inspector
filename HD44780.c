@@ -365,37 +365,6 @@ void LCD_MoveLeft ( unsigned int freq, unsigned int step, unsigned int way )
 #endif // USE_LCD_MoveLeft
 //-------------------------------------------------------------------------------------------------
 //
-// Czyszczenie zawartości okna
-//
-//-------------------------------------------------------------------------------------------------
-#if USE_LCD_Erase == 1
-void LCD_Erase ( unsigned int row )
-{
-    uint8_t temp;
-    if ( row == 0 || row == 1 )
-    {
-        LCD_GoTo( 0, 0 );
-        for ( temp = 0; temp < LCD_CHARSPERLINE; ++temp )
-        {
-            LCD_WriteData( 32 );//znak "spacji"
-
-        }
-
-    }
-
-    if ( row == 0 || row == 2 )
-    {
-        LCD_GoTo( 0, 1 );
-        for ( temp = 0; temp < LCD_CHARSPERLINE; ++temp )
-        {
-
-            LCD_WriteData( 32 );//znak "spacji"
-        }
-    }
-}
-#endif // USE_LCD_Erase
-//-------------------------------------------------------------------------------------------------
-//
 // Różne opcje wyświelania
 //
 //-------------------------------------------------------------------------------------------------

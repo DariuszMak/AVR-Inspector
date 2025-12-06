@@ -402,7 +402,7 @@ void step_decrease(void)
 
 void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 {
-    refresh_screen = 0;
+//    refresh_screen = 0;
     if(start_program != 1)
     {
         LCD_Home();
@@ -527,7 +527,7 @@ void show_alarm_format(uint8_t case_of_format)
 
 void setting_information()
 {
-    refresh_screen = 0;
+//    refresh_screen = 0;
     uint8_t temp_positon = LCD_position;
 
     LCD_Home();
@@ -1151,7 +1151,7 @@ void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     if (switch_menu > liczbaPodprogramow) switch_menu = 0;
     else if (switch_menu < 0) switch_menu = liczbaPodprogramow;
     LCD_Clear();
-    LCD_GoTo( 0, 0 );
+//    LCD_GoTo( 0, 0 );
     LCD_WriteText( "Wybierz program:" );
     LCD_GoTo( 4, 1 );
     LCD_WriteText(">>>");
@@ -1166,7 +1166,7 @@ void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw1( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     LCD_Clear();
-    LCD_GoTo( 0, 0 );
+//    LCD_GoTo( 0, 0 );
     LCD_Int( command );
     LCD_GoTo( 6, 0 );
     LCD_Int( address );
@@ -1257,7 +1257,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     if(u == end_of_settings())
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
-        refresh_screen = 0;
+//        refresh_screen = 0;
         w = 1;
         start = 1;
     }
@@ -1497,7 +1497,7 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     if(u == end_of_settings())
     {
         i2c_write_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&maximum_temperature);
-        refresh_screen = 0;
+//        refresh_screen = 0;
         w = 1;
         start = 1;
     }
@@ -1766,7 +1766,7 @@ void czynnosc1( int com, int tog )
     if ( com == 12 )
     {
         pilot_off();
-        refresh_screen = 0;
+//        refresh_screen = 0;
         LCD_Clear();
         LCD_Blink();
         LCD_GoTo( 9, 1 );
@@ -1839,18 +1839,13 @@ void czynnosc1( int com, int tog )
 
         free( i );
 
-        LCD_Cursor();
+        LCD_Blink();
         delay_ms_var_double( 1500 );
         LCD_PageUpScreen ();
         LCD_PageDownScreen();
-        LCD_Clear();
-        LCD_Blink();
-        delay_ms_var_double( 1000 );
         LCD_PageDownScreen();
         LCD_PageUpScreen();
         LCD_Cursor();
-
-
         LCD_Clear();
         LCD_ScreenOn();
         pilot_on();
@@ -2061,7 +2056,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
     if ( com == 38 )
     {
-        refresh_screen = 0;
+//        refresh_screen = 0;
         LCD_Clear();
         LCD_WriteText( "Na poczatek" );
         LCD_GoTo( 0, 1 );
@@ -2074,7 +2069,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     }
     if( com == 41 )
     {
-        lockers_print_all_memory();
+        if(menu != 4 && menu != 5) lockers_print_all_memory();
     }
     if( com == 15 )
     {
@@ -2131,6 +2126,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             buzzer_time(500);
             pilot_off();
             backlight(0);
+            printf("\nPilot OFF\n");
         }
         else if(pilot_state == 0)
         {
@@ -2138,6 +2134,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             green_colors_RGB();
             pilot_on();
             backlight(2);
+            printf("\nPilot ON\n");
         }
     }
 }
@@ -2401,6 +2398,7 @@ void sczytaj_komende( void )
                 else if(temp_char == 'q') pilot(14, 0);
                 else if(temp_char == 'Q') pilot(14, 1);
                 else if(temp_char == 'k') pilot(38, 0);
+                else if(temp_char == 'v') pilot(100, 0);
                 else if(temp_char == 'p') pilot(15, 0);
                 else if(temp_char == 'P') pilot(15, 1);
                 else if(temp_char == 'c') pilot(12, 0);
