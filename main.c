@@ -398,7 +398,7 @@ int main( void )
             break;
         case 1:
             LCD_Displaying( com );
-            wysw( *men );
+            if ( com != 100 ) wysw( *men );
             break;
         case 2:
             switch( com )
