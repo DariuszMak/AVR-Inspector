@@ -1,4 +1,3 @@
-
 #include "uart.h"
 
 volatile char UART_RX_BUF[UART_BUFFER_SIZE];
@@ -9,7 +8,7 @@ volatile char UART_TX_BUF[UART_BUFFER_SIZE];
 volatile uint8_t uart_tx_h=0;
 volatile uint8_t uart_tx_t=0;
 
-volatile uint8_t rx_overrun=0;
+//volatile uint8_t rx_overrun=0;
 
 void uart_init(uint16_t baud)
 {
@@ -23,12 +22,16 @@ void uart_init(uint16_t baud)
     UCSRC = (1<<URSEL)|(1<<UCSZ0)|(1<<UCSZ1);
     UCSRB |= (1<<RXEN)|(1<<TXEN)|(1<<RXCIE);
 
-     DDRD &= ~(1<<PD2);
+    DDRD &= ~(1<<PD2);
     PORTD |= (1<<PD2);//PD2 - wejście + pull-up
 }
 
 void uart_putc(char data)
 {
+    if (data == '\n')
+    {
+        uart_putc('\r');
+    }
     uint8_t new_h=(uart_tx_h+1)&UART_BUFFER_MASK;
     while(new_h==uart_tx_t);
     UART_TX_BUF[new_h]=data;
@@ -117,7 +120,7 @@ ISR(USART_RXC_vect)
     }
     else
     {
-        rx_overrun=1;
+//        rx_overrun=1;
         new_h=UDR;//odczytujemy bufor, ¿eby nie zawiesiæ systemu
     }
 }

@@ -109,9 +109,6 @@ void lockers_init()
 
     static FILE mystdin = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
 
-    /* Inicjalizuje  port szeregowy AVRa */
-    USART_init(MYUBRR);
-
     /* Przekierowuje standardowe wyjście do  'mystdout' */
     stdout = &mystdout;
 

@@ -1,9 +1,6 @@
 #ifndef LOCKERS_H_
 #define LOCKERS_H_
 
-#define BAUD 57600
-#define MYUBRR  F_CPU/BAUD/16-1
-
 #include <stdio.h>
 #include <avr/io.h>
 #include "delay_lib.h"
@@ -96,16 +93,6 @@ uint8_t state_temp;
 
 //uint16_t lockers_queue_head;
 
-
-/* Inicjuje port szeregowy AVRa */
-void USART_init(uint16_t myubrr);
-
-/* Wysyła znak do portu szeregowego */
-void USART_Transmit(uint8_t c, FILE *stream);
-
-uint8_t USART_Recieve(FILE *stream);
-
-uint8_t USART_Recieve_without_waiting(void);
 
 void lockers_flag_bit_on(uint8_t);
 

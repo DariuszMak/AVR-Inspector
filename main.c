@@ -2067,7 +2067,7 @@ void sczytaj_komende( void )
                 backlight(2);
                 printf("#");
 
-                temp_char = USART_Recieve_without_waiting();
+                temp_char = uart_getc();
 
                 if(temp_char == 'r')
                 {
@@ -2111,7 +2111,7 @@ void sczytaj_komende( void )
 
                 if(start_program == 2)
                 {
-                    temp_char = USART_Recieve_without_waiting();
+                    temp_char = uart_getc();
 
                     if(temp_char == 'R') lockers_print_all_memory();
                     else if(temp_char == 'r') lockers_print_latest_data();
