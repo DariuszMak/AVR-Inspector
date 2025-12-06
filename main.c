@@ -62,10 +62,9 @@ int main( void )
 			LCD_GoTo( 0, 1 );
 			LCD_WriteText( "1 - 3" );
 
-			LCDClearBuffer();
 			//LCDWriteToBuffer( 0, 0, "napis" );
-			LCDWriteToBuffer( 15, 1, "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
-			LCDWriteToBuffer( 0, 1, "Drugi" );
+			//LCD_WriteText ( "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
+			//LCD_WriteText ( "Drugi" );
 
 			break;
 		case 1:

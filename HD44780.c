@@ -213,14 +213,44 @@ unsigned char LCD_ReadData( void )
 #endif
 //-------------------------------------------------------------------------------------------------
 //
+// Zmienne potrzebne do buforowania danych na wyświetlaczu
+//
+//-------------------------------------------------------------------------------------------------
+#if BUFFERING == 1
+unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];//tablica dwuwymiarowa stanowiąca bufor (znaki do wyświetlania)
+unsigned char LCDNeedUpdate[LCD_LINES];//tablica wielkości ilości linii wyświetlacza (stwierdzenie, czy dana linia wymaga odświeżenia)
+signed 	 char LCDCharIndex[LCD_LINES];//w tej tablicy przechowywana jest pozycja w danej linii wyświetlacza
+unsigned char LCDLineIndex = 0;//zmienna pomocnicza w iteracjach
+unsigned char LCDLineAddress[2] = {0x00, 0x40/*, 0x14, 0x54*/};//adresy (w pamięci DDRAM wyświetlacza) poszczególnych linii
+
+int x_position = 0;
+int y_position = 0;
+
+#endif
+//-------------------------------------------------------------------------------------------------
+//
 // Funkcja wyœwietlenia napisu na wyswietlaczu
 //
 //-------------------------------------------------------------------------------------------------
+
 void LCD_WriteText( char * text )
 {
+#if BUFFERING == 0
 	while( *text )
 		LCD_WriteData( *text++ );
+#endif
+#if BUFFERING == 1
+	int cnt = 0;//zmienna pomocnicza
+	while( *text != 0 && cnt + x_position < LCD_CHARSPERLINE ) //w pętli o ilości iteracji równej długości łąńcucha, jeśli łańcuch jest zbyt długi, to się nie prześle
+	{
+		LCDBuffer[y_position][x_position + cnt] = *text;//do tablicy bufora o określonej linii i od określonego miejsca zapisywane zostają dane
+		++text;
+		++cnt;
+	}
+	LCDNeedUpdate[y_position] = 1;
+#endif
 }
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja ustawienia wspó³rzêdnych ekranowych
@@ -228,18 +258,32 @@ void LCD_WriteText( char * text )
 //-------------------------------------------------------------------------------------------------
 void LCD_GoTo( unsigned char x, unsigned char y )
 {
+#if BUFFERING == 0
 	LCD_WriteCommand( HD44780_DDRAM_SET | ( x + ( HD44780_CGRAM_SET * y ) ) );
+#endif
+#if BUFFERING == 1
+	x_position = x;
+	y_position = y;
+#endif
+
 }
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja czyszczenia ekranu wyœwietlacza.
 //
 //-------------------------------------------------------------------------------------------------
+
 void LCD_Clear( void )
 {
 	LCD_WriteCommand( HD44780_CLEAR );
 	_delay_ms( 2 );
+#if BUFFERING == 1
+    x_position = 0;
+    y_position = 0;
+	void LCDClearBuffer();
+#endif
 }
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja przywrócenia pocz¹tkowych wspó³rzêdnych wyœwietlacza.
@@ -249,6 +293,10 @@ void LCD_Home( void )
 {
 	LCD_WriteCommand( HD44780_HOME );
 	_delay_ms( 2 );
+	#if BUFFERING == 1
+    x_position = 0;
+    y_position = 0;
+#endif
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -319,13 +367,6 @@ void LCD_Hex( int value )
 	LCD_WriteText( itoa( value, bufor, 16 ) );
 }
 #endif
-//-------------------------------------------------------------------------------------------------
-//
-// Pomocnicze zmienne
-//
-//-------------------------------------------------------------------------------------------------
-
-const int czterdziesci = 40;
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -373,19 +414,41 @@ void LCD_Erase ( unsigned int row )
 	if ( row == 0 || row == 1 )
 	{
 		LCD_GoTo( 0, 0 );
-		for ( temp = 0; temp < czterdziesci; ++temp )
+		for ( temp = 0; temp < LCD_CHARSPERLINE; ++temp )
 		{
+#if BUFFERING == 0
 			LCD_WriteData( 32 );//znak "spacji"
+#endif
+#if BUFFERING == 1
+
+			LCDBuffer[0][temp] = 32;//wypełnienie bufora znakami "spacji"
+#endif
 		}
+		#if BUFFERING == 1
+
+		LCDNeedUpdate[0] = 1;
+		#endif
+
 	}
+
 
 	if ( row == 0 || row == 2 )
 	{
 		LCD_GoTo( 0, 1 );
-		for ( temp = 0; temp < czterdziesci; ++temp )
+		for ( temp = 0; temp < LCD_CHARSPERLINE; ++temp )
 		{
+		    #if BUFFERING == 0
 			LCD_WriteData( 32 );//znak "spacji"
+			#endif
+			#if BUFFERING == 1
+
+			LCDBuffer[1][temp] = 32;//wypełnienie bufora znakami "spacji"
+#endif
 		}
+		#if BUFFERING == 1
+
+		LCDNeedUpdate[1] = 1;
+		#endif
 	}
 }
 #endif
@@ -419,13 +482,6 @@ void LCD_Displaying ( unsigned int option )
 #endif
 
 #if BUFFERING == 1
-
-unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];//tablica dwuwymiarowa stanowiąca bufor (znaki do wyświetlania)
-unsigned char LCDNeedUpdate[LCD_LINES];//tablica wielkości ilości linii wyświetlacza (stwierdzenie, czy dana linia wymaga odświeżenia)
-signed 	 char LCDCharIndex[LCD_LINES];//w tej tablicy przechowywana jest pozycja w danej linii wyświetlacza
-unsigned char LCDLineIndex = 0;//zmienna pomocnicza w iteracjach
-unsigned char LCDLineAddress[2] = {0x00, 0x40/*, 0x14, 0x54*/};//adresy (w pamięci DDRAM wyświetlacza) poszczególnych linii
-
 //-------------------------------------------------------------------------------------------------
 // Wywoływane funkcje zewnętrzne :
 //		LCD_NotBusy - zwraca 0 jeśli wyświetlacz jest zajęty, w przeciwnym razie zwraca 1
@@ -438,28 +494,14 @@ void LCDClearBuffer( void )
 	int i, j;
 	for( j = 0; j < LCD_LINES; ++j )
 	{
-		LCDCharIndex[j] = -1;
 		for( i = 0; i < LCD_CHARSPERLINE; ++i )
 		{
 			LCDBuffer[j][i] = 32;//wypełnienie bufora znakami "spacji"
 		}
+		LCDNeedUpdate[j] = 1;
 	}
 }
 
-//=================================================================================================
-
-void LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
-{
-	int cnt = 0;//zmienna pomocnicza
-	while( *str != 0 && cnt + x < LCD_CHARSPERLINE)//w pętli o ilości iteracji równej długości łąńcucha, jeśli łańcuch jest zbyt długi, to się nie prześle
-	{
-		LCDBuffer[y][x + cnt] = *str;//do tablicy bufora o określonej linii i od określonego miejsca zapisywane zostają dane
-		++str;
-		++cnt;
-	}
-	LCDNeedUpdate[y] = 1;
-	//return cnt;
-}
 //=================================================================================================
 // Należy wywoływać cykliczne w pętli głównej
 //=================================================================================================
