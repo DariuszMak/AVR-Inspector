@@ -207,7 +207,7 @@ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_time(uint8_t *hour,uint8_t *min,uint8_t *sec,uint8_t *hsec)
+void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 {
     PCF8583_hold_on();
     *hsec=PCF8583_read_bcd(1);
@@ -240,7 +240,7 @@ void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
  \param month miesiąc
  \param year rok
 */
-void PCF8583_get_date(uint8_t *day, uint8_t *day_of_week, uint8_t *month, uint16_t *year)
+void PCF8583_get_date(int8_t *day, int8_t *day_of_week, int8_t *month, int16_t *year)
 {
     uint16_t y1;
     uint8_t dy;
@@ -281,7 +281,7 @@ void PCF8583_set_date(uint8_t day, uint8_t day_of_week, uint8_t month,uint16_t y
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec)
+void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec)
 {
     *hsec=PCF8583_read_bcd(0x9);
     *sec=PCF8583_read_bcd(0xA);
@@ -294,7 +294,7 @@ void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *
  \param day dzień
  \param month miesiąc
 */
-void PCF8583_get_alarm_date(uint8_t *day, uint8_t *month)
+void PCF8583_get_alarm_date(int8_t *day, int8_t *month)
 {
     *day = PCF8583_read_bcd(0xD);
     if(PCF8583_recognise_type_of_alarm() == 2)
@@ -314,14 +314,14 @@ void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
     PCF8583_write_bcd( 0xE, month );
 }
 
-uint8_t PCF8583_recognise_type_of_alarm(void)
-{
-    return ((PCF8583_read(8) & 0x30) >> 4);
-}
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
 
+uint8_t PCF8583_recognise_type_of_alarm(void)
+{
+    return ((PCF8583_read(8) & 0x30) >> 4);
+}
 
 /**
  Wyłącza alarm
