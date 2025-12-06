@@ -231,14 +231,15 @@ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_
 */
 void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 {
-    PCF8583_hold_on();
     struct time_frame time_f;
+    PCF8583_hold_on();
     PCF8583_read_buf(0x01, 4, (uint8_t*)&time_f);
+    PCF8583_hold_off();
+
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
     *min=bcd2bin(time_f.minuts);
     *hour=bcd2bin(time_f.hours);
-    PCF8583_hold_off();
 }
 
 /**
@@ -250,12 +251,13 @@ void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 */
 void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
 {
-    PCF8583_stop();
     struct time_frame time_f;
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
     time_f.minuts=bin2bcd(min);
     time_f.hours=bin2bcd(hour);
+
+    PCF8583_stop();
     PCF8583_write_buf(0x01, 4, (uint8_t*)&time_f);
     PCF8583_start();
 }
@@ -272,8 +274,8 @@ void PCF8583_get_date(int8_t *day, int8_t *day_of_week, int8_t *month, int16_t *
     uint8_t dy;
     PCF8583_mask_on();
     PCF8583_hold_on();
-    *day = bcd2bin(PCF8583_read(5));
-    *month = bcd2bin(PCF8583_read(6));
+    *day = PCF8583_read_bcd(5);
+    *month = PCF8583_read_bcd(6);
     PCF8583_mask_off();
     *day_of_week = (PCF8583_read(6) & 0b11100000) >> 5;
 
