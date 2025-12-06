@@ -237,7 +237,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 void lockers_print_all_memory(void)
 {
     //uint16_t temp = 0;
-    lockers_print_amount_of_first_frames(lockers_queue_length());
+    lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
 
 }
 
@@ -266,6 +266,11 @@ uint8_t lockers_queue_length(void)
 {
     if( lockers_head() > lockers_tail() ) return lockers_number_of_frames() - ( lockers_head() - lockers_tail() ) + 1;
     else return lockers_tail() - lockers_head();
+}
+
+uint8_t lockers_queue_number_of_records(void)
+{
+    return lockers_queue_length() - 1;
 }
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane

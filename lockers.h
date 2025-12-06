@@ -107,6 +107,8 @@ void lockers_queue_empty(void);
 
 uint8_t lockers_queue_length(void);
 
+uint8_t lockers_queue_number_of_records(void);
+
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
 {
     uint8_t seconds;

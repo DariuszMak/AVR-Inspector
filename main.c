@@ -506,9 +506,9 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_EraseAll();
     if(zwiekszanie > 10) wysw_skok(10);
 
-    if(c < -1) c = lockers_queue_length() - 1;
-    else if(c > lockers_queue_length() - 1) c = -1;
-    show_list(c, lockers_queue_length() -1);
+    if(c < -1) c = lockers_queue_number_of_records() - 1;
+    else if(c > lockers_queue_number_of_records() - 1) c = -1;
+    show_list(c, lockers_queue_number_of_records() -1);
 }
 
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
