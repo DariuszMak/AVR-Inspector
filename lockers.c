@@ -12,6 +12,7 @@ void lockers_safety_bit_off(void)
 
 uint8_t lockers_is_safety_bit(void)
 {
+    return 0;//usunąć, gdy będzie PCF8563
     if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
     else return 1;
 }
@@ -62,7 +63,7 @@ void lockers_init()
 {
     if(lockers_head() > lockers_number_of_frames() || lockers_tail() > lockers_number_of_frames())
     {
-        lockers_queue_tail = 0;
+        PCF8583_write_word(PCF8583_TAIL, 0);
         lockers_queue_empty();
         buzzer_time(1000);
     }
@@ -113,9 +114,11 @@ void lockers_init()
 
     stdin = &mystdin;
 
-    lockers_queue_head = 0;
 
-    lockers_queue_tail = 0;
+
+    //lockers_queue_head = 0;
+
+    //lockers_queue_tail = 0;
 
     //lockers_find_latest_data();
 }
@@ -302,17 +305,17 @@ void lockers_print_latest_data(void)
 
 uint8_t lockers_tail(void)
 {
-    return lockers_convert_address_to_index_of_frame(lockers_queue_tail);
+    return lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_TAIL));
 }
 
 uint8_t lockers_head(void)
 {
-    return lockers_convert_address_to_index_of_frame(lockers_queue_head);
+    return lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_HEAD));
 }
 
 void lockers_queue_empty(void)
 {
-    lockers_queue_head = lockers_queue_tail;
+    PCF8583_write_word(PCF8583_HEAD, PCF8583_read_word(PCF8583_TAIL));
 }
 
 uint8_t lockers_queue_number_of_records(void)
@@ -415,9 +418,9 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 
     if(overflow_flag == 0)
     {
-        lockers_queue_tail = temp_address;
+        PCF8583_write_word(PCF8583_TAIL, temp_address);
     }
-    else lockers_queue_tail = temp_address + SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
+    else  PCF8583_write_word(PCF8583_TAIL, temp_address + SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM());
 
 }
 
