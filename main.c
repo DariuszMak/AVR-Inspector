@@ -213,7 +213,7 @@ void setting_information()
     refresh_screen = 0;
     LCD_EraseAll();
     LCD_GoTo(0, 0);
-    if( e == 0)
+    if( e == 0 || menu == 4)
     {
         if(u == end_of_settings())
         {
@@ -280,7 +280,7 @@ void set_appropriate_values_of_time()
     if(u == -2) e -= temp;
     else
     {
-        if(e == 0)
+        if(e == 0 || menu == 4)
         {
             if(u == -1) c -= temp;
             else
@@ -357,7 +357,8 @@ void set_appropriate_values_of_time()
 void check_step_value(void)
 {
     if((u == -2 || u == -1) && zwiekszanie > 1) wysw_skok(1);
-    if(e == 0)
+
+    if(e == 0 || menu == 4)
     {
         if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
 
@@ -367,6 +368,7 @@ void check_step_value(void)
             if(c == 0)
             {
                 if(u == 7 && zwiekszanie > 1) wysw_skok(1);
+                if(u == 8 && zwiekszanie > 10) wysw_skok(10);
             }
         }
     }
@@ -478,7 +480,6 @@ void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca wzg
 
     if(timer < 0) timer = 99;
     else if(timer > 99) timer = 0;
-
 }
 
 void show_frame( int16_t number )
@@ -793,6 +794,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 }
                 else
                 {
+                    correction_of_date(c);
                     moveStep = 0;
                     show_timer_alarm_format();
                 }
@@ -802,14 +804,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if( w == 1  && u >= 0)
     {
-        if(e == 0)
-        {
 
-        }
-        else if(e == 1)
-        {
-
-        }
 
         setting_information();
         w = 0;
