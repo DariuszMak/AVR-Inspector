@@ -1865,13 +1865,6 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
-        /*if(rano_wieczor == 0 )RGB_Red =  255;
-        else RGB_Red = 0;
-        if(PCF8583_is_12h_24h_format() == 0) RGB_Blue = 255;
-        else RGB_Blue = 0;
-        RGB_Green = 0;*/
-        //RGB_Blue = rand() % 255;
-
         overflow_timer_2 = 0;
         interr = 0;
 
@@ -1891,11 +1884,10 @@ void sczytaj_komende( void )
 
                 if(temp_char == 'o')
                 {
-                    printf("Oczekiwanie na restart.");
+                    printf("\nOczekiwanie na restart.");
                     lockers_safety_bit_off();
                     backlight(1);
                     temp = 1;
-                    //start_program = 4;
                 }
             }
             else if(lockers_is_safety_bit() == 0)
@@ -1903,6 +1895,9 @@ void sczytaj_komende( void )
                 lockers_safety_bit_on();
                 start_program = 0;
             }
+        }else if(temp == 1)
+        {
+            buzzer_time(100);
         }
 
         if(start_program == 0)
@@ -1924,32 +1919,29 @@ void sczytaj_komende( void )
             {
                 ds18b20_temperature();
                 lockers_check_events();
-
                 change_color_RGB();
+                if(start_program == 2)
+                {
+                    temp_char = USART_Recieve_without_waiting();
+
+                    if(temp_char == 'R') lockers_print_all_memory();
+                    else if(temp_char == 'r') lockers_print_latest_data();
+                    if(temp_char != 0) refresh_screen = 1;
+
+                    if(PCF8583_is_timer_flag_set() == 1)
+                    {
+                        backlight(2);
+                        buzzer();
+                        lockers_print_latest_data();
+                        PCF8583_alarm_flag_off();
+                        PCF8583_timer_flag_off();
+                    }
+                }
             }
             else
             {
                 lockers_beginning_actions();
                 no_colors_RGB();
-            }
-
-            if(start_program == 2)
-            {
-                temp_char = USART_Recieve_without_waiting();
-
-                if(temp_char == 'R') lockers_print_all_memory();
-                else if(temp_char == 'r') lockers_print_latest_data();
-                if(temp_char != 0) refresh_screen = 1;
-
-
-                if(PCF8583_is_timer_flag_set() == 1)
-                {
-                    backlight(2);
-                    buzzer();
-                    lockers_print_latest_data();
-                    PCF8583_alarm_flag_off();
-                    PCF8583_timer_flag_off();
-                }
             }
         }
 
