@@ -30,6 +30,9 @@ int main( void )
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 
+    char n,d;
+    int i,w, l;
+
 
 //definicje funkcji
 
@@ -326,6 +329,52 @@ int main( void )
             switch( com )
             {
             case 100:
+                l = 0;
+
+                    while (stop_button() && l != 255)
+                    {
+                        buzzer();
+                        _delay_ms(0.4);
+                        buzzer();
+                        ++l;
+                        _delay_ms(500/l+15);
+                    }
+
+                while(1)
+                {
+                    for(i; i>=1; i-=1)
+                    {
+                        n=rand()%6 + 1;
+                    }
+
+                    for(i=1; i<=n; i++)
+                    {
+                        _delay_ms((2+1500/l)/(7-i));
+                        cyfry = i;
+                        wysw ( *men );
+                        buzzer();
+                        _delay_ms(1);
+                        buzzer();
+                    }
+
+                    if(l == 1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        --l;
+                    }
+                }
+                _delay_ms((2+1500/l)/(7-i));
+                cyfry += 1000;
+                wysw( *men );
+                buzzer();
+                _delay_ms(1);
+                buzzer();
+                _delay_ms(750);
+
+
 
                 break;
             case 59:
@@ -506,6 +555,15 @@ int main( void )
                 case 2:
                     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
                     czynnosc( men, 52, tog );
+                    for(i = 0; i <= 5; i++)
+                    {
+                        buzzer();
+                        _delay_ms(i);
+                        buzzer();
+                        _delay_ms(400-50*i);
+                        cyfry = i;
+                        wysw( *men );
+                    }
                     //wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 
