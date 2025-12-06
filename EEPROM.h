@@ -36,6 +36,9 @@ uint8_t EEPROM_read(uint8_t address);
 */
  uint16_t EEPROM_read_word(uint8_t address);
 
+ void EEPROM_clear_all_memory(void);
+
+
 /*@}*/
 
 #endif // __EEPROM_H__

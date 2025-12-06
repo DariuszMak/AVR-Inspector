@@ -201,12 +201,18 @@ int main( void )
         LCD_Int(frame.year);
 
         LCD_WriteText(" ");
-        LCD_WriteText("NR: ");
-        LCD_Int(frame.information % 100);
-        LCD_WriteText(" ");
-        t = frame.information / 100;
-        if(t == 1) LCD_WriteText("OTWARTA");
-        else if(t == 2) LCD_WriteText("ZAMKNIETA");
+
+        number = frame.information % 100;
+        if(number != 0)
+        {
+
+            LCD_WriteText("NR: ");
+            LCD_Int(number);
+            LCD_WriteText(" ");
+            t = frame.information / 100;
+            if(t == 1) LCD_WriteText("OTWARTA");
+            else if(t == 2) LCD_WriteText("ZAMKNIETA");
+        }
     }
 
     void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -861,7 +867,18 @@ int main( void )
         case 6:
             switch ( com )
             {
-            case 59:
+            case 12:
+
+                switch(tog)
+                {
+                case 0:
+                    break;
+                case 1:
+                    EEPROM_clear_all_memory();
+                    PCF8583_write(PCF8583_CELL, 0);
+                    break;
+                }
+
                 break;
             case 32:
                 u -= 1;

@@ -126,7 +126,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             ++temp_address;
             ++temp_address;
             uint8_t information = (uint8_t)save_info_table[i] * 100;
-            information += i;
+            information += i + 1;
             EEPROM_write(temp_address,information);
             ++temp_address;
         }

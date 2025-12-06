@@ -29,7 +29,7 @@ uint8_t EEPROM_read(uint8_t address)
  \param address adres komórki w układzie
  \param data bajt do wpisania
 */
- void EEPROM_write(uint8_t address,uint8_t data)
+void EEPROM_write(uint8_t address,uint8_t data)
 {
     i2cStart();
     i2cWrite(EEPROM_ADDRESS);
@@ -45,7 +45,7 @@ uint8_t EEPROM_read(uint8_t address)
  \param address adres komórki w układzie
  \param data słowo do wpisania
 */
- void EEPROM_write_word(uint8_t address,uint16_t data)
+void EEPROM_write_word(uint8_t address,uint16_t data)
 {
     EEPROM_write(address, (uint8_t)(data & 0xFF));
     EEPROM_write(++address, (uint8_t)(data >> 8));
@@ -55,13 +55,23 @@ uint8_t EEPROM_read(uint8_t address)
  Wczytuje słowo z układu
  \param address adres komórki w układzie
 */
- uint16_t EEPROM_read_word(uint8_t address)
+uint16_t EEPROM_read_word(uint8_t address)
 {
     uint16_t temp;
     temp = EEPROM_read(address) & 0xFF;
     temp |= EEPROM_read(++address) << 8;
     return temp;
 }
+
+void EEPROM_clear_all_memory(void)
+{
+    uint8_t i = 0;
+    for(i = 0; i < 255; ++i)
+    {
+        EEPROM_write((uint8_t) i, 0);
+    }
+}
+
 
 
 
