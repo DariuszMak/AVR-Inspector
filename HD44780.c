@@ -2,13 +2,12 @@
 #include <stdlib.h>
 #include <avr/interrupt.h>
 //-------------------------------------------------------------------------------------------------
-// Wyœwietlacz alfanumeryczny ze sterownikiem HD44780
+// Wyświetlacz alfanumeryczny ze sterownikiem HD44780
 // Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci
 // z dowolnym przypisaniem sygna³ów steruj¹cych
 // Plik : HD44780.c
 // Mikrokontroler : Atmel AVR
 // Kompilator : avr-gcc
-// Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
 const int LCD_CHARSPERLINE = 40;// liczba znaków w pojedynczej linii bufora wyświetlacza
 
@@ -115,7 +114,7 @@ unsigned char _LCD_InNibble( void )
 		tmp |= ( 1 << 3 );
 	return tmp;
 }
-#endif
+#endif // USE_RW
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu bajtu do wyświetacza (bez rozróżnienia instrukcja/dane).
@@ -129,7 +128,7 @@ void _LCD_Write( unsigned char dataToWrite )
 	LCD_DB6_DIR |= LCD_DB6;
 	LCD_DB7_DIR |= LCD_DB7;
 	LCD_RW_PORT &= ~LCD_RW;
-#endif
+#endif // USE_RW
 	LCD_E_PORT |= LCD_E;
 	_LCD_OutNibble( dataToWrite >> 4 );
 	LCD_E_PORT &= ~LCD_E;
@@ -140,9 +139,8 @@ void _LCD_Write( unsigned char dataToWrite )
 	while( LCD_ReadStatus() & HD44780_DDRAM_SET );
 #else
 	_delay_us( 50 );
-#endif
+#endif // USE_RW
 }
-
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja odczytu bajtu z wyœwietacza (bez rozró¿nienia instrukcja/dane).
@@ -167,7 +165,7 @@ unsigned char _LCD_Read( void )
 	_delay_us( 50 );
 	return tmp;
 }
-#endif
+#endif // USE_RW
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu rozkazu do wyœwietlacza
@@ -189,7 +187,7 @@ unsigned char LCD_ReadStatus( void )
 	LCD_RS_PORT &= ~LCD_RS;
 	return _LCD_Read();
 }
-#endif
+#endif // USE_RW
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu danych do pamięci wyœwietlacza
@@ -211,7 +209,7 @@ unsigned char LCD_ReadData( void )
 	LCD_RS_PORT |= LCD_RS;
 	return _LCD_Read();
 }
-#endif
+#endif // USE_RW
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wyświetlenia napisu na wyswietlaczu
@@ -240,7 +238,6 @@ void LCD_GoTo( unsigned char x, unsigned char y )
 // Funkcja czyszczenia ekranu wyświetlacza.
 //
 //-------------------------------------------------------------------------------------------------
-
 void LCD_Clear( void )
 {
 	LCD_WriteCommand( HD44780_CLEAR );
@@ -272,13 +269,13 @@ void LCD_Initalize( void )
 	LCD_RS_DIR 	|= LCD_RS;  //
 #if USE_RW == 1
 	LCD_RW_DIR 	|= LCD_RW;  //
-#endif
+#endif // USE_RW
 	_delay_ms( 15 ); // oczekiwanie na ustalibizowanie się napiecia zasilajacego
 	LCD_RS_PORT &= ~LCD_RS; // wyzerowanie linii RS
 	LCD_E_PORT &= ~LCD_E;  // wyzerowanie linii E
 #if USE_RW == 1
 	LCD_RW_PORT &= ~LCD_RW;
-#endif
+#endif // USE_RW
 	for( i = 0; i < 3; ++i ) // trzykrotne powtórzenie bloku instrukcji
 	{
 		LCD_E_PORT |= LCD_E; //  E = 1
@@ -297,7 +294,7 @@ void LCD_Initalize( void )
 	LCD_WriteCommand( HD44780_CLEAR ); // czyszczenie zawartosæi pamieci DDRAM
 #if USE_RW == 0
 	_delay_ms( 2 );
-#endif
+#endif // USE_RW
 	LCD_WriteCommand( HD44780_ENTRY_MODE | HD44780_EM_SHIFT_CURSOR | HD44780_EM_INCREMENT ); // inkrementaja adresu i przesuwanie kursora
 	LCD_WriteCommand( HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK ); // w³¹cz LCD, bez kursora i mrugania
 }
@@ -312,7 +309,7 @@ void LCD_Int( int value )
 	char bufor[17];
 	LCD_WriteText( itoa( value, bufor, 10 ) );
 }
-#endif
+#endif // USE_LCD_Int
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
@@ -324,8 +321,7 @@ void LCD_Hex( int value )
 	char bufor[17];
 	LCD_WriteText( itoa( value, bufor, 16 ) );
 }
-#endif
-
+#endif // USE_LCD_Hex
 //-------------------------------------------------------------------------------------------------
 //
 // Efekt przesunięcia zawartości o okreœlonej częstotliwoœci kroku oraz liczbie kroków
@@ -342,7 +338,7 @@ void LCD_MoveRight ( unsigned int freq, unsigned int step, unsigned int way )
 		if ( freq ) delay_ms_var( freq );
 	}
 }
-#endif
+#endif // USE_LCD_MoveRight
 //-------------------------------------------------------------------------------------------------
 //
 // Efekt przesuniêcia zawartości o cały ekran w prawo
@@ -359,7 +355,7 @@ void LCD_MoveLeft ( unsigned int freq, unsigned int step, unsigned int way )
 		if ( freq ) delay_ms_var( freq );
 	}
 }
-#endif
+#endif // USE_LCD_MoveLeft
 //-------------------------------------------------------------------------------------------------
 //
 // Czyszczenie zawartości okna
@@ -390,7 +386,7 @@ void LCD_Erase ( unsigned int row )
 		}
 	}
 }
-#endif
+#endif // USE_LCD_Erase
 //-------------------------------------------------------------------------------------------------
 //
 // Różne opcje wyświelania
@@ -418,9 +414,7 @@ void LCD_Displaying ( unsigned int option )
 		break;
 	}
 }
-#endif
-
-
+#endif // USE_LCD_Displaying
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.c

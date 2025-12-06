@@ -5,7 +5,6 @@
 // Plik : HD44780.h
 // Mikrokontroler : Atmel AVR
 // Kompilator : avr-gcc
-// Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
 #ifndef HD44780_H_
 #define HD44789_H_
@@ -39,7 +38,7 @@
 #define LCD_RW_PORT		PORTA
 #define LCD_RW_PIN		PINA
 #define LCD_RW			(1 << PA2)
-#endif
+#endif // USE_RW
 
 #define LCD_E_DIR		DDRA
 #define LCD_E_PORT		PORTA
@@ -123,56 +122,59 @@ void delay_us_var_double( double ); // czekaj określoną ilość mikrosekund
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
 unsigned char _LCD_InNibble( void );
-#endif
+#endif // USE_RW
 void _LCD_Write( unsigned char );
 #if USE_RW == 1
 unsigned char _LCD_Read( void );
-#endif
+#endif // USE_RW
 void LCD_WriteCommand( unsigned char );
 #if USE_RW == 1
 unsigned char LCD_ReadStatus( void );
-#endif
+#endif // USE_RW
 
 void LCD_WriteData( unsigned char ); // odczytywanie danych po kolei w zależności od pozycji kursora
 #if USE_RW == 1
 unsigned char LCD_ReadData( void ); // zapisywanie danych po kolei w zależności od pozycji kursora
-#endif
+#endif // USE_RW
+
+//-------------------------------------------------------------------------------------------------
+//Najczęściej używane funkcje
 
 void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
 
-void LCD_WriteText( char * );//Wypisanie tekstu (łańcuch znaków)
-void LCD_GoTo( unsigned char, unsigned char ); // pozycja X, pozycja Y
-void LCD_Clear( void ); // czyści wszystko sprzętowo
-void LCD_Home( void ); // sprętowa funkcje powrotu ns początek (ekran i kursor)
+void LCD_WriteText( char * );//Wypisanie tekstu (łańcucha znaków)
+void LCD_GoTo( unsigned char, unsigned char ); // pozycja X, pozycja Y - pozycja X (0 - (liczba_wierszy - 1)), pozycja kursora w wierszu), pozycja Y (0 - górny wiersz, 1 - dolny wiersz)
+void LCD_Clear( void ); // czyści cały wyświetlacz sprzętowo
+void LCD_Home( void ); // sprzętowa funkcja powrotu na początek (ekran i kursor)
 
 #if USE_LCD_Int == 1
 void LCD_Int( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
-#endif
+#endif // USE_LCD_Int
 
 #if USE_LCD_Hex == 1
 void LCD_Hex( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
-#endif
+#endif // USE_LCD_Hex
 
 #if USE_LCD_MoveRight == 1
 void LCD_MoveRight( unsigned int, unsigned int, unsigned int ); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
 #define LCD_PageUpScreen() LCD_MoveRight(20,15,1) // przesunięcie o cały ekran w prawo
-#define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
 #define LCD_ShiftRightCursor() LCD_MoveRight(0,1,0) // jeden krok kursora w prawo
-#endif
+#define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
+#endif // USE_LCD_MoveRight
 
 #if USE_LCD_MoveLeft == 1
 void LCD_MoveLeft( unsigned int, unsigned int, unsigned int ); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
+#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesunięcie o cały ekran w lewo
 #define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
 #define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
-#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesunięcie o cały ekran w lewo
-#endif
+#endif // USE_LCD_MoveLeft
 
 #if USE_LCD_Erase == 1
-void LCD_Erase( unsigned int ); // uzuoełnianie spacjami wyświetlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
-#define LCD_EraseAll() LCD_Erase(0) // uzuoełnianie spacjami wyświetlacza - dwa wiersze
-#define LCD_EraseUp() LCD_Erase(1) // uzuoełnianie spacjami wyświetlacza 1 - górny wiersz,
-#define LCD_EraseDown() LCD_Erase(2) // uzuoełnianie spacjami wyświetlacza 2 - dolny wiersz
-#endif
+void LCD_Erase( unsigned int ); // uzupełnianie spacjami wyświetlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
+#define LCD_EraseAll() LCD_Erase(0) // uzupełnianie spacjami wyświetlacza - dwa wiersze
+#define LCD_EraseUp() LCD_Erase(1) // uzupełnianie spacjami wyświetlacza 1 - górny wiersz
+#define LCD_EraseDown() LCD_Erase(2) // uzupełnianie spacjami wyświetlacza 2 - dolny wiersz
+#endif // USE_LCD_Erase
 
 #if USE_LCD_Displaying == 1
 void LCD_Displaying( unsigned int );
@@ -181,9 +183,9 @@ void LCD_Displaying( unsigned int );
 #define LCD_Cursor() LCD_Displaying(3) // tryb pracy z kursorem
 #define LCD_Blink() LCD_Displaying(4) // tryb pracy z migającym prostokątem
 #define LCD_CursorBlink() LCD_Displaying(5) // tryb pracy z kursorem i z migającym prostokątem
-#endif
+#endif // USE_LCD_Displaying
 
-#endif // HD44780_h_
+#endif // HD44780_H_
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.h
