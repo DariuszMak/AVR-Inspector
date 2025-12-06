@@ -15,6 +15,7 @@ int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzy
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 int8_t backlight_of_lcd = 0;
+uint8_t reset_variable = 0;
 //uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
@@ -28,6 +29,8 @@ void send_all_screen(void)
     rozmiar = LCD_CHARSPERLINE;
     uint8_t temp_position = LCD_position;
 
+    printf("\n");
+
     for( t = 0; t < rozmiar; ++t )
     {
         if((LCD_CHARSPERLINE - temp_position + t) % rozmiar < LCD_REAL_CHARSPERLINE) printf("#");
@@ -35,25 +38,50 @@ void send_all_screen(void)
     }
 
     printf("\n");
-    LCD_Home();
-    //printf("|");
-    for( t = 0; t < rozmiar; ++t )
+
+    char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
+
+    for ( t = 0; t < 2; ++t )
     {
-        uart_putc(LCD_ReadData());
+        buffer_table[t] = ( char* ) malloc ( rozmiar * sizeof ( *buffer_table ) );
     }
 
-    printf("\n");
+    LCD_Home();
+
+    for( t = 0; t < rozmiar; ++t )
+    {
+        buffer_table[0][t] = LCD_ReadData();
+    }
 
     LCD_GoTo( 0, 1 );
 
     for( t = 0; t < rozmiar; ++t )
     {
-        uart_putc(LCD_ReadData());
+        buffer_table[1][t] = LCD_ReadData();
     }
 
     LCD_Home();
     if(temp_position < rozmiar / 2) LCD_MoveLeft ( 0, temp_position, 1 );
     else LCD_MoveRight(0,  rozmiar - temp_position, 1);
+
+
+    for( t = 0; t < rozmiar; ++t )
+    {
+        uart_putc( buffer_table[0][t] );
+    }
+
+    printf("\n");
+
+    for( t = 0; t < rozmiar; ++t )
+    {
+        uart_putc( buffer_table[1][t] );
+    }
+
+    for ( t = 0; t < 2; ++t )
+    {
+        free( buffer_table[t] );
+    }
+    free( buffer_table );
 
     printf("\n");
 
@@ -68,48 +96,48 @@ void send_all_screen(void)
 
 /*void set_time_by_uart(void)
 {*/
-    /*int8_t godz, min, sek, hsek;
-    int8_t dzien,dzien_tygodnia, miesiac, timer,rano_wieczor;
-    int16_t rok;*/
+/*int8_t godz, min, sek, hsek;
+int8_t dzien,dzien_tygodnia, miesiac, timer,rano_wieczor;
+int16_t rok;*/
 
-    /*printf("Ustawienia czasu\n");
+/*printf("Ustawienia czasu\n");
 
-    printf("Godziny\n");
-    godz = uart_getint();
+printf("Godziny\n");
+godz = uart_getint();
 
-    printf("Minuty\n");
-    min = uart_getint();
+printf("Minuty\n");
+min = uart_getint();
 
-    printf("Sekundy\n");
-    sek = uart_getint();
+printf("Sekundy\n");
+sek = uart_getint();
 
-    printf("Setne sekund\n");
-    hsek = uart_getint();
+printf("Setne sekund\n");
+hsek = uart_getint();
 
-    printf("Dzien\n");
-    dzien = uart_getint();
+printf("Dzien\n");
+dzien = uart_getint();
 
-    printf("Miesiac\n");
-    miesiac = uart_getint();
+printf("Miesiac\n");
+miesiac = uart_getint();
 
-    printf("Rok\n");
-    rok = uart_getint();
+printf("Rok\n");
+rok = uart_getint();
 
-    printf("Dzien tygodnia\n");
-    dzien_tygodnia = uart_getint();
+printf("Dzien tygodnia\n");
+dzien_tygodnia = uart_getint();
 
-    printf("Timer\n");
-    timer = uart_getint();
+printf("Timer\n");
+timer = uart_getint();
 
-    correction_of_time();//funkcja korygująca po pojednczym wywołaniu właściwe wartości formatu godziny z minutami, sekundami oraz częściami setnych
+correction_of_time();//funkcja korygująca po pojednczym wywołaniu właściwe wartości formatu godziny z minutami, sekundami oraz częściami setnych
 
-    correction_of_date();//uwzględnianie dnia miesiąca względem roku
+correction_of_date();//uwzględnianie dnia miesiąca względem roku
 
-    PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
+PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
 
-    printf("Zapisano!\n");
+printf("Zapisano!\n");
 
-    lockers_print_date_of_report();
+lockers_print_date_of_report();
 }*/
 
 double round_double(float number, uint8_t precision)
@@ -1545,6 +1573,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             wysw7();
         }
     }
+    send_all_screen();
 }
 
 void czynnosc0( int com, int tog )
@@ -1839,7 +1868,6 @@ void czynnosc1( int com, int tog )
         pilot_on();
     }
     if( com >= 0 && com <=  5 ) LCD_Displaying( com );
-    wysw();
 }
 
 void czynnosc2( int com, int tog )
@@ -1875,10 +1903,6 @@ void czynnosc3( int com, int tog )
             lockers_clear_all_memory();
             //c = 0;
         }
-    }
-    if( com == 41 )
-    {
-        lockers_print_all_memory();
     }
     /*if( com == 55)
     {
@@ -2055,6 +2079,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_PageDownScreen();
         refresh_screen = 1;
     }
+    if( com == 41 )
+    {
+        lockers_print_all_memory();
+    }
     if( com == 15 )
     {
         if( tog == 0)
@@ -2119,6 +2147,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             backlight(2);
         }
     }
+    if(menu == 1) wysw();
 }
 
 // funkcja obsługująca menu dwupoziomowe
@@ -2128,13 +2157,13 @@ void pilot( int com, int tog )//
 //    if(pilot_state == 1) pilot_off();
     if(backlight_of_lcd >= 0) backlight(2);
 
-    if( start_program == 3 && lockers_is_flag_bit(0) == 1)
+    if(start_program != 3) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+
+    if( (start_program == 3 && lockers_is_flag_bit(0) == 1) )
     {
         start_program = 0;
         backlight(2);
     }
-
-    if(start_program != 3) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     // if(pilot_state == 1) pilot_on();
 }
@@ -2148,7 +2177,6 @@ void sczytaj_komende( void )
         refresh_screen = 0;
         wysw();
         //printf("%d\n",LCD_position);
-        send_all_screen();
 
         //printf("%d\n",LCD_position);
     }
@@ -2158,26 +2186,23 @@ void sczytaj_komende( void )
         overflow_timer_2 = 0;
         interr = 0;
 
-        uint8_t temp_char;
-
         static uint8_t temp = 0;
 
         if(start_program == 3 && temp == 0)
         {
+            //temp_char = uart_getc();
             if(lockers_is_flag_bit(0) == 1)
             {
                 buzzer();
                 backlight(2);
                 printf("#");
 
-                temp_char = uart_getc();
-
-                if(temp_char == 'r')
+                if(reset_variable == 1)
                 {
-                    printf("\nOczekiwanie na restart.");
                     lockers_flag_bit_off(0);
                     backlight(1);
                     temp = 1;
+                    printf("\nOczekiwanie na restart.\n");
                 }
             }
             else if(lockers_is_flag_bit(0) == 0)
@@ -2214,12 +2239,8 @@ void sczytaj_komende( void )
 
                 if(start_program == 2)
                 {
-                    temp_char = uart_getc();
-
-                    if(temp_char == 'R') lockers_print_all_memory();
-                    else if(temp_char == 'r') lockers_print_latest_data();
                     //else if(temp_char == 'u') set_time_by_uart();
-                    if(temp_char != 0) refresh_screen = 1;
+                    //if(temp_char != 0) refresh_screen = 1;
 
                     if(PCF8583_is_timer_flag_set() == 1)
                     {
@@ -2321,8 +2342,6 @@ void sczytaj_komende( void )
         }
     }
 
-
-
     if( Ir_key_press_flag )
     {
         if( !address )
@@ -2336,16 +2355,21 @@ void sczytaj_komende( void )
     }
     else
     {
-        char temp_char = uart_getc();
+        temp_char = uart_getc();
+        if(start_program == 3 && temp_char != 0)
+        {
+            if(temp_char == 'r') reset_variable = 1;
+            else pilot(0, 0);
+        }
 
-        if(temp_char == 'e') pilot(59, 0);
+        else if(temp_char == 'e') pilot(59, 0);
         else if(temp_char == 'w') pilot(32, 0);
         else if(temp_char == 's') pilot(33, 0);
         else if(temp_char == 'd') pilot(16, 0);
         else if(temp_char == 'a') pilot(17, 0);
         else if(temp_char == 'q') pilot(14, 0);
         else if(temp_char == 'Q') pilot(14, 1);
-        else if(temp_char == 'k') pilot(32, 0);
+        else if(temp_char == 'k') pilot(38, 0);
         else if(temp_char == 'p') pilot(15, 0);
         else if(temp_char == 'P') pilot(15, 1);
         else if(temp_char == 't') pilot(12, 0);
@@ -2354,6 +2378,11 @@ void sczytaj_komende( void )
         else if(temp_char == '{') pilot(36, 0);
         else if(temp_char == '}') pilot(35, 0);
         else if(temp_char == '!') pilot(41, 0);
+        else if(temp_char == '<') pilot(45, 0);
+        else if(temp_char == '>') pilot(44, 0);
+        //else if(temp_char == 'R') lockers_print_all_memory();
+        //else if(temp_char == 'r') lockers_print_latest_data();
+
     }
 }
 

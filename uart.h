@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 //rozmiar bufora musi byæ naturaln¹ potêg¹ liczby 2
-#define UART_WRITE_BUFFER_SIZE 128
+#define UART_WRITE_BUFFER_SIZE 32
 
 #define UART_READ_BUFFER_SIZE 16
 
