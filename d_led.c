@@ -8,7 +8,7 @@ volatile uint8_t cy2;
 volatile uint8_t cy3;
 volatile uint8_t cy4;
 
-uint8_t cyfry[10] PROGMEM =
+uint8_t cyfry[11] PROGMEM =
 {
 	~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F ),//0
 	~( SEG_B | SEG_C ),//1
@@ -20,6 +20,7 @@ uint8_t cyfry[10] PROGMEM =
 	~( SEG_A | SEG_B | SEG_C | SEG_F ),//7
 	~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G ),//8
 	~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_F | SEG_G ),//9
+	( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G | SEG_DP ) //puste pole
 };
 
 void d_led_init( void )
@@ -48,3 +49,48 @@ ISR( TIMER0_COMP_vect )
 	licznik <<= 1;
 	if( licznik > 8 ) licznik = 1;
 }
+
+void d_led_Int ( int dana )
+{
+	if ( dana >= 10000 || dana <= -10000 )
+	{
+		cy1 = 10;
+		cy2 = 10;
+		cy3 = 10;
+		cy4 = 10;
+		return;
+	};
+
+
+	int dana_temp = abs( dana );
+
+	int d = 1;
+	int g = 10;
+	while ( dana_temp >= g )
+	{
+		d += 1;
+		g *= 10;
+	}
+
+	if( d >= 4 )
+	{
+		cy1 = dana_temp / 1000;
+		dana_temp -= cy1 * 1000;
+	}
+	else cy1 = 10;
+	if( d >= 3 )
+	{
+		cy2 = dana_temp / 100;
+		dana_temp -= cy2 * 100;
+	}
+	else cy2 = 10;
+	if( d >= 2 )
+	{
+		cy3 = dana_temp / 10;
+		dana_temp -= cy3 * 10;
+	}
+	else cy3 = 10;
+	cy4 = dana_temp;
+	if( !dana ) cy4 = 10;
+}
+

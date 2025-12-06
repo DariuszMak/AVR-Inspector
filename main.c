@@ -9,14 +9,11 @@
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
 
-
 //##############################################################################
-
-int t, rozmiar = 6;
-
 
 int main( void )
 {
+	int t, rozmiar = 6, cyfry = 0, zwiekszanie = 0;
 	DDRD |= ( 1 << PD7 );
 
 	void buzzer( void )
@@ -25,6 +22,7 @@ int main( void )
 		_delay_ms( 3 );
 		PORTD &= ~( 1 << PD7 );
 	}
+
 
 	LCD_Initalize();
 	ir_init();
@@ -45,6 +43,8 @@ int main( void )
 				LCD_Int( address );
 				LCD_GoTo( 0, 1 );
 				LCD_Int( toggle_bit );
+
+
 
 				buzzer();
 
@@ -168,18 +168,19 @@ int main( void )
 					cy2 = 2;
 					cy3 = 3;
 					cy4 = 4;
+					_delay_ms( 1000 );
 					break;
 				case 55:
-					OCR0 = 78;
+					zwiekszanie = 1000;
 					break;
 				case 54:
-					OCR0 = 255;
+					zwiekszanie = 100;
 					break;
 				case 50:
-					OCR0 = 150;
+					zwiekszanie = 10;
 					break;
 				case 52:
-					OCR0 = 0;
+					zwiekszanie = 1;
 					break;
 				case 36:
 					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
@@ -187,16 +188,26 @@ int main( void )
 				case 35:
 					TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
 					break;
+				case 46:
+					cyfry -= zwiekszanie;
+					break;
+				case 34:
+					cyfry += zwiekszanie;
+					break;
 				}
 
-
+				if ( cyfry >= 10000 ) cyfry = 10000;
+				else if( cyfry <= -10000 ) cyfry = -10000;
+				OCR0=cyfry;
+				d_led_Int( cyfry );
+				LCD_GoTo( 6, 1 );
+				LCD_Int( cyfry );
 			}
 			Ir_key_press_flag = 0;
 			command = 0xff;
 			address = 0xff;
 		}
 	}
-
 	return 0;
 }
 

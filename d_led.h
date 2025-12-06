@@ -25,4 +25,7 @@ extern volatile uint8_t cy2;
 extern volatile uint8_t cy3;
 extern volatile uint8_t cy4;
 
+void d_led_init( void );
+void d_led_Int ( int );
+
 #endif // _d_led_h
