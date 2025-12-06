@@ -2364,7 +2364,7 @@ void pilot( int com, int tog )//
     //if(lockers_is_flag_bit(3) == 1) pilot_off();
     backlight(2);
 
-    if(start_program != 3 && start_program != 1) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+    if(start_program == 2) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     if( (start_program == 3 && lockers_is_flag_bit(0) == 1) )
     {
@@ -2407,7 +2407,7 @@ void sczytaj_komende( void )
         }
     }
 
-    if(start_program != 0)
+    if(start_program == 2 || start_program == 3)
     {
         if(pilot_button_pressed == 1)
         {
@@ -2430,7 +2430,7 @@ void sczytaj_komende( void )
         else
         {
             temp_char = uart_getc();
-            if(start_program == 3 && temp_char != 0 && temp_char != 't' && temp_char != 'T')
+            if(start_program == 3 && temp_char != 0 && temp_char != 't')
             {
                 if(temp_char == 'r') reset_variable = 1;
                 else pilot(-1, 0);
@@ -2844,6 +2844,8 @@ int main( void )
     switch_menu = 2;
 
     start_program = 3;
+    pilot_reset();
+    pilot_button_pressed = 0;
 
     //PCF8583_write_word(254, 1256);
 
