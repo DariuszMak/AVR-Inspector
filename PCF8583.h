@@ -39,6 +39,8 @@ struct time_frame
     uint8_t seconds;
     uint8_t minuts;
     uint8_t hours;
+    uint8_t days;
+    uint8_t months;
 };
 
 
@@ -186,7 +188,7 @@ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec);
+void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *day_of_week, uint8_t *month, int16_t *year);
 
 /**
  Ustawia czas w układzie
@@ -196,13 +198,7 @@ void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec);
  \param hsec setne części sekundy
 */
 void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec);
-/**
- Czyta datę z układu
- \param day dzień
- \param month miesiąc
- \param year rok
-*/
-void PCF8583_get_date(int8_t *day, int8_t *day_of_week, int8_t *month, int16_t *year);
+
 
 /**
  Ustawia datę w układzie

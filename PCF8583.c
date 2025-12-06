@@ -229,17 +229,35 @@ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
+void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *day_of_week, uint8_t *month, int16_t *year)
 {
     struct time_frame time_f;
+    uint8_t year_table[2];
+    PCF8583_mask_off();
     PCF8583_hold_on();
-    PCF8583_read_buf(0x01, 4, (uint8_t*)&time_f);
-    PCF8583_hold_off();
+    PCF8583_read_buf(0x01, 6, (uint8_t*)&time_f);
+                PCF8583_hold_off();
+    PCF8583_mask_on();
+    PCF8583_read_buf(0x10, 2, year_table);
 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
     *min=bcd2bin(time_f.minuts);
     *hour=bcd2bin(time_f.hours);
+    *day = bcd2bin(time_f.days & 0b00111111);
+    *month = bcd2bin(time_f.months & 0b00011111);
+    *day_of_week = (time_f.months & 0b11100000) >> 5;
+
+    int16_t y1;
+    uint8_t dy;
+
+    dy = (time_f.days & 0b11000000) >> 6;
+    y1 = year_table[0] | ( (int16_t)year_table[1] << 8);
+    if ( ( (uint8_t) y1 & 3 ) != dy )
+        PCF8583_write_word(0x10, ++y1);
+    *year = y1;
+
+
 }
 
 /**
@@ -268,24 +286,6 @@ void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
  \param month miesiąc
  \param year rok
 */
-void PCF8583_get_date(int8_t *day, int8_t *day_of_week, int8_t *month, int16_t *year)
-{
-    uint16_t y1;
-    uint8_t dy;
-    PCF8583_mask_on();
-    PCF8583_hold_on();
-    *day = PCF8583_read_bcd(5);
-    *month = PCF8583_read_bcd(6);
-    PCF8583_mask_off();
-    *day_of_week = (PCF8583_read(6) & 0b11100000) >> 5;
-
-    dy = (PCF8583_read(5) & 0b11000000) >> 6;
-    y1 = PCF8583_read(16) | ( (uint16_t)PCF8583_read(17) << 8);
-    if ( ( (uint8_t) y1 & 3 ) != dy )
-        PCF8583_write_word(16, ++y1);
-    *year = y1;
-    PCF8583_hold_off();
-}
 
 /**
  Ustawia datę w układzie
@@ -343,6 +343,32 @@ void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
     PCF8583_write_bcd( 0xE, month );
 }
 
+/**
+ Załącza alarm codzienny
+*/
+void PCF8583_alarm_every_day(void)
+{
+    PCF8583_write(8, PCF8583_read(8) | 0b00010000);//alarm codzienny
+    PCF8583_write(8, PCF8583_read(8) & ~0b00100000);//alarm codzienny
+}
+
+/**
+ Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
+*/
+void PCF8583_alarm_weekly(void)
+{
+    PCF8583_write(8, PCF8583_read(8) & ~0b00010000);//alarm codzienny
+    PCF8583_write(8, PCF8583_read(8) | 0b00100000);//alarm codzienny
+}
+
+/**
+ Załącza alarm dla dni w miesiącu
+*/
+void PCF8583_alarm_monthly(void)
+{
+    PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
+}
+
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
@@ -371,31 +397,6 @@ void PCF8583_alarm_off(void)
     PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
 }
 
-/**
- Załącza alarm codzienny
-*/
-void PCF8583_alarm_every_day(void)
-{
-    PCF8583_write(8, PCF8583_read(8) | 0b00010000);//alarm codzienny
-    PCF8583_write(8, PCF8583_read(8) & ~0b00100000);//alarm codzienny
-}
-
-/**
- Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
-*/
-void PCF8583_alarm_weekly(void)
-{
-    PCF8583_write(8, PCF8583_read(8) & ~0b00010000);//alarm codzienny
-    PCF8583_write(8, PCF8583_read(8) | 0b00100000);//alarm codzienny
-}
-
-/**
- Załącza alarm dla dni w miesiącu
-*/
-void PCF8583_alarm_monthly(void)
-{
-    PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
-}
 
 /**
  Ustawia czas alarmu w układzie
@@ -432,8 +433,7 @@ void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą d
 
 void PCF8583_get_wall_time(void)
 {
-    PCF8583_get_time( &godz, &min, &sek, &hsek );
-    PCF8583_get_date( &dzien,&dzien_tygodnia, &miesiac, &rok );
+    PCF8583_get_time( (uint8_t*)&godz, (uint8_t*)&min, (uint8_t*)&sek, (uint8_t*)&hsek, (uint8_t*)&dzien, (uint8_t*)&dzien_tygodnia, (uint8_t*)&miesiac, (int16_t*)&rok );
 }
 
 /*@}*/
