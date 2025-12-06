@@ -18,7 +18,6 @@ uint8_t lockers_is_flag_bit(uint8_t move)
 
 void lockers_init()
 {
-
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
     uint16_t tail_word = PCF8583_read_word(PCF8583_TAIL);
     uint16_t head_word = PCF8583_read_word(PCF8583_HEAD);
@@ -107,9 +106,9 @@ void lockers_save_events(void)
 
     uint8_t * dynamically_temp_table = ( uint8_t* ) malloc ( AMOUNT_OF_LOCKERS * sizeof ( *dynamically_temp_table ) );
 
-    checking_pins_interrupt_off();
-
     //zatrzymanie timera
+
+    checking_pins_interrupt_off();
 
     for(; i < AMOUNT_OF_LOCKERS; ++i)//przepisanie zawartości tabeli
     {
@@ -327,7 +326,7 @@ void lockers_queue_enque(uint8_t * temp_save_table)//funkcja zapisująca do pami
             frame.day = dzien;
             frame.month = miesiac;
             frame.year = rok;
-            frame.information = (uint8_t)temp_save_table[i] * 100;
+            frame.information = temp_save_table[i] * 100;
             frame.information += i + 1;
             uint16_t temp_address = lockers_convert_index_of_frame_to_address(lockers_tail());//pobranie ostatniego adresu
 
