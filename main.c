@@ -1024,6 +1024,10 @@ void czynnosc2( int com, int tog )
 
 void czynnosc3( int com, int tog )
 {
+    if( com == 42 )
+    {
+        PCF8583_alarm_flag_on();
+    }
     if ( com == 59 )
     {
         PCF8583_alarm_flag_off();

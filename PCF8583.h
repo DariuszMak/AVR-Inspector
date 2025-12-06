@@ -129,6 +129,9 @@ void PCF8583_mask_on(void);//maskuje dane - można bezpośrednio odczytywać
 */
 void PCF8583_alarm_flag_off(void);
 
+void PCF8583_alarm_flag_on(void);
+
+
 /**
  Zapisuje słowo do układu
  \param address adres komórki w układzie

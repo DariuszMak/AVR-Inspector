@@ -102,10 +102,12 @@ void PCF8583_init(void)
 {
 //    PCF8583_alarm=0;
     PCF8583_write(0, PCF8583_read(0) & ~0b11111101);//bez zerowania flagi alarmu
-    PCF8583_write(0, PCF8583_read(0) | 0x04);//komórki do alarmu dozwolone
+    PCF8583_write(0, PCF8583_read(0) | 0b00000100);//komórki do alarmu dozwolone
     PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
     PCF8583_mask_off();//maskowanie dni i roku wyłączone
     PCF8583_write(4, PCF8583_read(4) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
+    PCF8583_write(8, PCF8583_read(8) | 0b10000000);//przerwania alarmu dozwolone
+
     //PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
 }
 
@@ -164,6 +166,14 @@ void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
 void PCF8583_alarm_flag_off(void)
 {
     PCF8583_write(0, PCF8583_read(0) & ~0b00000010);//alarm codzienny
+}
+
+/**
+ Włącza wskaźnik alarmu
+*/
+void PCF8583_alarm_flag_on(void)
+{
+    PCF8583_write(0, PCF8583_read(0) | 0b00000010);//alarm codzienny
 }
 
 /**
