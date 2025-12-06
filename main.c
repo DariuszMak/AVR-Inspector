@@ -1180,12 +1180,12 @@ void zczytaj_komende( void )
 
         if(temp_char == 'R') lockers_print_all_memory();
         else if(temp_char == 'r') lockers_print_latest_data();
-
-
+        if(temp_char != 0) refresh_screen = 1;
         if( menu == 2 )
         {
             lockers_check_events();
             refresh_screen = 1;
+
             if(PCF8583_is_alarm_set() == 1)
             {
                 buzzer();
@@ -1193,10 +1193,11 @@ void zczytaj_komende( void )
                 PCF8583_alarm_flag_off();
             }
         }
-        if(backlight_of_lcd > 0) --backlight_of_lcd;
+        else
+
+            if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
         else LCD_BacklightOn();
-
     }
 
     if(refresh_screen == 1 )
