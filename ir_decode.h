@@ -6,7 +6,7 @@
 #define IR_PIN PIND
 #define IR_IN (1 << PD6)
 
-//#define IR_PORT D // te dyrektywy s� autorstwa Miros�wa Kardasia
+//#define IR_PORT D // te dyrektywy s¹ autorstwa Miros³wa Kardasia
 //#define IR_PIN 6
 //#define IR_IN (1<<IR_PIN)
 
@@ -35,5 +35,7 @@ extern volatile uint8_t command;
 extern volatile uint8_t Ir_key_press_flag;
 
 void ir_init( void );
+
+int stop_button();//funkcja zwraca "1" gdy przycisk jest naciśnięty (nie sprawdza drgań styków)
 
 #endif // IR_DECODE_H_

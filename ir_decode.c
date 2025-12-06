@@ -34,11 +34,14 @@ void ir_init()
     TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
 #endif // TIMER1_PRESCALER
 
-    TCCR1B &= ~( 1 << ICES1 ); //zbocze opadaj�ce na ICP
-    rc5cnt = 0; // zerowanie licznika wyst�puj�cych zboczy
+    TCCR1B &= ~( 1 << ICES1 ); //zbocze opadaj¹ce na ICP
+    rc5cnt = 0; // zerowanie licznika wystêpuj¹cych zboczy
 
     TIMSK |= ( 1 << TICIE1 ); //przerwanie
     Ir_key_press_flag = 0;
+
+    DDRB  &= 1 << 4;//inicjowanie przycisku stopu jako wejście
+    PORTB |= 1 << 4;//inicjowanie przycisku stopu jako wejście
 }
 
 ISR( TIMER1_CAPT_vect )
@@ -109,4 +112,14 @@ ISR( TIMER1_CAPT_vect )
         rc5cnt = 0;
         TCCR1B &= ~( 1 << ICES1 );
     }
+}
+
+int stop_button()//przycisk fizycznie umieszczony na płytce
+{
+    int temp = 0;
+    if(!(PINB & 0x10))
+    {
+        temp = 1;
+    }
+    return temp;
 }

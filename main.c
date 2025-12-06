@@ -7,6 +7,7 @@
 #include "ir_decode.h"
 #include "d_led.h"
 #include "pwm_led.h"
+#include "inverter.h"
 #include <stdlib.h>
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
@@ -125,24 +126,18 @@ int main( void )
             {
             case 41:
                 LCD_Clear();
-                /*char* original_text = ( char* ) malloc( LCD_CHARSPERLINE * sizeof *original_text * 2);//utworzenie tymczasowej tablicy na dane
 
-                original_text = "ATmega32 program                        Dariusz M. proj.                        ";
-
-                for( t = 0; t < LCD_CHARSPERLINE * 2; ++t )
-                {
-                    LCD_WriteData( original_text[t] );
-                }*/
-
-                char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
+                /*char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
 
                 for ( t = 0; t < 2; ++t )
                 {
                     original_text[t] = ( char* ) malloc ( LCD_CHARSPERLINE * sizeof ( *original_text ) );
-                }
+                }*/
 
-                original_text[0] = "ATmega32 program                        ";
-                original_text[1] = "Dariusz M. proj.                        ";
+                char original_text[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
+
+                /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";
+                original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
 
                 for( t = 0; t < LCD_CHARSPERLINE; ++t )
                 {
@@ -157,10 +152,11 @@ int main( void )
                 }
 
                 rozmiar = 40;
+                u = 1;
 
-                while( 1 )
+                while( u )
                 {
-                    char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwywymiarowa jako bufor do odczytu z wyświetlacza
+                    char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
 
                     for ( t = 0; t < 2; ++t )
                     {
@@ -185,22 +181,28 @@ int main( void )
 
                     for( t = 0; t < rozmiar; ++t )
                     {
+                        if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 0;
+                    }
+
+                    if ( stop_button() )//jeśli przycisk zatrzymania został wciśnięty
+                    {
                         u = 0;
-                        if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 1;;
                     }
 
-                    if (u) break;
-
-                    for( t = 0; t < rozmiar; ++t )
+                    if( u )
                     {
-                        LCD_WriteData( buffer_table[0][t] );
-                    }
+                        for( t = 0; t < rozmiar; ++t )
+                        {
+                            LCD_WriteData( buffer_table[0][t] );
+                        }
 
-                    LCD_GoTo( 0, 1 );
+                        LCD_GoTo( 0, 1 );
 
-                    for( t = 0; t < rozmiar; ++t )
-                    {
-                        LCD_WriteData( buffer_table[1][t] );
+                        for( t = 0; t < rozmiar; ++t )
+                        {
+                            LCD_WriteData( buffer_table[1][t] );
+                        }
+
                     }
 
                     for ( t = 0; t < 2; ++t )
@@ -210,11 +212,17 @@ int main( void )
                     free( buffer_table );
                 }
 
-                for ( t = 0; t < 2; ++t )
+                /*for ( t = 0; t < 2; ++t )
                 {
                     free( original_text[t] );
                 }
-                free( original_text );
+                free( original_text );*/
+
+                buzzer();
+                _delay_ms(10);
+                buzzer();
+                _delay_ms(10);
+                buzzer();
 
                 break;
             case 12:
@@ -581,6 +589,7 @@ int main( void )
     LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
+    inverter_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
     sei();//włącza przerwania
 
     pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu
@@ -589,7 +598,6 @@ int main( void )
 
     while( 1 )
     {
-
         zczytaj_komende();
     }
 
