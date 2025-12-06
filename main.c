@@ -2397,6 +2397,7 @@ void sczytaj_komende( void )
     if(pilot_button_pressed == 1)
     {
         pilot(100, 0);
+        delay_ms_var(100);
         pilot_button_pressed = 0;
     }
 
@@ -2523,6 +2524,11 @@ void sczytaj_komende( void )
             printf("\n");
             lockers_print_date_of_report();
             show_properties(11);
+            for(t = 30; t > 0; t--)
+            {
+                buzzer_time(t);
+                delay_ms_var(t);
+            }
 
             if(lockers_is_queue_full() == 1 )
             {
@@ -2530,10 +2536,7 @@ void sczytaj_komende( void )
                 show_properties(12);
                 lockers_print_latest_data();
             }
-            else
-            {
-                lockers_print_latest_data();
-            }
+            else if (lockers_is_queue_empty() == 0)lockers_print_latest_data();
             start_program = 2;
         }
 

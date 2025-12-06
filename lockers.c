@@ -117,9 +117,9 @@ void lockers_save_events(void)
         if(dynamically_temp_table[i]) action = 1;
     }
 
-    checking_pins_interrupt_on();
-
     //wznowienie timera
+
+    checking_pins_interrupt_on();
 
     if(action == 1)
     {
@@ -309,10 +309,10 @@ void lockers_queue_enque(uint8_t * temp_save_table)//funkcja zapisująca do pami
             {
                 if(start_program == 3)
                 {
-                    lockers_queue_dequeue();
                     green_colors_RGB();
                     show_properties(9);
                     buzzer_time(2000);
+                    lockers_queue_dequeue();
                 }
                 else
                 {

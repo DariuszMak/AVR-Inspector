@@ -43,11 +43,6 @@ ISR(TIMER0_OVF_vect)
 
     if (pilot_button_pressed == 0 && stop_button())
     {
-        delay_ms_var(30);
-        if (stop_button())
-        {
-            pilot_button_pressed = 1;//zmienna pamiętająca naciśnięcie przycisku
-            delay_ms_var(100);
-        }
+        pilot_button_pressed = 1;//zmienna pamiętająca naciśnięcie przycisku
     }
 }
