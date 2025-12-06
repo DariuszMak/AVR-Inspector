@@ -19,7 +19,7 @@ ISR( _VECTOR( 4 ) )
 	static uint8_t cnt;
 	if( cnt >= pwm1 ) PORTD |= ( 1 << PD2 );
 	else PORTD &= ~( 1 << PD2 );
-	if( cnt >= pwm2 ) PORTD |= ( 1 << PD3 );
+    if( cnt >= pwm2 ) PORTD |= ( 1 << PD3 );
 	else PORTD &= ~( 1 << PD3 );
 	++cnt;
 }

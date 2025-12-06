@@ -307,7 +307,22 @@ int main( void )
             case 16:
                 cyfry += zwiekszanie;
                 break;
+            case 14:
+                switch(tog)
+                {
+                case 0:
+                    break;
+                case 1://wygaszenie elementów wyświetlacza podczas opuszczania podprogramu
+                    TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
+                    cy1 = 10;
+                    cy2 = 10;
+                    cy3 = 10;
+                    cy4 = 10;
+                    break;
+                }
+                break;
             }
+
             wysw( *men, com );
             break;
 
@@ -410,7 +425,7 @@ int main( void )
 
 // funkcja obsługująca menu dwupoziomowe
 
-    void pilot( int * const men , int com, int tog)//
+    void pilot( int * const men , int com, int tog )//
     {
 
         if( *men == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
@@ -464,17 +479,16 @@ int main( void )
             if( !address )
             {
                 TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-                t = 0;
-                if(toggle != 2)
+                t = 0;//zmienna pomocnicza
+                if(toggle != 2)//jeśli zmiaenna "toggle" ma wartość inną niż na samym początku programu
                 {
-                    if(toggle == toggle_bit)
+                    if(toggle == toggle_bit)//jeśli stara zapamiętana wartość zmiennej "toggle" jest taka sama jak "toggle_bit", to oznacza to, że przycisk pilota zotał dłużej przytrzymany
                     {
-                        t = 1;
-
+                        t = 1;//przypisanie jednynki - przycisk zostal dłużej przyciśnięty
                     }
-                    toggle = toggle_bit;
+                    toggle = toggle_bit;//przypiwanie obecnej wartości do zmiennej "toggle"
                 }
-                else toggle = toggle_bit;
+                else toggle = toggle_bit;//przypisanie obecnej wartości do zmiennej "toggle"
 
                 pilot( &menu, command, t );//wywołanie funkcji pilot
                 Ir_key_press_flag = 0;
