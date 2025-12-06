@@ -1408,7 +1408,7 @@ int main( void )
 
     sei();//włącza przerwania
 
-    PCF8583_write_word(254, 232);
+    //PCF8583_write_word(254, 1256);
 
     //główna pętla programu
 
