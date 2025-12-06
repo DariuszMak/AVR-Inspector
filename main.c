@@ -408,8 +408,8 @@ void step_decrease(void)
 void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 {
 //    refresh_screen = 0;
-    if(start_program != 1)
-    {
+    //if(start_program != 1)
+    //{
         LCD_Home();
         LCD_Clear();
         LCD_WriteText( "Program: " );
@@ -435,7 +435,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         LCD_PageUpScreen();
         LCD_Home();
         LCD_Clear();
-    }
+    //}
     pilot_reset();
     //refresh_screen = 1;
 }
@@ -2370,7 +2370,7 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
-        if( lockers_is_flag_bit(2) == 1 && start_program != 1 && start != 1 ) send_all_screen();
+        if( lockers_is_flag_bit(2) == 1 /*&& start_program != 1*/ && start != 1 ) send_all_screen();
 
         //printf("%d\n",LCD_position);
         //printf("%d\n",LCD_position);
@@ -2541,9 +2541,11 @@ void sczytaj_komende( void )
                 lockers_print_latest_data();
             }
             else if (lockers_is_queue_empty() == 0)lockers_print_latest_data();
+
             pilot_reset();
             pilot_button_pressed = 0;
             start_program = 2;
+            pilot( 59, 0 );//przejście do podprogramu nr 2
         }
 
         //krótki etap przejściowy - koniec
@@ -2817,7 +2819,6 @@ int main( void )
 
     sczytaj_komende();
     switch_menu = 2;
-    pilot( 59, 0 );//przejście do podprogramu nr 2
 
     start_program = 3;
 
