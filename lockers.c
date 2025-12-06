@@ -312,7 +312,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 
     if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
     {
-         buzzer_time(500);
+        buzzer_time(500);
         temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
     }
 
@@ -329,9 +329,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
-#if SAFETY_BIT == 1
-    lockers_safety_bit_on();
-#endif
+
     PCF8583_get_wall_time();
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
@@ -358,12 +356,19 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 
             if( end_of_mem == 1)
             {
-                if(start_program == 3) buzzer_time(3000);
+                if(start_program == 3)
+                {
+                    buzzer_time(3000);
+#if SAFETY_BIT == 1
+                    lockers_safety_bit_on();
+#endif
+                }
                 else
                 {
                     lockers_print_latest_data();
                     lockers_save_frame(lockers_tail(), i);
                 }
+
             }
             else lockers_save_frame(lockers_tail(), i);
         }
