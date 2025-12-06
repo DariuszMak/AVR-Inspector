@@ -2285,8 +2285,23 @@ void pilot( int com, int tog )//
 
     if( (start_program == 3 && lockers_is_flag_bit(0) == 1) )
     {
-        start_program = 0;
+        //start_program = 0;
         backlight(2);
+        printf("\n");
+        lockers_print_date_of_report();
+        show_properties(11);
+
+        if(lockers_is_queue_full() == 1 )
+        {
+            LCD_Clear();
+            show_properties(12);
+            lockers_print_latest_data();
+        }
+        else
+        {
+            lockers_print_latest_data();
+        }
+        start_program = 2;
     }
 
     // if(pilot_state == 1) pilot_on();
@@ -2362,28 +2377,6 @@ void sczytaj_komende( void )
 
         //restartowanie - koniec
 
-        //krótki etap przejściowy
-
-        if(start_program == 0)
-        {
-            printf("\n");
-            lockers_print_date_of_report();
-            show_properties(11);
-
-            if(lockers_is_queue_full() == 1 )
-            {
-                LCD_Clear();
-                show_properties(12);
-                lockers_print_latest_data();
-            }
-            else
-            {
-                lockers_print_latest_data();
-            }
-            start_program = 2;
-        }
-
-        //krótki etap przejściowy - koniec
 
         if(start_program == 2 || start_program == 3)
         {
