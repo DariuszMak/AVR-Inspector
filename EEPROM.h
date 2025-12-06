@@ -69,6 +69,9 @@ static uint16_t EEPROM_read_word(uint8_t address)
 }
 
 
+
+
+
 /*@}*/
 
 #endif // __EEPROM_H__

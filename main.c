@@ -44,10 +44,6 @@ int main( void )
     int s;//inna (dodatowa zmienna)
 
 
-    uint8_t godz, min, sek, hsek;
-    uint8_t dzien, miesiac;
-    uint16_t rok;
-
 //definicje funkcji
 
     void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
@@ -196,8 +192,7 @@ int main( void )
                 int moveStep=0;
                 if(t==0)
                 {
-                    PCF8583_get_time( &godz, &min, &sek, &hsek );
-                    PCF8583_get_date( &dzien, &miesiac, &rok );
+                    //PCF8583_get_wall_time();
                     moveStep=0;
                 }
                 else if (t==1)

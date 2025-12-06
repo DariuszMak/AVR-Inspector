@@ -24,6 +24,10 @@
 */
 //static volatile uint8_t PCF8583_alarm;
 
+ uint8_t godz, min, sek, hsek;
+    uint8_t dzien, miesiac;
+    uint16_t rok;
+
 
 /**-------------------------------------------------------------------------------------------------
 
@@ -343,6 +347,12 @@ static void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
 {
     PCF8583_write_date( 0xD, day, 0 );
     PCF8583_write_bcd( 0xE, month );
+}
+
+void PCF8583_get_wall_time(void)
+{
+    PCF8583_get_time( &godz, &min, &sek, &hsek );
+    PCF8583_get_date( &dzien, &miesiac, &rok );
 }
 
 /*@}*/
