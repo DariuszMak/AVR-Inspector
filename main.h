@@ -11,6 +11,7 @@
 #include "delay_lib.h"
 #include "HD44780.h"
 #include "ir_decode.h"
+#include "timer_0.h"
 #include "timer_2.h"
 #include "lockers.h"
 #include "PCF8583.h"

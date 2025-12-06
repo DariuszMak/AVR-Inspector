@@ -71,6 +71,10 @@ void lockers_init()
     LOCKER_10_BUTTON_DIR  &= ~LOCKER_10_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_10_BUTTON_PORT |= LOCKER_10_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
+    timer_0_init();
+
+    checking_pins_interrupt_on();
+
     /* Przekierowuje standardowe wejście do  'mystdin' */
 
     //stdin = &mystdin;
@@ -104,20 +108,7 @@ uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przy
 
 void lockers_check_events(void)
 {
-    int i = 0;//zmienna pmocnicza w pętlach
-    //int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
-    uint8_t state;//stan przycisku z danej chwili
-    for(; i < AMOUNT_OF_LOCKERS; ++i)//sprawdzanie stanów przycisków i odpowiednie wypełnianie tablicy
-    {
-        state = lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
-        if( state != states_table[i] && save_info_table[i] == 0)//jeśli stan przycisku różni się od poprzednich wartości i wartość jeszcze nie jest zapisana, należy wypełnić tabelę
-        {
-            if (state == 1) save_info_table[i] = 2;//szafka otwarta
-            else if(state == 0) save_info_table[i] = 1;//szafka zamknięta
-            states_table[i] = state;
-        }
-        //else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
-    }
+
 }
 
 void lockers_save_events(void)
@@ -146,7 +137,8 @@ void lockers_save_events(void)
         buzzer_time(300);
         lockers_queue_enque(dynamically_temp_table);
         change_color_RGB();
-    }else free(dynamically_temp_table);//usunięcie tymczasowej tablicy, a jeśli jest inaczej, zostanie usunięta w innym kroku
+    }
+    else free(dynamically_temp_table); //usunięcie tymczasowej tablicy, a jeśli jest inaczej, zostanie usunięta w innym kroku
 }
 
 uint8_t lockers_number_of_frames(void)

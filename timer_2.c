@@ -32,10 +32,10 @@ void refreshing_interrupt_off()
     TCCR2 &= ~(( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 )); // wyłączenie timera preskaler 1024, timer do odświeżania
 }
 
-ISR( _VECTOR( 4 ) )
+ISR( TIMER2_COMP_vect  )
 {
     timer_cycle_overflow = 1;
-    if( overflow_timer_2 > 1500 ) interr = 1;
+    if( overflow_timer_2 > 1200 ) interr = 1;
     if( cnt >= RGB_Red ) RGB_R_PORT |= RGB_R;
     else RGB_R_PORT &= ~RGB_R;
     if( cnt >= RGB_Green ) RGB_G_PORT |= RGB_G;
