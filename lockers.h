@@ -98,7 +98,7 @@ void lockers_flag_bit_on(uint8_t);
 
 void lockers_flag_bit_off(uint8_t);
 
-uint8_t lockers_is_flag_bit(uint8_t);//0, jeśli chodzi o restart, 1, jeśli chodzi o alarm temperatury, 2, jeśli chodzi tryb konsolowy, 3, jeśli chodzi o tryb pilota
+uint8_t lockers_is_flag_bit(uint8_t);//0, jeśli chodzi o restart, 1, jeśli chodzi o alarm temperatury, 2, jeśli chodzi tryb konsolowy, 3, jeśli chodzi o tryb pilota, 4, jeśli chodzi o podświetlenie
 
 void lockers_init();//inicjalizacja wejść
 

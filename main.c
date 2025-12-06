@@ -438,6 +438,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
 
 void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte w bitach stanu
 {
+    backlight(2);
     temp_position = LCD_position;
 
     LCD_Home();
@@ -475,40 +476,62 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     }
     else if(number == 8)
     {
-        LCD_WriteText("PIIIK!");
+        LCD_WriteText("PRZETWARZANIE");
+        LCD_GoTo(0,1);
+        LCD_WriteText("SYGNALU");
     }
     else
     {
+        if(number == 1)
+        {
+            LCD_WriteText("TEMPERATURA");
+            LCD_GoTo(0,1);
+        }
+        if(number == 3)
+        {
+            LCD_WriteText("PILOT");
+            LCD_GoTo(6,0);
+        }
+        else if(number == 4)
+        {
+            LCD_WriteText("PODSWIETLENIE");
+            LCD_GoTo(0,1);
+        }
+
         if(lockers_is_flag_bit(number) == 1)
         {
             if(number == 1)
             {
-                LCD_WriteText("TEMPERATURA");
-                LCD_GoTo(0,1);
                 LCD_WriteText("KRYTYCZNA!!!");
             }
-            if(number == 2) LCD_WriteText("RC5 & TERMINAL");
-            if(number == 3)
+            else if(number == 2) LCD_WriteText("RC5 & TERMINAL");
+            else if(number == 3)
             {
-                LCD_WriteText("PILOT ON");
+                LCD_WriteText("ON");
+            }
+            else if(number == 4)
+            {
+                LCD_WriteText("STALE");
             }
         }
         else
         {
             if(number == 1)
             {
-                LCD_WriteText("TEMPERATURA");
-                LCD_GoTo(0, 1);
                 LCD_WriteText("USTABILIZOWANA!");
             }
-            if(number == 2) LCD_WriteText("RC5");
-            if(number == 3)
+            else if(number == 2) LCD_WriteText("RC5");
+            else if(number == 3)
             {
-                LCD_WriteText("PILOT OFF");
+                LCD_WriteText("OFF");
+            }
+            else if(number == 4)
+            {
+                LCD_WriteText("CZASOWE");
             }
         }
     }
-    if(number != 8 || lockers_is_flag_bit(2) == 1) send_all_screen();
+    if( !(number == 8 || number == 4) || lockers_is_flag_bit(2) == 1) send_all_screen();
 
     delay_ms_var_double( 500 );
     pilot_reset();
@@ -2215,15 +2238,18 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     }
     if( com == 15 )
     {
-        if( tog == 0)
+        if( lockers_is_flag_bit(4) == 1)
         {
+            lockers_flag_bit_off(4);
             backlight_of_lcd = 0;
             backlight(2);
         }
-        if( tog == 1)
+        else
         {
+            lockers_flag_bit_on(4);
             backlight(1);
         }
+        show_properties(4);
     }
     if ( com == 46 )
     {
@@ -2263,7 +2289,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             lockers_flag_bit_off(3);
             blue_colors_RGB();
             pilot_off();
-            backlight(0);
+            //backlight(0);
             show_properties(3);
             buzzer_time(500);
             //printf("\nPilot OFF\n");
@@ -2273,7 +2299,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             lockers_flag_bit_on(3);
             green_colors_RGB();
             pilot_on();
-            backlight(2);
+            //backlight(2);
             show_properties(3);
             //printf("\nPilot ON\n");
         }
@@ -2285,14 +2311,14 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 void pilot( int com, int tog )//
 {
 //    if(pilot_state == 1) pilot_off();
-    if(backlight_of_lcd >= 0) backlight(2);
+    backlight(2);
 
     if(start_program != 3) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     if( (start_program == 3 && lockers_is_flag_bit(0) == 1) )
     {
         start_program = 0;
-        backlight(2);
+        //backlight(2);
     }
 
     // if(pilot_state == 1) pilot_on();
@@ -2352,7 +2378,7 @@ void sczytaj_komende( void )
                 if(reset_variable == 1)
                 {
                     lockers_flag_bit_off(0);
-                    backlight(1);
+                    //backlight(1);
                     temp = 1;
                     show_properties(13);
                 }
@@ -2432,7 +2458,6 @@ void sczytaj_komende( void )
                             lockers_flag_bit_on(1);
                             show_properties(1);
                             buzzer();
-                            backlight(2);
                             lockers_print_temperature();
                         }
                     }
@@ -2443,7 +2468,6 @@ void sczytaj_komende( void )
                             lockers_flag_bit_off(1);
                             show_properties(1);
                             buzzer_time(10);
-                            backlight(2);
                             lockers_print_temperature();
                         }
                     }
@@ -2551,7 +2575,6 @@ void sczytaj_komende( void )
                 else if(temp_char == 'k') pilot(38, 0);
                 else if(temp_char == 'v') pilot(100, 0);
                 else if(temp_char == 'p') pilot(15, 0);
-                else if(temp_char == 'P') pilot(15, 1);
                 else if(temp_char == 'c') pilot(12, 0);
                 else if(temp_char == '[') pilot(46, 0);
                 else if(temp_char == ']') pilot(34, 0);
@@ -2641,6 +2664,9 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     if(lockers_is_flag_bit(3) == 1) pilot_on();
     else pilot_off();
+
+    if( lockers_is_flag_bit(4) == 1) backlight(1);
+    else backlight(2);
 
     uart_init(57600);//inicjalizacja uart'u
 
