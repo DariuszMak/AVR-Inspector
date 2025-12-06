@@ -30,7 +30,7 @@ void ir_init()
 	TCCR1B |= ( 1 << CS12 );
 #endif // TIMER1_PRESCALER
 
-	TCCR1B &= ~( 1 << CS12 );
+	TCCR1B &= ~( 1 << ICES1 );
 	rc5cnt = 0;
 
 	TIMSK |= ( 1 << TICIE1 );
@@ -74,7 +74,7 @@ ISR( TIMER1_CAPT_vect )
 		if( PulseWidth > MAX_BIT ) frame_status = FRAME_RESTART;
 		if ( frame_status == FRAME_OK )
 		{
-			if( PulseWidth > MAX_HALF_BIT ) rc5cnt++;
+			if ( PulseWidth > MAX_HALF_BIT ) rc5cnt++;
 			if ( rc5cnt > 1 )
 				if ( ( rc5cnt % 2 ) == 0 )
 				{
