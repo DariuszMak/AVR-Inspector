@@ -1439,7 +1439,7 @@ void czynnosc1( int com, int tog )
 
 void czynnosc2( int com, int tog )
 {
-    if( com == 42 )
+    /*if( com == 42 )
     {
         PCF8583_alarm_flag_on();
     }
@@ -1451,7 +1451,7 @@ void czynnosc2( int com, int tog )
     if ( com == 59 )
     {
         PCF8583_alarm_flag_off();
-    }
+    }*/
 
     refresh_screen = 1;
 }
