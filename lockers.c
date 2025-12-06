@@ -95,28 +95,28 @@ void lockers_read_frame(uint16_t index)
     }
     else
     {
-        //eeprom_busy_wait();
 
         temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
+        eeprom_busy_wait();
 
 
-        frame.seconds = eeprom_read_word((uint16_t*)temp_address++);
+        frame.seconds = eeprom_read_byte((uint8_t*)temp_address++);
         //_EEGET(frame.seconds,temp_address);
 
-        frame.minutes = eeprom_read_word((uint16_t*)temp_address++);
+        frame.minutes = eeprom_read_byte((uint8_t*)temp_address++);
 
-        frame.hours = eeprom_read_word((uint16_t*)temp_address++);
+        frame.hours = eeprom_read_byte((uint8_t*)temp_address++);
 
-        frame.day = eeprom_read_word((uint16_t*)temp_address++);
+        frame.day = eeprom_read_byte((uint8_t*)temp_address++);
 
-        frame.month = eeprom_read_word((uint16_t*)temp_address++);
+        frame.month = eeprom_read_byte((uint8_t*)temp_address++);
 
 //        uint8_t temp;
         //_EEGET(frame.year,temp_address);
         frame.year = eeprom_read_word((uint16_t*)temp_address++);
         temp_address++;
 
-        frame.information = eeprom_read_word((uint16_t*)temp_address++);
+        frame.information = eeprom_read_byte((uint8_t*)temp_address++);
     }
 }
 
@@ -184,19 +184,19 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
                 eeprom_busy_wait();
                 //_EEPUT(temp_address, sek);
-                eeprom_write_word((uint16_t*)temp_address++,sek);
+                eeprom_write_byte((uint8_t*)temp_address++,sek);
                 eeprom_busy_wait();
                 //_EEPUT(temp_address, min);
-                eeprom_write_word((uint16_t*)temp_address++,min);
+                eeprom_write_byte((uint8_t*)temp_address++,min);
                 //_EEPUT(temp_address, godz);
                 eeprom_busy_wait();
-                eeprom_write_word((uint16_t*)temp_address++,godz);
+                eeprom_write_byte((uint8_t*)temp_address++,godz);
                 eeprom_busy_wait();
                 //_EEPUT(temp_address, dzien);
-                eeprom_write_word((uint16_t*)temp_address++,dzien);
+                eeprom_write_byte((uint8_t*)temp_address++,dzien);
                 eeprom_busy_wait();
                 //_EEPUT(temp_address, miesiac);
-                eeprom_write_word((uint16_t*)temp_address++,miesiac);
+                eeprom_write_byte((uint8_t*)temp_address++,miesiac);
                 eeprom_busy_wait();
                 //_EEPUT(temp_address, rok);
                 eeprom_write_word((uint16_t*)temp_address++, rok);
@@ -206,7 +206,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
                 information += i + 1;
                 //_EEPUT(temp_address, information);
                 eeprom_busy_wait();
-                eeprom_write_word((uint16_t*)temp_address++,information);
+                eeprom_write_byte((uint8_t*)temp_address++,information);
             }
 
             if(overflow_flag == 1)
@@ -258,10 +258,10 @@ void lockers_clear_all_memory(void)
     EEPROM_clear_all_memory();
     uint16_t i = 0;
 
-    for(; i < INTERNAL_EEPROM_MAX_INDEX; ++i)
+    for(; i <= INTERNAL_EEPROM_MAX_INDEX; ++i)
     {
         eeprom_busy_wait();
-        eeprom_write_word((uint16_t*)i, 0);
+        eeprom_write_byte((uint8_t*)i, 0);
     }
 
     PCF8583_write_word(PCF8583_CELL, 0);

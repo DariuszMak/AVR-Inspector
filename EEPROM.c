@@ -39,7 +39,6 @@ void EEPROM_write(uint8_t address,uint8_t data)
     delay_ms_var(5);
 }
 
-
 /**
  Zapisuje słowo do układu
  \param address adres komórki w układzie
@@ -65,17 +64,12 @@ uint16_t EEPROM_read_word(uint8_t address)
 
 void EEPROM_clear_all_memory(void)
 {
-    uint8_t i = 0;
-    for(; i < EEPROM_MAX_ADDRESS; ++i)
+    uint16_t i = 0;
+    for(; i <= EEPROM_MAX_ADDRESS; ++i)
     {
         EEPROM_write((uint8_t) i, 0);
     }
 }
-
-
-
-
-
 
 /*@}*/
 
