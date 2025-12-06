@@ -166,7 +166,7 @@ void lockers_check_events()
     }
     if(action)
     {
-        all_colors_RGB();
+        blue_colors_RGB();
         lockers_queue_enque();
         refresh_screen = 1;
         buzzer_time(10);

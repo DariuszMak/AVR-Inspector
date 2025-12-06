@@ -177,6 +177,29 @@ void change_color_RGB(void)
     //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
 
+void green_colors_RGB(void)
+{
+    RGB_Red = 0;
+    RGB_Green = 255;
+    RGB_Blue = 0;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
+}
+
+void blue_colors_RGB(void)
+{
+    RGB_Red = 0;
+    RGB_Green = 0;
+    RGB_Blue = 255;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
+}
+
+void alert_colors_RGB(void)
+{
+    RGB_Green = 0;
+    RGB_Blue = 0;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
+}
+
 void all_colors_RGB(void)
 {
     RGB_Red = 255;
@@ -2117,6 +2140,12 @@ void sczytaj_komende( void )
                         }
                     }
 
+                    if(lockers_is_flag_bit(1) == 1)
+                    {
+                        alert_colors_RGB();
+                        buzzer_time(50);
+                    }
+
                     if( PCF8583_is_alarm_flag_set() == 1)
                     {
                         backlight(2);
@@ -2143,8 +2172,7 @@ void sczytaj_komende( void )
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
 
-        if(lockers_is_queue_full() == 1) all_colors_RGB();
-
+        if(lockers_is_queue_full() == 1) green_colors_RGB();
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
