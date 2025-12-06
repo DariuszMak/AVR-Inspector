@@ -54,7 +54,7 @@ ISR( TIMER0_COMP_vect )
 
 void d_led_Int ( int dana )
 {
-    if ( dana >= 10000 || dana <= -10000 ) dana = 0;
+    if ( dana >= 10000 || dana <= -1000 ) dana = 0;
     int dana_temp = abs( dana );
 
     int d = 1;
@@ -65,25 +65,43 @@ void d_led_Int ( int dana )
         g *= 10;
     }
 
-    if( d >= 4 )
+    int f;
+    int h;
+    g = 10;
+
+    for( f = 0; f < d; ++f)
     {
-        cy1 = dana_temp / 1000;
-        dana_temp -= cy1 * 1000;
+        h = dana_temp % g;
+        if( f == 1 ) h -= cy4;
+        if( f == 2 ) h -= cy3 + cy4;
+        if( f == 3 ) h -= cy2 + cy3 + cy4;
+        h /= g / 10;
+
+        if ( f == 0 ) cy4 = h;
+        if ( f == 1 ) cy3 = h;
+        if ( f == 2 ) cy2 = h;
+        if ( f == 3 ) cy1 = h;
+
+        g *= 10;
     }
-    else cy1 = 10;
-    if( d >= 3 )
+
+    for ( f = d; f < 5; ++f)
     {
-        cy2 = dana_temp / 100;
-        dana_temp -= cy2 * 100;
+        if(f == 1 )
+        {
+            cy3 = 10;
+            if ( dana_temp == 0 ) cy4 = 10;
+        }
+
+        if(f == 2 ) cy2 = 10;
+        if(f == 3 ) cy1 = 10;
     }
-    else cy2 = 10;
-    if( d >= 2 )
+
+    if(dana < 0)
     {
-        cy3 = dana_temp / 10;
-        dana_temp -= cy3 * 10;
+        if ( d == 3 ) cy1 = 11;
+        if ( d == 2 ) cy2 = 11;
+        if ( d == 1 ) cy3 = 11;
     }
-    else cy3 = 10;
-    cy4 = dana_temp;
-    if( !dana ) cy4 = 10;
 }
 

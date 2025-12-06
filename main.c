@@ -433,7 +433,7 @@ int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
 
                 break;
             case 59:
-                d_led_Int ( 9000 );
+                /*d_led_Int ( 9000 );
                 _delay_ms( 1000 );
                 d_led_Int ( 8765 );
                 _delay_ms( 1000 );
@@ -442,7 +442,7 @@ int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
                 d_led_Int ( -123 );
                 _delay_ms( 1000 );
                 d_led_Int ( -1000 );
-                _delay_ms( 1000 );
+                _delay_ms( 1000 );*/
                 break;
             case 55:
                 wysw_skok( 1000 );
@@ -463,10 +463,10 @@ int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wy
                 TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
                 break;
             case 17:
-                cyfry -= zwiekszanie;
+                //cyfry -= zwiekszanie;
                 break;
             case 16:
-                cyfry += zwiekszanie;
+                //cyfry += zwiekszanie;
                 break;
             case 14:
                 switch(tog)
