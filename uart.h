@@ -7,9 +7,13 @@
 #include <stdio.h>
 
 //rozmiar bufora musi byæ naturaln¹ potêg¹ liczby 2
-#define UART_BUFFER_SIZE 64
+#define UART_WRITE_BUFFER_SIZE 4
 
-#define UART_BUFFER_MASK (UART_BUFFER_SIZE-1)
+#define UART_READ_BUFFER_SIZE 16
+
+#define UART_WRITE_BUFFER_MASK (UART_WRITE_BUFFER_SIZE-1)
+
+#define UART_READ_BUFFER_MASK (UART_READ_BUFFER_SIZE-1)
 
 //flaga sygnalizuj¹ca przepe³nienie bufora odbiorczego
 //volatile uint8_t rx_overrun;

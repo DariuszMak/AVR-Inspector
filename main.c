@@ -28,13 +28,13 @@ void send_all_screen(void)
     rozmiar = LCD_CHARSPERLINE;
     LCD_Home();
 
-    uart_puts("|");
+    printf("|");
     for( t = 0; t < rozmiar; ++t )
     {
         uart_putc(LCD_ReadData());
     }
 
-    uart_puts("|\n|");
+    printf("|\n|");
 
     LCD_GoTo( 0, 1 );
 
@@ -42,7 +42,7 @@ void send_all_screen(void)
     {
         uart_putc(LCD_ReadData());
     }
-    uart_puts("|\n");
+    printf("|\n");
 }
 
 void set_time_by_uart(void)

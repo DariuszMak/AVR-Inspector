@@ -1,12 +1,12 @@
 #include "uart.h"
 
-volatile char UART_RX_BUF[UART_BUFFER_SIZE];
-volatile uint8_t uart_rx_h=0;
-volatile uint8_t uart_rx_t=0;
+volatile char UART_RX_BUF[UART_READ_BUFFER_SIZE];
+volatile uint16_t uart_rx_h=0;
+volatile uint16_t uart_rx_t=0;
 
-volatile char UART_TX_BUF[UART_BUFFER_SIZE];
-volatile uint8_t uart_tx_h=0;
-volatile uint8_t uart_tx_t=0;
+volatile char UART_TX_BUF[UART_WRITE_BUFFER_SIZE];
+volatile uint16_t uart_tx_h=0;
+volatile uint16_t uart_tx_t=0;
 
 //volatile uint8_t rx_overrun=0;
 
@@ -47,7 +47,7 @@ void uart_putc(char data)
     {
         uart_putc('\r');
     }
-    uint8_t new_h=(uart_tx_h+1)&UART_BUFFER_MASK;
+    uint16_t new_h=(uart_tx_h+1)&UART_WRITE_BUFFER_MASK;
     while(new_h==uart_tx_t);
     UART_TX_BUF[new_h]=data;
     uart_tx_h=new_h;
@@ -70,14 +70,14 @@ void uart_putint(int number, uint8_t base)
 char uart_getc(void)
 {
     if(uart_rx_t==uart_rx_h)return 0;
-    uart_rx_t=(uart_rx_t+1)&UART_BUFFER_MASK;
+    uart_rx_t=(uart_rx_t+1)&UART_READ_BUFFER_MASK;
     return UART_RX_BUF[uart_rx_t];
 }
 
 void uart_gets(char * temporary_table, uint16_t size_of_table)
 {
     //uart_putint(sizeof(temporary_table),10);
-    uint8_t times = 0;
+    uint16_t times = 0;
     char odebrany;
 
     do
@@ -127,7 +127,7 @@ uint16_t uart_getint(void)
 
 ISR(USART_RXC_vect)
 {
-    uint8_t new_h=(uart_rx_h+1)&UART_BUFFER_MASK;
+    uint16_t new_h=(uart_rx_h+1)&UART_READ_BUFFER_MASK;
 
     if(new_h!=uart_rx_t)
     {
@@ -145,7 +145,7 @@ ISR(USART_UDRE_vect)
 {
     if(uart_tx_t!=uart_tx_h)
     {
-        uart_tx_t=(uart_tx_t+1)&UART_BUFFER_MASK;
+        uart_tx_t=(uart_tx_t+1)&UART_WRITE_BUFFER_MASK;
         UDR=UART_TX_BUF[uart_tx_t];
     }
     else
