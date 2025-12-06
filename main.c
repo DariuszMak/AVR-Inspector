@@ -216,6 +216,8 @@ int main( void )
                 LCD_WriteText(":");
                 if(hsek < 10) LCD_Int(0);
                 LCD_Int(hsek);
+                LCD_WriteText(":");
+                LCD_Int(dzien_tygodnia);
                 LCD_GoTo( 0 + moveStep, 1 );
                 if(dzien < 10) LCD_Int(0);
                 LCD_Int(dzien);
@@ -224,9 +226,6 @@ int main( void )
                 LCD_Int(miesiac);
                 LCD_WriteText(":");
                 LCD_Int(rok);
-                LCD_WriteText(" ");
-                LCD_Double(ds18b20_temperature(), 2);
-
             }
 
             //LCD_Int( pwm1 );
@@ -565,7 +564,7 @@ int main( void )
                 EEPROM_write(15, 0);
                 EEPROM_write_word(16, 0);
                 break;
-                case 2:
+            case 2:
                 EEPROM_write(10, 1);
                 EEPROM_write(11, 2);
                 EEPROM_write(12, 8);
@@ -594,8 +593,8 @@ int main( void )
                 break;
 
             case 41:
-                PCF8583_set_time( 1, 2, 3, 4 );
-                PCF8583_set_date( 5, 6, 2007 );
+                PCF8583_set_time( 23, 59, 55, 00 );
+                PCF8583_set_date( 13, 8, 2015 );
                 break;
 
                 break;

@@ -103,6 +103,8 @@
 //    PCF8583_alarm=0;
     PCF8583_write(0, 0);
     PCF8583_write(0, PCF8583_read(0) | 0x04);//komórki do alarmu dozwolone
+    PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
+    PCF8583_mask_off();
     PCF8583_write(4, PCF8583_read(4) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
     PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
 }
@@ -128,15 +130,31 @@
 */
  void PCF8583_hold_off(void)
 {
-    PCF8583_write(0, PCF8583_read(0) & ~0x40);
+    PCF8583_write(0, PCF8583_read(0) & ~0x40);//pozwala dalej zliczać układowi
 }
 
 /**
  Zawiesza układu
 */
- void PCF8583_hold_on(void)
+ void PCF8583_hold_on(void)//przechowanie w zatrzaskach wyniku ostatniego zliczania
 {
     PCF8583_write(0, PCF8583_read(0) | 0x40);
+}
+
+/**
+ Odwiesza układ
+*/
+ void PCF8583_mask_off(void)
+{
+    PCF8583_write(0, PCF8583_read(0) & ~0x08);//wyłącza maskę - dostępne są wszystkie rejestry
+}
+
+/**
+ Zawiesza układu
+*/
+ void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
+{
+    PCF8583_write(0, PCF8583_read(0) | 0x08);
 }
 
 
@@ -245,20 +263,25 @@
  \param month miesiąc
  \param year rok
 */
- void PCF8583_get_date(uint8_t *day,uint8_t *month,uint16_t *year)
+ void PCF8583_get_date(uint8_t *day, uint8_t *day_of_week, uint8_t *month, uint16_t *year)
 {
-    uint8_t dy;
     uint16_t y1;
+    uint8_t dy;
+    PCF8583_mask_on();
     PCF8583_hold_on();
-    dy = PCF8583_read(5);
-    *month = bcd2bin(PCF8583_read(6) & 0x1F);
+    *day = bcd2bin(PCF8583_read(5));
+    *month = bcd2bin(PCF8583_read(6));
     PCF8583_hold_off();
-    *day = bcd2bin(dy & 0x3F);
-    dy >>= 6;
+    PCF8583_mask_off();
+    PCF8583_hold_on();
+    *day_of_week = (PCF8583_read(6) & 0b11100000) >> 5;
+
+    dy = (PCF8583_read(5) & 0b11000000) >> 6;
     y1 = PCF8583_read(16) | ( (uint16_t)PCF8583_read(17) << 8);
     if ( ( (uint8_t) y1 & 3 ) != dy )
         PCF8583_write_word(16, ++y1);
     *year = y1;
+    PCF8583_hold_off();
 }
 
 /**
@@ -331,7 +354,7 @@
 void PCF8583_get_wall_time(void)
 {
     PCF8583_get_time( &godz, &min, &sek, &hsek );
-    PCF8583_get_date( &dzien, &miesiac, &rok );
+    PCF8583_get_date( &dzien,&dzien_tygodnia, &miesiac, &rok );
 }
 
 /*@}*/

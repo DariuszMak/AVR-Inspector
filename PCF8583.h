@@ -25,7 +25,7 @@
 // volatile uint8_t PCF8583_alarm;
 
     uint8_t godz, min, sek, hsek;
-    uint8_t dzien, miesiac;
+    uint8_t dzien,dzien_tygodnia, miesiac;
     uint16_t rok;
 
 
@@ -109,6 +109,17 @@
 */
  void PCF8583_hold_on(void);
 
+ /**
+ Odwiesza układ
+*/
+ void PCF8583_mask_off(void);//wyłącza maskę - dostępne są wszystkie rejestry
+
+/**
+ Zawiesza układu
+*/
+ void PCF8583_mask_on(void);//maskuje dane - można bezpośrednio odczytywać
+
+
 
 /**
  Wyłącza alarm
@@ -173,7 +184,7 @@
  \param month miesiąc
  \param year rok
 */
- void PCF8583_get_date(uint8_t *day,uint8_t *month,uint16_t *year);
+ void PCF8583_get_date(uint8_t *day, uint8_t *day_of_week, uint8_t *month, uint16_t *year);
 
 /**
  Ustawia datę w układzie
