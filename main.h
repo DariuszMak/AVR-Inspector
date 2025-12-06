@@ -64,7 +64,7 @@ int main( void );
 
 uint8_t number_of_digits(uint32_t);
 
-void show_current_temperature(void);
+void show_temperature(void);
 
 int8_t put_double_format(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
 

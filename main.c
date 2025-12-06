@@ -37,10 +37,11 @@ uint8_t number_of_digits(uint32_t number)
     return d;
 }
 
-void show_current_temperature(void)
+void show_temperature(void)
 {
-    uint8_t temp = put_double_format(ds18b20_temperature(), 2);
+    uint8_t temp = put_double_format(termometer_temperature, 1);
     LCD_Int (double_format_global.integer_number);
+    LCD_WriteText(".");
     for(t = 0; t < temp; ++t)
     {
         LCD_Int(0);
@@ -971,7 +972,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     LCD_GoTo(12, 0);
-    show_current_temperature();
+    show_temperature();
 
     /*LCD_Double(-23.301,2);
     LCD_Double(-23.3015,2);
@@ -1906,6 +1907,7 @@ void sczytaj_komende( void )
 
         if(menu != 4 && menu != 5)
         {
+            ds18b20_temperature();
             lockers_check_events();
 
             change_color_RGB();

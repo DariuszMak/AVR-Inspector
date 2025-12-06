@@ -9,6 +9,8 @@
 #define ONEWIRE_PIN PINA
 #define ONEWIRE (1 << PA0)
 
+double termometer_temperature;
+
 /* DS18B20 przyłączony do portu  PD7 AVRa  */
 
 unsigned char ds18b20_ConvertT(void);
@@ -20,6 +22,6 @@ unsigned char OneWireReadByte(void);
 
 unsigned char ds18b20_pad[2];
 
-double ds18b20_temperature(void);
+void ds18b20_temperature(void);
 
 #endif

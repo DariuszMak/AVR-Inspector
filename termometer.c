@@ -130,7 +130,7 @@ unsigned char OneWireReadByte(void)
 }
 /***********************************************************/
 
-double ds18b20_temperature(void)
+void ds18b20_temperature(void)
 {
     double temp = 0;
     if(ds18b20_ConvertT())
@@ -151,6 +151,5 @@ double ds18b20_temperature(void)
         int i = 0;
         for(; i<2; i++) ds18b20_pad[i] = 0;
     }
-    return temp;
-
+    termometer_temperature = temp;
 }
