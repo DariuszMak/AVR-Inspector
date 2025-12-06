@@ -176,7 +176,6 @@ void lockers_check_events()
     }
 }
 
-
 uint8_t lockers_number_of_frames(void)
 {
     return ((INTERNAL_EEPROM_MAX_INDEX + 1 - INTERNAL_EEPROM_MIN_INDEX) / SIZE_OF_FRAME);

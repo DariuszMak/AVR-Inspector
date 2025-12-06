@@ -196,7 +196,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec);
+void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec, int8_t *day, int8_t *month);
 
 /**
  Ustawia czas alarmu w układzie
@@ -206,13 +206,6 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
  \param hsec setne części sekundy
 */
 void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec);
-
-/**
- Czyta datê alarmu z układu
- \param day dzień
- \param month miesiąc
-*/
-void PCF8583_get_alarm_date(int8_t *day, int8_t *month);
 
 /**
  Ustawia datę alarmu w układzie

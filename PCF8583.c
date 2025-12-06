@@ -270,21 +270,16 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec)
+void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec, int8_t *day, int8_t *month)
 {
-    *hsec=PCF8583_read_bcd(0x9);
-    *sec=PCF8583_read_bcd(0xA);
-    *min=PCF8583_read_bcd(0xB);
-    *hour=PCF8583_read_bcd(0xC);
-}
+    struct time_frame time_f;
+    PCF8583_read_buf(0x09, 6, (uint8_t*)&time_f);
 
-/**
- Czyta datê alarmu z układu
- \param day dzień
- \param month miesiąc
-*/
-void PCF8583_get_alarm_date(int8_t *day, int8_t *month)
-{
+    *hsec=bcd2bin(time_f.hseconds);
+    *sec=bcd2bin(time_f.seconds);
+    *min=bcd2bin(time_f.minuts);
+    *hour=bcd2bin(time_f.hours);
+
     *day = PCF8583_read_bcd(0xD);
     if(PCF8583_recognise_type_of_alarm() == 2)
     {
@@ -388,8 +383,7 @@ void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
 {
-    PCF8583_get_alarm_time( &godz, &min, &sek, &hsek );//należy pamiętać, że w trybie alarmu dziennego w zmiennej miesac przechowywane są dni tygodnia, w których będzie aktywny alarm
-    PCF8583_get_alarm_date( &dzien, &miesiac );
+    PCF8583_get_alarm_time( &godz, &min, &sek, &hsek, &dzien, &miesiac);//należy pamiętać, że w trybie alarmu dziennego w zmiennej miesac przechowywane są dni tygodnia, w których będzie aktywny alarm
 }
 
 void PCF8583_get_wall_time(void)
