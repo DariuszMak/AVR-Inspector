@@ -15,12 +15,12 @@
 /**
  Bajt statusu układu
 */
-static volatile uint8_t PCF8583_status;
+//static volatile uint8_t PCF8583_status;
 
 /**
  Bajt alarmu układu
 */
-static volatile uint8_t PCF8583_alarm;
+//static volatile uint8_t PCF8583_alarm;
 
 
 /**-------------------------------------------------------------------------------------------------
@@ -109,25 +109,13 @@ static void PCF8583_write_bcd(uint8_t address,uint8_t data)
     PCF8583_write(address,bin2bcd(data));
 }
 
-/**
- Czyta status układu
- \return status układu
-*/
-static uint8_t PCF8583_get_status(void)
-{
-    PCF8583_status = PCF8583_read(0);
-    PCF8583_alarm = (PCF8583_status & 2);
-    return PCF8583_status;
-}
-
 
 /**
  Inicjalizuje układ
 */
 static void PCF8583_init(void)
 {
-    PCF8583_status=0;
-    PCF8583_alarm=0;
+//    PCF8583_alarm=0;
     PCF8583_write(0, 0);
     PCF8583_write(0, PCF8583_read(0) | 0x04);//komórki do alarmu dozwolone
     PCF8583_write(4, PCF8583_read(4) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
@@ -139,9 +127,7 @@ static void PCF8583_init(void)
 */
 static void PCF8583_stop(void)
 {
-    PCF8583_get_status();
-    PCF8583_status |= 0x80;
-    PCF8583_write(0, PCF8583_status);
+    PCF8583_write(0, PCF8583_read(0) | 0x80);
 }
 
 /**
@@ -149,9 +135,7 @@ static void PCF8583_stop(void)
 */
 static void PCF8583_start(void)
 {
-    PCF8583_get_status();
-    PCF8583_status &= ~0x80;
-    PCF8583_write(0, PCF8583_status);
+    PCF8583_write(0, PCF8583_read(0) & ~0x80);
 }
 
 /**
@@ -159,9 +143,7 @@ static void PCF8583_start(void)
 */
 static void PCF8583_hold_off(void)
 {
-    PCF8583_get_status();
-    PCF8583_status &= ~0x40;
-    PCF8583_write(0, PCF8583_status);
+    PCF8583_write(0, PCF8583_read(0) & ~0x40);
 }
 
 /**
@@ -169,9 +151,7 @@ static void PCF8583_hold_off(void)
 */
 static void PCF8583_hold_on(void)
 {
-    PCF8583_get_status();
-    PCF8583_status |= 0x40;
-    PCF8583_write(0, PCF8583_status);
+    PCF8583_write(0, PCF8583_read(0) | 0x40);
 }
 
 
@@ -194,7 +174,7 @@ static void PCF8583_alarm_every_day(void)
 }
 
 /**
- Załącza alarm dla dni w tygodniu
+ Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
 */
 static void PCF8583_alarm_weekly(void)
 {
@@ -203,11 +183,19 @@ static void PCF8583_alarm_weekly(void)
 }
 
 /**
- Załącza alarm dla dni w tygodniu
+ Załącza alarm dla dni w miesiącu
 */
 static void PCF8583_alarm_monthly(void)
 {
     PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
+}
+
+/**
+ Wyłacza wskaźnik alarmu
+*/
+static void PCF8583_alarm_flag_off(void)
+{
+    PCF8583_write(0, PCF8583_read(0) & ~0b00000010);//alarm codzienny
 }
 
 /**
@@ -250,22 +238,6 @@ static void PCF8583_get_time(uint8_t *hour,uint8_t *min,uint8_t *sec,uint8_t *hs
     PCF8583_hold_off();
 }
 
-/**
- Czyta czas z układu
- \param hour godzina w formanie BCD
- \param min minuta w formanie BCD
- \param sec sekunda w formanie BCD
- \param hsec setne części sekundy w formanie BCD
-*/
-static void PCF8583_get_time_bcd(uint8_t *hour,uint8_t *min,uint8_t *sec,uint8_t *hsec)
-{
-    PCF8583_hold_on();
-    *hsec=PCF8583_read(1);
-    *sec=PCF8583_read(2);
-    *min=PCF8583_read(3);
-    *hour=PCF8583_read(4) & 0b00111111;
-    PCF8583_hold_off();
-}
 /**
  Ustawia czas w układzie
  \param hour godzina

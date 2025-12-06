@@ -43,8 +43,8 @@ int main( void )
 
 
     uint8_t godz, min, sek, hsek;
-uint8_t dzien, miesiac;
-uint16_t rok;
+    uint8_t dzien, miesiac;
+    uint16_t rok;
 
 //definicje funkcji
 
@@ -188,24 +188,42 @@ uint16_t rok;
             break;
         case 3:
             PCF8583_get_time( &godz, &min, &sek, &hsek );
-    PCF8583_get_date( &dzien, &miesiac, &rok );
+            PCF8583_get_date( &dzien, &miesiac, &rok );
             LCD_EraseAll();
             LCD_GoTo( 0, 0 );
-            LCD_Int(hsek);
-            LCD_GoTo( 3, 0 );
-            LCD_Int(sek);
-            LCD_GoTo( 6, 0 );
-            LCD_Int(min);
-            LCD_GoTo( 9, 0 );
             LCD_Int(godz);
+            LCD_GoTo( 3, 0 );
+            LCD_Int(min);
+            LCD_GoTo( 6, 0 );
+            LCD_Int(sek);
+            LCD_GoTo( 9, 0 );
+            LCD_Int(hsek);
             LCD_GoTo( 0, 1 );
             LCD_Int(dzien);
             LCD_GoTo( 3, 1 );
             LCD_Int(miesiac);
             LCD_GoTo( 6, 1 );
             LCD_Int(rok);
+
+            PCF8583_get_alarm_time(&godz, &min, &sek, &hsek);
+            PCF8583_get_alarm_date( &dzien, &miesiac );
+
+            int moveStep = 16;
+
+            LCD_GoTo( 0 + moveStep, 0 );
+            LCD_Int(godz);
+            LCD_GoTo( 3 + moveStep, 0 );
+            LCD_Int(min);
+            LCD_GoTo( 6 + moveStep, 0 );
+            LCD_Int(sek);
+            LCD_GoTo( 9 + moveStep, 0 );
+            LCD_Int(hsek);
+            LCD_GoTo( 0 + moveStep, 1 );
+            LCD_Int(dzien);
+            LCD_GoTo( 3 + moveStep, 1 );
+            LCD_Int(miesiac);
+
             //LCD_Int( pwm1 );
-            LCD_GoTo( 0, 1 );
             //LCD_Int( pwm2 );
             //OCR0 = pwm1;//zmienna przepełnienia Timera 0
             break;
@@ -529,15 +547,23 @@ uint16_t rok;
             {
             case 55:
                 wysw_skok( 1000 );
+                PCF8583_alarm_off();
                 break;
             case 54:
                 wysw_skok( 100 );
+                PCF8583_alarm_every_day();
                 break;
             case 50:
                 wysw_skok( 10 );
+                //PCF8583_alarm_weekly();
                 break;
             case 52:
                 wysw_skok( 1 );
+                PCF8583_alarm_monthly();
+            case 59:
+                PCF8583_alarm_flag_off();
+                break;
+
                 break;
             case 17:
 //                pwm1 -= zwiekszanie;
@@ -705,6 +731,14 @@ uint16_t rok;
 
 //Inicjalizacja
 
+    i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
+    PCF8583_init();//inicjlalizacja wyświetlacza
+    PCF8583_set_time( 1, 2, 3, 4 );
+    PCF8583_set_date( 5, 6, 2007 );
+
+    PCF8583_set_alarm_time(1,2,15,4);//dwadzieścia sekund czasu do alarmu
+    PCF8583_set_alarm_date(5,6);
+
 
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     random_generator_init();//włączenie losowaniacyfr
@@ -713,10 +747,7 @@ uint16_t rok;
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     inverter_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-    i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
-     PCF8583_init();//inicjlalizacja wyświetlacza
-    PCF8583_set_time( 19, 17, 1, 0 );
-    PCF8583_set_date( 6, 2, 2012 );
+
 
 
     sei();//włącza przerwania
