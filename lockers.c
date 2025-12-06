@@ -280,7 +280,7 @@ void lockers_queue_empty(void)
 
 uint8_t lockers_queue_number_of_records(void)
 {
-    if( lockers_head() > lockers_tail() ) return lockers_number_of_frames() - ( lockers_head() - lockers_tail() ) + 1;
+    if( lockers_head() > lockers_tail() ) return lockers_number_of_frames() - ( lockers_head() - lockers_tail() );
     else return lockers_tail() - lockers_head();
 }
 
