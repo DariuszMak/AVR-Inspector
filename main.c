@@ -31,6 +31,7 @@ int main( void )
     uint16_t zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
     uint8_t pilot_state = 0;//stan pilota
+    uint8_t checking_lockers_state = 0;
 //zmienne zarezerwowane dla podprogramu nr 2:
     int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -846,6 +847,7 @@ int main( void )
                     //czynnosc( men, 50, tog );
                     lockers_beginning_actions();
                     TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
+                    checking_lockers_state = 1;
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 case 4:
@@ -866,6 +868,7 @@ int main( void )
         {
             start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
             *men = 0;//
+            checking_lockers_state = 0;
             TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
             TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
             wybor( *men );
@@ -939,7 +942,9 @@ int main( void )
 
     pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu
 
+    pilot_on();
     pilot_state = 1;
+
 
 
     //główna pętla programu
@@ -947,7 +952,7 @@ int main( void )
     while( 1 )
     {
         zczytaj_komende();
-        if( menu == 3) lockers_check_events();
+        if( checking_lockers_state == 1) lockers_check_events();
     }
 
     return 0;
