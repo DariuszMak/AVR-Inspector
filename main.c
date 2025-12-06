@@ -11,6 +11,7 @@ void pisz(void);
 //##############################################################################
 int main(void)
 {
+
     int t, rozmiar=6;
     char i[rozmiar];
     void pisz(void)
@@ -23,6 +24,8 @@ int main(void)
     }
 
     LCD_Initalize();
+    uint8_t tab1[]  = {0,0,14,1,15,17,15,2};
+    LCD_DefChar(0x81, tab1);
 
     while(1)
     {
@@ -32,6 +35,15 @@ int main(void)
         LCD_Home();
         LCD_WriteText("(D)Arek");
         _delay_ms(500);
+
+        LCD_INT(140);
+        _delay_ms(1500);
+        LCD_HEX(218);
+        _delay_ms(1500);
+        LCD_Home();
+        LCD_WriteText("m""\x81""czny");
+        _delay_ms(3000);
+        /*
         LCD_ShiftRightScreen();
         _delay_ms(700);
 
@@ -90,7 +102,7 @@ int main(void)
         LCD_PageUpScreen();
         LCD_Cursor();
         LCD_EraseDown();
-        _delay_ms(500);
+        _delay_ms(500);*/
 
         LCD_Clear();
     }

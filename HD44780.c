@@ -217,8 +217,52 @@ unsigned char LCD_ReadData(void)
 //-------------------------------------------------------------------------------------------------
 void LCD_WriteText(char * text)
 {
-    while(*text)
-        LCD_WriteData(*text++);
+    register char sign;
+    while((sign=*(text++)))
+        LCD_WriteData(((sign>=0x80) && (sign<=0x87)) ? (sign & 0x07) : sign);
+}
+
+#include <avr/pgmspace.h>
+void LCD_WriteText_P(char * text)
+{
+    register char sign;
+    while((sign=pgm_read_byte(text++)))
+        LCD_WriteData((sign>=0x80 && sign<=0x87) ? (sign & 0x07) : sign);
+}
+/*
+#include <avr/eeprom.h>
+void LCD_WriteText_E(char * text)
+{
+    register char sign;
+    while(1){
+        sign = eeprom_read_byte((uint8_t *)(text++));
+        if(!sign || sign == 0xFF) break;
+        else
+        LCD_WriteData((sign>=0x80 && sign<=0x87) ? (sign & 0x07) : sign);
+    }
+}*/
+
+void LCD_INT(int value)
+{
+    char bufor[17];
+    LCD_WriteText( itoa(value, bufor, 10));
+}
+
+void LCD_HEX(int value)
+{
+    char bufor[17];
+    LCD_WriteText( itoa(value, bufor, 16));
+}
+void LCD_DefChar (uint8_t nr, uint8_t *def_sign)
+{
+    register uint8_t i,c;
+    LCD_WriteCommand( 0x40);
+    for(i=0;i<8;i++)
+    {
+        c = *(def_sign++);
+        LCD_WriteData(c);
+    }
+    LCD_WriteCommand( 0x80);
 }
 //-------------------------------------------------------------------------------------------------
 //
