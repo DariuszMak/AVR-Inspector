@@ -66,6 +66,8 @@ void show_time_only_format(void);
 
 void show_time_format(void);
 
+void show_alarm_format(uint8_t case_of_format);
+
 void correction_of_time(void);
 
 void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku

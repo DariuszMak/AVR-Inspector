@@ -299,8 +299,9 @@ void PCF8583_get_alarm_date(int8_t *day, int8_t *month)
     *day = PCF8583_read_bcd(0xD);
     if(PCF8583_recognise_type_of_alarm() == 2)
     {
-        *month = PCF8583_read(0xe);
-    }else *month = PCF8583_read_bcd(0xE);
+        *month = PCF8583_read(0xe) & 0b01111111;
+    }
+    else *month = PCF8583_read_bcd(0xE);
 }
 
 /**
@@ -375,7 +376,7 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
 void PCF8583_set_weekly_alarm(uint8_t days_of_week, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
 {
     PCF8583_set_alarm_time( hour,  min,  sec,  hsec);
-    PCF8583_write(0xE, days_of_week);
+    PCF8583_write(0xE, days_of_week & 0b01111111);
 }
 
 void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)

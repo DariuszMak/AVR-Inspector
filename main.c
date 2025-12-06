@@ -18,6 +18,9 @@ uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną po
 int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 
 
+//definicje funkcji
+
+
 void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 {
     PORTD |= ( 1 << PD7 );
@@ -126,6 +129,38 @@ void show_time_format(void)
 
     LCD_GoTo(13,1);
     show_day_of_week(dzien_tygodnia);
+}
+
+void show_alarm_format(uint8_t case_of_format)
+{
+
+    if(case_of_format == 2)
+    {
+        if(miesiac == 0)
+        {
+            LCD_WriteText("-------");
+        }
+        else
+        {
+            for(w = 0; w < 7; ++w)
+            {
+                if(miesiac & (1 << w))
+                {
+                    LCD_WriteText("|");
+                    LCD_Int(w+1);
+                }
+            }
+            LCD_WriteText("|");
+        }
+    }
+    else if ( case_of_format == 3)
+    {
+        if(dzien < 10) LCD_Int(0);
+        LCD_Int(dzien);
+        LCD_WriteText(":");
+        if(miesiac < 10) LCD_Int(0);
+        LCD_Int(miesiac);
+    }
 }
 
 void correction_of_time(void)
@@ -299,7 +334,8 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         show_time_format();
 
         PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
-        moveStep=22;
+
+        moveStep=21;
 
         if(u != 0)
         {
@@ -309,39 +345,14 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             LCD_GoTo(18, 1);
             LCD_WriteText("|");
 
-            LCD_GoTo( 0 + moveStep, 0 );
-            if(godz < 10) LCD_Int(0);
-            LCD_Int(godz);
-            LCD_WriteText(":");
-            if(min < 10) LCD_Int(0);
-            LCD_Int(min);
-            LCD_WriteText(":");
-            if(sek < 10) LCD_Int(0);
-            LCD_Int(sek);
-            LCD_WriteText(":");
-            if(hsek < 10) LCD_Int(0);
-            LCD_Int(hsek);
-            LCD_GoTo( 0 + moveStep, 1 );
-            if(u == 2)
-            {
-                for(w = 0; w < 7; ++w)
-                {
-                    if(miesiac & (1 << w))
-                    {
-                        LCD_Int(w+1);
-                    }
-                    LCD_WriteText("|");
-                }
-            }
-            else if ( u == 3)
-            {
-                if(dzien < 10) LCD_Int(0);
-                LCD_Int(dzien);
-                LCD_WriteText(":");
-                if(miesiac < 10) LCD_Int(0);
-                LCD_Int(miesiac);
-            }
+            show_time_only_format();
         }
+
+        LCD_GoTo( 0 + moveStep, 1 );
+
+        show_alarm_format(u);
+
+
         LCD_GoTo(12, 0);
         LCD_Double(ds18b20_temperature(),1);
 
@@ -443,8 +454,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             //LCD_EraseUp();
             LCD_GoTo(0, 1);
             show_frame(u + 1);
-
-
         }
 
         break;
@@ -877,16 +886,16 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_Clear();
         wysw();
         break;
-    case 34:
+    case 46:
         LCD_ShiftRightScreen();
         break;
-    case 46:
+    case 34:
         LCD_ShiftLeftScreen();
         break;
-    case 35:
+    case 36:
         LCD_PageUpScreen();
         break;
-    case 36:
+    case 35:
         LCD_PageDownScreen();
         break;
     case 44:
@@ -957,7 +966,6 @@ void pilot( int com, int tog )//
                 break;
             case 5:
                 //czynnosc( men, 50, tog );
-
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 6:
@@ -1042,9 +1050,6 @@ void zczytaj_komende( void )
 int main( void )
 {
 
-//definicje funkcji
-
-
 //Inicjalizacja
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
@@ -1057,11 +1062,11 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
-    PCF8583_alarm_monthly();
+    PCF8583_alarm_weekly();
+    PCF8583_set_weekly_alarm(0b11110101,5,30,45,25);
     //PCF8583_alarm_monthly();
 
     sei();//włącza przerwania
-
 
     pilot( 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
     pilot( 3, 0 );//przejście do podprogramu nr 3
