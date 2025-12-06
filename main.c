@@ -23,8 +23,6 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
-
-
 void backlight(int8_t state)
 {
     if(state == 0) backlight_of_lcd = 0;

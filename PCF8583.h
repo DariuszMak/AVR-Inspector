@@ -33,10 +33,16 @@ int8_t godz, min, sek, hsek;
 int8_t dzien,dzien_tygodnia, miesiac;
 int16_t rok;
 
-#if buffer == 1
+struct time_frame
+{
+    uint8_t hseconds;
+    uint8_t seconds;
+    uint8_t minuts;
+    uint8_t hours;
+};
+
 void PCF8583_write_buf( uint8_t adr, uint8_t len, uint8_t *buf );
 void PCF8583_read_buf( uint8_t adr, uint8_t len, uint8_t *buf);
-#endif // buffer
 
 
 /**-------------------------------------------------------------------------------------------------

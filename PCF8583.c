@@ -58,8 +58,6 @@ uint8_t PCF8583_read(uint8_t address)
     return a;
 }
 
-#if buffer == 1
-
 void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf )
 {
     i2cStart();
@@ -81,8 +79,6 @@ void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
     while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
     i2cStop();
 }
-
-#endif // buffer
 
 
 /**
@@ -253,12 +249,12 @@ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_
 void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 {
     PCF8583_hold_on();
-    uint8_t bufor[4];
-    PCF8583_read_buf(0x01, 4, bufor );
-    *hsec=bcd2bin(bufor[0]);
-    *sec=bcd2bin(bufor[1]);
-    *min=bcd2bin(bufor[2]);
-    *hour=bcd2bin(bufor[3]);
+    struct time_frame time_f;
+    PCF8583_read_buf(0x01, 4, (uint8_t*)&time_f);
+    *hsec=bcd2bin(time_f.hseconds);
+    *sec=bcd2bin(time_f.seconds);
+    *min=bcd2bin(time_f.minuts);
+    *hour=bcd2bin(time_f.hours);
     PCF8583_hold_off();
 }
 
@@ -272,12 +268,12 @@ void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
 {
     PCF8583_stop();
-    uint8_t bufor[4];
-    bufor[0]=bin2bcd(hsec);
-    bufor[1]=bin2bcd(sec);
-    bufor[2]=bin2bcd(min);
-    bufor[3]=bin2bcd(hour);
-    PCF8583_write_buf(0x01, 4, bufor);
+    struct time_frame time_f;
+    time_f.hseconds=bin2bcd(hsec);
+    time_f.seconds=bin2bcd(sec);
+    time_f.minuts=bin2bcd(min);
+    time_f.hours=bin2bcd(hour);
+    PCF8583_write_buf(0x01, 4, (uint8_t*)&time_f);
     PCF8583_start();
 }
 
