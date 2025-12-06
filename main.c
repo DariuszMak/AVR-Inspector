@@ -202,7 +202,7 @@ int main( void )
                 {
                     PCF8583_get_alarm_time(&godz, &min, &sek, &hsek);
                     PCF8583_get_alarm_date( &dzien, &miesiac );
-                    moveStep=16;
+                    moveStep=24;
                 }
                 LCD_GoTo( 0 + moveStep, 0 );
                 if(godz < 10) LCD_Int(0);
@@ -224,6 +224,10 @@ int main( void )
                 LCD_Int(miesiac);
                 LCD_WriteText(":");
                 LCD_Int(rok);
+                LCD_WriteText(" ");
+                LCD_Double(12.12, 9);
+                LCD_WriteText(" ");
+                LCD_Double(12.12, 1);
             }
 
             //LCD_Int( pwm1 );

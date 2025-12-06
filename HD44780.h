@@ -25,6 +25,7 @@
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
 
 #define USE_LCD_Int 1
+#define USE_LCD_Double 1
 #define USE_LCD_Hex 1
 #define USE_LCD_MoveRight 1
 #define USE_LCD_MoveLeft 1
@@ -151,6 +152,10 @@ void LCD_Home( void ); // sprzętowa funkcja powrotu na początek (ekran i kurso
 #if USE_LCD_Int == 1
 void LCD_Int( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
 #endif // USE_LCD_Int
+
+#if USE_LCD_Double == 1 && USE_LCD_Int == 1
+void LCD_Double(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
+#endif // USE_LCD_Double
 
 #if USE_LCD_Hex == 1
 void LCD_Hex( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)

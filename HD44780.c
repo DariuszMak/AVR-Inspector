@@ -252,6 +252,35 @@ void LCD_Int( int value )
     LCD_WriteText( itoa( value, bufor, 10 ) );
 }
 #endif // USE_LCD_Int
+
+//-------------------------------------------------------------------------------------------------
+//
+// Funkcja wyświetlenia liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
+//
+//-------------------------------------------------------------------------------------------------
+
+#if USE_LCD_Double == 1 && USE_LCD_Int == 1
+void LCD_Double( double value, unsigned int approximation)
+{
+    if(approximation > 4) approximation = 4;
+    LCD_Int((int)value);
+    unsigned int value_temp = value;
+    uint16_t ten = 10;
+    int a = 1;
+    for(; a < approximation; ++a)
+    {
+        ten *= 10;
+    }
+    value *= ten;
+    value -= ten * value_temp;
+    if(approximation)
+    {
+        LCD_WriteText(".");
+        LCD_Int(value);
+    }
+}
+#endif // USE_LCD_Double
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
