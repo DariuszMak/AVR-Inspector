@@ -1172,22 +1172,16 @@ void pilot( int com, int tog )//
 
 void zczytaj_komende( void )
 {
-    if( interr == 1  )
+    if( interr == 1 )
     {
-        interr = 0;
         cnt = 0;
+        interr = 0;
 
         if( menu == 2 )
         {
             lockers_check_events();
             wysw();
         }
-
-        if(backlight_of_lcd > 0) --backlight_of_lcd;
-        if(backlight_of_lcd == 0) LCD_BacklightOff();
-        else LCD_BacklightOn();
-
-
     }
 
     if(refresh_screen == 1 )
@@ -1195,7 +1189,12 @@ void zczytaj_komende( void )
         if(pilot_state == 1) pilot_off();
         refresh_screen = 0;
         wysw();
+        if(backlight_of_lcd > 0) --backlight_of_lcd;
+        if(backlight_of_lcd == 0) LCD_BacklightOff();
+        else LCD_BacklightOn();
         if(pilot_state == 1) pilot_on();
+        cnt = 0;
+        interr = 0;
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
