@@ -963,8 +963,17 @@ void czynnosc2( int com, int tog )
         }
         else if(pilot_state == 0)
         {
-            pilot_state = 1;
-            backlight(1);
+            if(start_program == 0)
+            {
+                pilot_state = 1;
+                backlight(1);
+            }
+            else
+            {
+                start_program = 0;
+                backlight(2);
+            }
+
         }
     }
     refresh_screen = 1;
@@ -1185,15 +1194,22 @@ void zczytaj_komende( void )
         cnt = 0;
         interr = 0;
 
-        uint8_t temp_char = USART_Recieve_without_waiting();
-
-        if(temp_char == 'I') lockers_print_all_memory();
-        else if(temp_char == 'i') lockers_print_latest_data();
-        if(temp_char != 0) refresh_screen = 1;
-        if( menu == 2 )
+        if(start_program == 1)
         {
-            lockers_check_events();
-            refresh_screen = 1;
+            buzzer();
+        }
+        else
+        {
+            if(lockers_is_safety_bit() == 1)
+            {
+                lockers_print_all_memory();
+            }
+
+            uint8_t temp_char = USART_Recieve_without_waiting();
+
+            if(temp_char == 'I') lockers_print_all_memory();
+            else if(temp_char == 'i') lockers_print_latest_data();
+            if(temp_char != 0) refresh_screen = 1;
 
             if(PCF8583_is_alarm_set() == 1)
             {
@@ -1201,11 +1217,20 @@ void zczytaj_komende( void )
                 lockers_print_latest_data();
                 PCF8583_alarm_flag_off();
             }
+
+            if(backlight_of_lcd > 0) --backlight_of_lcd;
+            if(backlight_of_lcd == 0) LCD_BacklightOff();
+            else LCD_BacklightOn();
         }
 
-        if(backlight_of_lcd > 0) --backlight_of_lcd;
-        if(backlight_of_lcd == 0) LCD_BacklightOff();
-        else LCD_BacklightOn();
+
+        if( menu == 2 )
+        {
+            lockers_check_events();
+            refresh_screen = 1;
+        }
+
+
     }
 
     if(refresh_screen == 1 )
@@ -1318,7 +1343,7 @@ int main( void )
     //PCF8583_write_word(254, 1256);
 
     //główna pętla programu
-    start_program = 0;
+//    start_program = 0;
     sei();//włącza przerwania
 
 

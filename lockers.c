@@ -1,5 +1,20 @@
 #include "lockers.h"
 
+void lockers_safety_bit_on(void)
+{
+    PCF8583_write(PCF8583_SAFETY_CELL,1);
+}
+
+void lockers_safety_bit_off(void)
+{
+    PCF8583_write(PCF8583_SAFETY_CELL,0);
+}
+
+uint8_t lockers_is_safety_bit(void)
+{
+    if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
+    else return 1;
+}
 
 /* Inicjuje port szeregowy AVRa */
 void USART_init(uint16_t myubrr)
@@ -258,16 +273,26 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
     }
 }
 
+void lockers_print_date_of_report()
+{
+    lockers_safety_bit_off();
+    PCF8583_get_wall_time();
+    printf("%02d:%02d:%02d %02d:%02d:%d\n", godz, min, sek, dzien, miesiac, rok);
+}
+
 void lockers_print_all_memory(void)
 {
     //uint16_t temp = 0;
+    printf("Raport awaryjny. ");
+    lockers_print_date_of_report();
     lockers_print_amount_of_first_frames(lockers_number_of_frames());
 }
 
 void lockers_print_latest_data(void)
 {
-    PCF8583_get_wall_time();
-    printf("Raport. %02d:%02d:%02d %02d:%02d:%d\n", godz, min, sek, dzien, miesiac, rok);
+
+    printf("Raport. ");
+    lockers_print_date_of_report();
     lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
     lockers_queue_empty();
 }
@@ -396,6 +421,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
+    lockers_safety_bit_on();
     PCF8583_get_wall_time();
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)

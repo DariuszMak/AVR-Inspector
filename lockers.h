@@ -23,6 +23,8 @@
 
 #define PCF8583_HEAD 252//komórka głowy
 
+#define PCF8583_SAFETY_CELL 251
+
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
 #define LOCKER_1_BUTTON_DIR DDRD
@@ -78,6 +80,12 @@
 uint8_t state_temp;
 
 
+
+void lockers_safety_bit_on(void);
+
+void lockers_safety_bit_off(void);
+
+uint8_t lockers_is_safety_bit(void);
 
 /* Inicjuje port szeregowy AVRa */
 void USART_init(uint16_t myubrr);
@@ -138,7 +146,7 @@ uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan pos
 
 void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian i nakazuje zapis
 
-void lockers_save_events(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
+void lockers_queue_enque(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
 
 void lockers_queue_read(uint8_t index);
 
