@@ -374,35 +374,34 @@ void show_frame( int8_t number)
     }
 }
 
-void show_list(uint16_t current_index, uint16_t max_index)
+void show_list_case(index)
+{
+    if(menu == 6)
+    {
+        lockers_read_frame(index);
+        show_frame(index+1);
+    }
+    else if (menu == 5)
+    {
+        show_alarm_options(index);
+    }
+}
+
+
+void show_list(int16_t current_index, int16_t max_index)
 {
 
-    if ( current_index != 0)
+    if ( current_index != -1)
     {
         LCD_GoTo(0, 0);
-        if(menu == 6)
-        {
-            lockers_read_frame(current_index - 1);
-            show_frame(current_index);
-        }
-        else if (menu == 5)
-        {
-            show_alarm_options(current_index - 1);
-        }
+        show_list_case(current_index);
     }
 
     if(current_index != max_index)
     {
         LCD_GoTo(0, 1);
-        if(menu == 6)
-        {
-            lockers_read_frame(current_index);
-            show_frame(current_index + 1);
-        }
-        else if (menu == 5)
-        {
-            show_alarm_options(current_index);
-        }
+        show_list_case(current_index + 1);
+
 
     }
 }
@@ -579,9 +578,9 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         if (u < -1) u = -1;
         if(u == -1)
         {
-            if(c < 0) c = 4;
-            else if(c > 4) c = 0;
-            show_list(c, 4);
+            if(c < -1) c = 3;
+            else if(c > 3) c = -1;
+            show_list(c, 3);
         }
 
         else
@@ -648,9 +647,10 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
     case 6:
         LCD_EraseAll();
         if(zwiekszanie > 10) wysw_skok(10);
-        if(u < 0) u = lockers_number_of_frames();
-        else if(u > lockers_number_of_frames()) u = 0;
-        show_list(u, lockers_number_of_frames());
+
+        if(u < -1) u = lockers_number_of_frames() - 1;
+        else if(u > lockers_number_of_frames() - 1) u = -1;
+        show_list(u, lockers_number_of_frames() -1);
         break;
     }
 }

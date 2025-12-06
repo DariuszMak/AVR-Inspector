@@ -85,7 +85,7 @@ uint8_t end_of_settings(uint8_t case_of_time);
 
 void show_frame( int8_t number);
 
-void show_list(uint16_t current_index, uint16_t max_index);
+void show_list(int16_t current_index, int16_t max_index);
 
 void wysw( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
