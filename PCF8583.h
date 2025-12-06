@@ -30,7 +30,7 @@
 
 int8_t godz, min, sek, hsek;
 
-int8_t dzien,dzien_tygodnia, miesiac;
+int8_t dzien,dzien_tygodnia, miesiac, timer;
 int16_t rok;
 
 struct time_frame
@@ -41,6 +41,7 @@ struct time_frame
     uint8_t hours;
     uint8_t days;
     uint8_t months;
+    uint8_t timer;
 };
 
 
@@ -159,7 +160,7 @@ uint16_t PCF8583_read_word(uint8_t address);
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *day_of_week, uint8_t *month, int16_t *year);
+void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *day_of_week, uint8_t *month, int16_t *year, uint8_t *timer);
 
 /**
  Ustawia czas w układzie
@@ -168,7 +169,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t day_of_week, uint8_t month, int16_t year);
+void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t day_of_week, uint8_t month, int16_t year, uint8_t timer);
 
 /**
  Czyta czas alarmu z układu
@@ -177,7 +178,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec, int8_t *day, int8_t *month);
+void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *month, uint8_t *timer);
 
 /**
  Ustawia czas alarmu w układzie
@@ -186,7 +187,7 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t type_of_alarm);
+void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer, uint8_t type_of_alarm);
 
 
 

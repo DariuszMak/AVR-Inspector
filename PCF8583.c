@@ -250,13 +250,13 @@ uint16_t PCF8583_read_word(uint8_t address)
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *day_of_week, uint8_t *month, int16_t *year)
+void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *day_of_week, uint8_t *month, int16_t *year, uint8_t *timer)
 {
     struct time_frame time_f;
     uint8_t year_table[2];
     PCF8583_mask_off();
     PCF8583_hold_on();
-    PCF8583_read_buf(0x01, 6, (uint8_t*)&time_f);
+    PCF8583_read_buf(0x01, 7, (uint8_t*)&time_f);
     PCF8583_hold_off();
     PCF8583_mask_on();
     PCF8583_read_buf(0x10, 2, year_table);
@@ -277,6 +277,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
     if ( ( (uint8_t) y1 & 3 ) != dy )
         PCF8583_write_word(0x10, ++y1);
     *year = y1;
+    *timer= bcd2bin(time_f.timer);
 }
 
 /**
@@ -286,7 +287,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t day_of_week, uint8_t month, int16_t year)
+void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t day_of_week, uint8_t month, int16_t year, uint8_t timer)
 {
     struct time_frame time_f;
     uint8_t year_table[2];
@@ -300,8 +301,10 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
     year_table[0] = year;
     year_table[1] = year >> 8;
 
+    time_f.timer = bin2bcd(timer);
+
     PCF8583_stop();
-    PCF8583_write_buf(0x01, 6, (uint8_t*)&time_f);
+    PCF8583_write_buf(0x01, 7, (uint8_t*)&time_f);
     //PCF8583_start();
     PCF8583_write_buf(0x10, 2, year_table);
 }
@@ -313,10 +316,10 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec, int8_t *day, int8_t *month)
+void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, uint8_t *day, uint8_t *month, uint8_t *timer)
 {
     struct time_frame time_f;
-    PCF8583_read_buf(0x09, 6, (uint8_t*)&time_f);
+    PCF8583_read_buf(0x09, 7, (uint8_t*)&time_f);
 
     *hsec=bcd2bin(time_f.hseconds);
     *sec=bcd2bin(time_f.seconds);
@@ -329,6 +332,7 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
         *month = time_f.months & 0b01111111;
     }
     else *month = bcd2bin(time_f.months);
+    *timer=bcd2bin(time_f.timer);
 }
 
 
@@ -339,7 +343,7 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t type_of_alarm)
+void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer, uint8_t type_of_alarm)
 {
     struct time_frame time_f;
     time_f.hseconds=bin2bcd(hsec);
@@ -359,8 +363,9 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
         time_f.days = bin2bcd(day);
         time_f.months = bin2bcd(month);
     }
+    time_f.timer=bin2bcd(timer);
 
-    PCF8583_write_buf(0x09, 6, (uint8_t*)&time_f);
+    PCF8583_write_buf(0x09, 7, (uint8_t*)&time_f);
 }
 
 
@@ -408,7 +413,6 @@ uint8_t PCF8583_is_timer_interrupt(void)
 }
 
 
-
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
 
 
@@ -446,12 +450,12 @@ uint8_t PCF8583_is_alarm_flag_set(void)
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
 {
-    PCF8583_get_alarm_time( &godz, &min, &sek, &hsek, &dzien, &miesiac);//należy pamiętać, że w trybie alarmu dziennego w zmiennej miesac przechowywane są dni tygodnia, w których będzie aktywny alarm
+    PCF8583_get_alarm_time( (uint8_t*)&godz, (uint8_t*)&min, (uint8_t*)&sek, (uint8_t*)&hsek, (uint8_t*)&dzien, (uint8_t*)&miesiac, (uint8_t*)&timer);//należy pamiętać, że w trybie alarmu dziennego w zmiennej miesac przechowywane są dni tygodnia, w których będzie aktywny alarm
 }
 
 void PCF8583_get_wall_time(void)
 {
-    PCF8583_get_time( (uint8_t*)&godz, (uint8_t*)&min, (uint8_t*)&sek, (uint8_t*)&hsek, (uint8_t*)&dzien, (uint8_t*)&dzien_tygodnia, (uint8_t*)&miesiac, (int16_t*)&rok );
+    PCF8583_get_time( (uint8_t*)&godz, (uint8_t*)&min, (uint8_t*)&sek, (uint8_t*)&hsek, (uint8_t*)&dzien, (uint8_t*)&dzien_tygodnia, (uint8_t*)&miesiac, (int16_t*)&rok, (uint8_t*)&timer);
 }
 
 /*@}*/

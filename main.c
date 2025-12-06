@@ -124,13 +124,13 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
 
 void show_day_of_week( uint8_t day)
 {
-    if(day == 0) LCD_WriteText("Pn.");
-    else if(day == 1) LCD_WriteText("Wt.");
-    else if(day == 2) LCD_WriteText("Sr.");
-    else if(day == 3) LCD_WriteText("Cz.");
-    else if(day == 4) LCD_WriteText("Pt.");
-    else if(day == 5) LCD_WriteText("So.");
-    else if(day == 6) LCD_WriteText("Nd.");
+    if(day == 0) LCD_WriteText("Pn");
+    else if(day == 1) LCD_WriteText("Wt");
+    else if(day == 2) LCD_WriteText("Sr");
+    else if(day == 3) LCD_WriteText("Cz");
+    else if(day == 4) LCD_WriteText("Pt");
+    else if(day == 5) LCD_WriteText("So");
+    else if(day == 6) LCD_WriteText("Nd");
 }
 
 void show_time_only_format(void)
@@ -162,15 +162,16 @@ void show_time_format(void)
     LCD_Int(miesiac);
     LCD_WriteText(":");
     LCD_Int(rok);
-
-    LCD_GoTo(13,1);
+    LCD_WriteText("|");
     show_day_of_week(dzien_tygodnia);
+    LCD_WriteText("|");
+    if(timer < 10) LCD_Int(0);
+    LCD_Int(timer);
 }
 
 void show_timer_alarm_format(void)
 {
     LCD_GoTo( 0 + moveStep, 0 );
-    LCD_Int(bcd2bin(PCF8583_read(0x07)));
 }
 
 void show_alarm_format(uint8_t case_of_format)
@@ -547,7 +548,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if(u == end_of_settings(0))
     {
-        PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok);
+        PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok, timer);
         PCF8583_start();
         refresh_screen = 0;
         LCD_Clear();
@@ -596,7 +597,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             w = 1;
             if(c != -1)
             {
-                PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
+                PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,c);
                 if(c == 0)
                 {
                     PCF8583_alarm_flag_off();
