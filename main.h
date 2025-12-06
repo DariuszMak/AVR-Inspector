@@ -68,7 +68,7 @@ double round_double(float number, uint8_t precision);
 
 uint8_t number_of_digits(int32_t);//funkcja zwracjąca ilość cyfr dla danej liczby
 
-void show_double(double, uint8_t);//funkcja wyświetlająca format (rozbity na dwie części), przjmuje liczbę i miejsca po przecinku
+void show_double(struct double_format, uint8_t);//funkcja wyświetlająca format (rozbity na dwie części), przjmuje liczbę i miejsca po przecinku
 
 double get_double_form_double_format(struct double_format);//funkcja konwertująca strukturę do doubli na zmienną typu double
 

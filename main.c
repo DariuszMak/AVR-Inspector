@@ -56,10 +56,10 @@ uint8_t number_of_digits(int32_t number)
     return d;
 }
 
-void show_double(double number, uint8_t approximation)
+void show_double(struct double_format temp_double_format, uint8_t approximation)
 {
     LCD_GoTo(moveStep, 0);
-    struct double_format temp_double_format = set_double_format(number, approximation);
+    //struct double_format temp_double_format = set_double_format(number, approximation);
     LCD_Int (temp_double_format.integer_number);
     LCD_WriteText(".");
     for(t = 0; t < approximation - number_of_digits(temp_double_format.decimal_number); ++t) LCD_WriteText("0");
@@ -811,7 +811,7 @@ void correction_of_temperature(void)
     else if(maximum_temperature.integer_number > 300) maximum_temperature.integer_number = -300;
     if(maximum_temperature.decimal_number < 0 ) maximum_temperature.decimal_number = 99;
     else if(maximum_temperature.decimal_number > 99 ) maximum_temperature.decimal_number = 0;
-    if(maximum_temperature.integer_number > 300 || maximum_temperature.integer_number < -300) maximum_temperature.decimal_number = 0;
+    if(maximum_temperature.integer_number == 300 || maximum_temperature.integer_number == -300) maximum_temperature.decimal_number = 0;
 }
 
 void correction_of_time(void)
@@ -1050,7 +1050,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     moveStep = 12;
-    show_double(termometer_temperature,1);
+    show_double(set_double_format(termometer_temperature, 1),1);
 
     /*LCD_Double(-23.301,2);
     LCD_Double(-23.3015,2);
@@ -1352,7 +1352,7 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         moveStep = 0;
 
-        show_double(get_double_form_double_format(maximum_temperature),2);
+        show_double(maximum_temperature,2);
     }
 
     if( w == 1 )
@@ -2099,7 +2099,7 @@ void sczytaj_komende( void )
                         if(current_temp_temperature > maximum_temp_temperature)
                         {
                             buzzer_time(10);
-                            printf("\nTEMPERATURA PRZEKROCZONA!");
+                            printf("\nZADANA TEMPERATURA PRZEKROCZONA!");
                         }
                         else if(PCF8583_is_alarm_flag_set() == 1)
                         {
@@ -2232,14 +2232,14 @@ int main( void )
     while(test_of_double < 310.0)
     {
         LCD_Clear();
-
-        show_double(test_of_double, 2);
-        LCD_GoTo(0,1);
-        show_double(test_of_double, 1);
+        moveStep = 0;
+        show_double(set_double_format(test_of_double,2), 2);
+        moveStep = 8;
+        show_double(set_double_format(test_of_double,1), 1);
         struct double_format temp_doub = set_double_format(test_of_double,2);
         printf("%d.%02d\n", temp_doub.integer_number, temp_doub.decimal_number);
         test_of_double += 0.11;
-        //delay_ms_var(2);
+        delay_ms_var(2);
     }*/
 
 
