@@ -142,6 +142,15 @@ void PCF8583_write_word(uint8_t address,uint16_t data);
  \param day dzień
  \param year rok
 */
+/**
+ Zapisuje słowo z układu
+ \param address adres komórki w układzie
+
+*/
+
+uint16_t PCF8583_read_word(uint8_t address);
+
+
 void PCF8583_write_date(uint8_t address,uint8_t day,uint16_t year);
 
 /**

@@ -1109,7 +1109,7 @@ void czynnosc6( int com, int tog )
         if( tog == 1)
         {
             EEPROM_clear_all_memory();
-            PCF8583_write(PCF8583_CELL, 0);
+            PCF8583_write_word(PCF8583_CELL, 0);
             u = 0;
         }
     }
@@ -1123,7 +1123,7 @@ void czynnosc6( int com, int tog )
     }
     if ( com == 59 )
     {
-        u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
+        u = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
     }
 
     refresh_screen = 1;
@@ -1282,7 +1282,7 @@ void pilot( int com, int tog )//
             {
                 //czynnosc( men, 50, tog );
                 //lockers_find_latest_data();
-                u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
+                u = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
                 refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
         }

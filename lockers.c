@@ -88,7 +88,7 @@ void lockers_read_frame(uint8_t index)
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     delay_ms_var(400);
-    uint8_t temp_address = PCF8583_read(PCF8583_CELL);;//pobranie ostatniego adresu
+    uint8_t temp_address = PCF8583_read_word(PCF8583_CELL);;//pobranie ostatniego adresu
     uint8_t overflow_flag = 0;
 
     if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1))

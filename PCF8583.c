@@ -178,6 +178,16 @@ void PCF8583_write_word(uint8_t address,uint16_t data)
 }
 
 
+
+uint16_t PCF8583_read_word(uint8_t address)
+{
+    uint16_t temp;
+    temp = PCF8583_read(address) & 0xFF;
+    temp |= PCF8583_read(++address) << 8;
+    return temp;
+}
+
+
 /**
  Ustawia datę w układzie
  \param address adres komórki w układzie
