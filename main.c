@@ -506,9 +506,9 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_EraseAll();
     if(zwiekszanie > 10) wysw_skok(10);
 
-    if(c < -1) c = lockers_number_of_frames() - 1;
-    else if(c > lockers_number_of_frames() - 1) c = -1;
-    show_list(c, lockers_number_of_frames() -1);
+    if(c < -1) c = lockers_queue_length() - 1;
+    else if(c > lockers_queue_length() - 1) c = -1;
+    show_list(c, lockers_queue_length() -1);
 }
 
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -683,7 +683,7 @@ void czynnosc0( int com, int tog )
         {
             //czynnosc( men, 50, tog );
             //lockers_find_latest_data();
-            c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+            c = 0;
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 
         }
@@ -986,7 +986,7 @@ void czynnosc3( int com, int tog )
     }
     if ( com == 59 )
     {
-        c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+        c = 0;
     }
 
     refresh_screen = 1;

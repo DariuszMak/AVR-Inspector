@@ -19,7 +19,9 @@
 
 #define EXTERNAL_EEPROM_MAX_INDEX 255//wartość ostatniej największej komórki zewnętrznej pamięci eeprom do wykorzystania
 
-#define PCF8583_CELL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
+#define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
+
+#define PCF8583_HEAD 252//komórka głowy
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
@@ -97,6 +99,14 @@ void lockers_print_all_memory(void);
 
 void lockers_print_latest_data(void);
 
+uint8_t lockers_tail(void);
+
+uint8_t lockers_head(void);
+
+void lockers_queue_empty(void);
+
+uint8_t lockers_queue_length(void);
+
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
 {
     uint8_t seconds;
@@ -138,7 +148,7 @@ uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczon
 
 uint8_t lockers_number_of_frames_exteral_EEPROM(void);
 
-uint16_t lockers_number_of_frames_internal_EEPROM(void);
+uint8_t lockers_number_of_frames_internal_EEPROM(void);
 
 void lockers_clear_all_memory(void);
 

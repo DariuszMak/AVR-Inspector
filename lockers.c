@@ -151,7 +151,7 @@ uint8_t lockers_number_of_frames_exteral_EEPROM(void)
     return ((EXTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
 }
 
-uint16_t lockers_number_of_frames_internal_EEPROM(void)
+uint8_t lockers_number_of_frames_internal_EEPROM(void)
 {
     return ((INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
 }
@@ -237,14 +237,35 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 void lockers_print_all_memory(void)
 {
     //uint16_t temp = 0;
-    lockers_print_amount_of_first_frames(lockers_number_of_frames());
+    lockers_print_amount_of_first_frames(lockers_queue_length());
 
 }
 
 void lockers_print_latest_data(void)
 {
-    lockers_print_amount_of_first_frames(lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL)));
-    PCF8583_write_word(PCF8583_CELL, 0);//po wygenerowaniu małego raportu zapis będzie generowany od nowa
+    lockers_print_amount_of_first_frames(lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_HEAD)));
+    lockers_queue_empty();
+}
+
+uint8_t lockers_tail(void)
+{
+    return lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_TAIL));
+}
+
+uint8_t lockers_head(void)
+{
+    return lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_HEAD));
+}
+
+void lockers_queue_empty(void)
+{
+    PCF8583_write_word(PCF8583_HEAD, PCF8583_read_word(PCF8583_TAIL));
+}
+
+uint8_t lockers_queue_length(void)
+{
+    if( lockers_head() > lockers_tail() ) return lockers_number_of_frames() - ( lockers_head() - lockers_tail() ) + 1;
+    else return lockers_tail() - lockers_head();
 }
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
@@ -259,7 +280,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             delay_ms_var(5);
             PCF8583_get_wall_time();
 
-            uint16_t temp_address = PCF8583_read_word(PCF8583_CELL);//pobranie ostatniego adresu
+            uint16_t temp_address = PCF8583_read_word(PCF8583_TAIL);//pobranie ostatniego adresu
             uint8_t overflow_flag = 0;//jeśli == 1 - bramka zmieści się na "styk"
 
             // eeprom_read_word( (uint16_t*)21);
@@ -351,9 +372,9 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
             if(overflow_flag == 0)
             {
-                PCF8583_write_word(PCF8583_CELL, temp_address);
+                PCF8583_write_word(PCF8583_TAIL, temp_address);
             }
-            else PCF8583_write_word(PCF8583_CELL, temp_address + SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM());
+            else PCF8583_write_word(PCF8583_TAIL, temp_address + SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM());
         }
     }
     backlight(2);
@@ -475,5 +496,5 @@ void lockers_clear_all_memory(void)
         eeprom_write_byte((uint8_t*)i, 0);
     }
 
-    PCF8583_write_word(PCF8583_CELL, 0);
+    lockers_queue_empty();
 }
