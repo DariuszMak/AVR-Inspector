@@ -14,7 +14,7 @@ int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glown
 int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
-int8_t backlight_of_lcd = -1;
+int8_t backlight_of_lcd = 0;
 //uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
@@ -1719,7 +1719,7 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
-        cnt = 0;
+        overflow_timer_2 = 0;
         interr = 0;
 
         if(start_program == 3)
@@ -1844,10 +1844,17 @@ int main( void )
     PCF8583_alarm_flag_off();
     PCF8583_timer_flag_off();
 
+    RGB_init();
+
+
+     RGB_Red = 0;
+    RGB_Green = 255;
+    RGB_Blue = 0;
+
     //PCF8583_write_word(PCF8583_HEAD, 3000);
 
     ds18b20_temperature();//zmierzenie temperatury
-    random_generator_init();//włączenie losowaniacyfr
+    timer_2_init();//włączenie losowaniacyfr
     refreshing_interrupt_on();
     ir_init();//inicjalizacja odbioru sygnału z pilota
 
@@ -1860,7 +1867,7 @@ int main( void )
     pilot_on();
     pilot_state = 1;
 
-    backlight(1);
+    //backlight(1);
 
     start_program = 1;
 

@@ -135,7 +135,6 @@ double ds18b20_temperature(void)
     double temp = 0;
     if(ds18b20_ConvertT())
     {
-
         /* 750ms - czas konwersji */
         //delay_ms_var(750);
 
