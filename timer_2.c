@@ -7,8 +7,10 @@ void timer_2_init( void )
     OCR2 = 5;
     TIMSK |= ( 1 << OCIE2 );
     cnt = 0;
-    overflow_timer_2 = 0;
+
     timer_cycle_overflow = 0;
+
+    overflow_timer_2 = 0;
     interr = 0;
 }
 
@@ -34,14 +36,18 @@ void refreshing_interrupt_off()
 
 ISR( TIMER2_COMP_vect  )
 {
-    timer_cycle_overflow = 1;
-    if( overflow_timer_2 > 1200 ) interr = 1;
+    if(timer_cycle_overflow == 0) timer_cycle_overflow = 1;
+    if( interr == 0 && overflow_timer_2 == 1200 )
+    {
+        interr = 1;
+    }
+    else ++overflow_timer_2;
+
     if( cnt >= RGB_Red ) RGB_R_PORT |= RGB_R;
     else RGB_R_PORT &= ~RGB_R;
     if( cnt >= RGB_Green ) RGB_G_PORT |= RGB_G;
     else RGB_G_PORT &= ~RGB_G;
     if( cnt >= RGB_Blue ) RGB_B_PORT |= RGB_B;
     else RGB_B_PORT &= ~RGB_B;
-    ++overflow_timer_2;
     ++cnt;
 }
