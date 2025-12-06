@@ -106,12 +106,21 @@ void PCF8583_write_bcd(uint8_t address,uint8_t data)
 void PCF8583_init(void)
 {
 //    PCF8583_alarm=0;
-    PCF8583_write(0, PCF8583_read(0) & ~0b11111101);//bez zerowania flagi alarmu
-    PCF8583_write(0, PCF8583_read(0) | 0b00000100);//komórki do alarmu dozwolone
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b11111101);//bez zerowania flagi alarmu
+    PCF8583_write(0x00, PCF8583_read(0x00) | 0b00000100);//komórki do alarmu dozwolone
     PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
     PCF8583_mask_off();//maskowanie dni i roku wyłączone
-    PCF8583_write(4, PCF8583_read(4) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
-    PCF8583_write(8, PCF8583_read(8) | 0b10000000);//przerwania alarmu dozwolone
+    PCF8583_write(0x04, PCF8583_read(0x04) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
+
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00000101);//przerwania alarmu dozwolone i timera też
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b10001010);//przerwania alarmu dozwolone i timera też
+
+    PCF8583_write(0x0F, 0b11111100);
+
+    PCF8583_timer_flag_off();
+
+    PCF8583_timer_on();
+
 
     //PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
 }
@@ -164,6 +173,21 @@ void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
     PCF8583_write(0, PCF8583_read(0) | 0x08);
 }
 
+/**
+ Wyłacza wskaźnik alarmu
+*/
+void PCF8583_timer_flag_off(void)
+{
+    PCF8583_write(0, PCF8583_read(0) & ~0b00000001);//alarm codzienny
+}
+
+/**
+ Włącza wskaźnik alarmu
+*/
+void PCF8583_timer_flag_on(void)
+{
+    PCF8583_write(0, PCF8583_read(0) | 0b00000001);//alarm codzienny
+}
 
 /**
  Wyłacza wskaźnik alarmu
@@ -327,12 +351,22 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     PCF8583_write_buf(0x09, 6, (uint8_t*)&time_f);
 }
 
+void PCF8583_timer_off()
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b01000000);
+}
+
+void PCF8583_timer_on()
+{
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b01000000);
+}
+
 /**
  Wyłącza alarm
 */
 void PCF8583_alarm_off(void)
 {
-    PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00110000);//wyłączenie alarmu
 }
 
 /**
@@ -340,8 +374,8 @@ void PCF8583_alarm_off(void)
 */
 void PCF8583_alarm_every_day(void)
 {
-    PCF8583_write(8, PCF8583_read(8) | 0b00010000);//alarm codzienny
-    PCF8583_write(8, PCF8583_read(8) & ~0b00100000);//alarm codzienny
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b00010000);//alarm codzienny
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00100000);//alarm codzienny
 }
 
 /**
@@ -349,8 +383,8 @@ void PCF8583_alarm_every_day(void)
 */
 void PCF8583_alarm_weekly(void)
 {
-    PCF8583_write(8, PCF8583_read(8) & ~0b00010000);//alarm codzienny
-    PCF8583_write(8, PCF8583_read(8) | 0b00100000);//alarm codzienny
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00010000);//alarm codzienny
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b00100000);//alarm codzienny
 }
 
 /**
@@ -358,9 +392,8 @@ void PCF8583_alarm_weekly(void)
 */
 void PCF8583_alarm_monthly(void)
 {
-    PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
+    PCF8583_write(0x08, PCF8583_read(0x08) | 0b00110000);//alarm codzienny
 }
-
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
@@ -368,7 +401,13 @@ void PCF8583_alarm_monthly(void)
 
 uint8_t PCF8583_recognise_type_of_alarm(void)
 {
-    return ((PCF8583_read(8) & 0x30) >> 4);
+    return ((PCF8583_read(0x08) & 0x30) >> 4);
+}
+
+uint8_t PCF8583_is_timer_set(void)
+{
+    if(PCF8583_read(0x00) & 0b00000001) return 1;
+    else return 0;
 }
 
 /**
@@ -377,11 +416,9 @@ uint8_t PCF8583_recognise_type_of_alarm(void)
 
 uint8_t PCF8583_is_alarm_set(void)
 {
-    if(PCF8583_read(0) & 0b00000010) return 1;
+    if(PCF8583_read(0x00) & 0b00000010) return 1;
     else return 0;
 }
-
-
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
 {

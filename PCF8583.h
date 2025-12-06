@@ -139,6 +139,10 @@ void PCF8583_mask_off(void);//wyłącza maskę - dostępne są wszystkie rejestr
 void PCF8583_mask_on(void);//maskuje dane - można bezpośrednio odczytywać
 
 
+void PCF8583_timer_flag_off(void);
+
+void PCF8583_timer_flag_on(void);
+
 /**
  Wyłacza wskaźnik alarmu
 */
@@ -210,6 +214,12 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
+
+void PCF8583_timer_off();
+
+void PCF8583_timer_on();
+
+uint8_t PCF8583_is_timer_set(void);
 
 uint8_t PCF8583_recognise_type_of_alarm(void);
 

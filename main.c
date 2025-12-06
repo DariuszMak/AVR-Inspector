@@ -965,6 +965,11 @@ void czynnosc2( int com, int tog )
     {
         PCF8583_alarm_flag_on();
     }
+
+    if( com == 41 )
+    {
+        PCF8583_timer_flag_on();
+    }
     if ( com == 59 )
     {
         PCF8583_alarm_flag_off();
@@ -1242,11 +1247,12 @@ void zczytaj_komende( void )
             else if(temp_char == 'i') lockers_print_latest_data();
             if(temp_char != 0) refresh_screen = 1;
 
-            if(PCF8583_is_alarm_set() == 1)
+            if(PCF8583_is_alarm_set() == 1 || PCF8583_is_timer_set() == 1)
             {
                 buzzer();
                 lockers_print_latest_data();
                 PCF8583_alarm_flag_off();
+                PCF8583_timer_flag_off();
             }
         }
 
