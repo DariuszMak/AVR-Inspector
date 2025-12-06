@@ -839,11 +839,12 @@ void show_alarm_options(uint8_t index)
 
 void correction_of_temperature(void)
 {
-    if(maximum_temperature.integer_number < -300 ) maximum_temperature.integer_number = 300;
-    else if(maximum_temperature.integer_number > 300) maximum_temperature.integer_number = -300;
+    if(maximum_temperature.integer_number < -273 ) maximum_temperature.integer_number = 300;
+    else if(maximum_temperature.integer_number > 300) maximum_temperature.integer_number = -273;
     if(maximum_temperature.decimal_number < 0 ) maximum_temperature.decimal_number = 99;
     else if(maximum_temperature.decimal_number > 99 ) maximum_temperature.decimal_number = 0;
-    if(maximum_temperature.integer_number == 300 || maximum_temperature.integer_number == -300) maximum_temperature.decimal_number = 0;
+    if(maximum_temperature.integer_number == 300) maximum_temperature.decimal_number = 0;
+    else if(maximum_temperature.integer_number == -273 && maximum_temperature.decimal_number > 15) maximum_temperature.decimal_number = 15;
 }
 
 void correction_of_time(void)
@@ -1409,7 +1410,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             LCD_EraseAll();
             LCD_WriteText("RESTART");
-            red_colors_RGB();
+            green_colors_RGB();
         }
     }
     else
@@ -2105,6 +2106,7 @@ void sczytaj_komende( void )
                 change_color_RGB();
                 ds18b20_temperature();
                 lockers_check_events();
+
                 if(start_program == 2)
                 {
                     temp_char = USART_Recieve_without_waiting();
@@ -2126,9 +2128,11 @@ void sczytaj_komende( void )
                     double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
                     double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
 
+                    static uint8_t beginning_raport = 0;
+
                     if( current_temp_temperature > maximum_temp_temperature)
                     {
-                        if(lockers_is_flag_bit(1) == 0)
+                        if(lockers_is_flag_bit(1) == 0 || beginning_raport == 0)
                         {
                             buzzer_time(10);
                             backlight(2);
@@ -2148,6 +2152,8 @@ void sczytaj_komende( void )
                             lockers_flag_bit_off(1);
                         }
                     }
+
+                    beginning_raport = 1;
 
                     if(lockers_is_flag_bit(1) == 1)
                     {
@@ -2181,7 +2187,7 @@ void sczytaj_komende( void )
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
 
-        if(lockers_is_queue_full() == 1) green_colors_RGB();
+        if(lockers_is_queue_full() == 1) red_colors_RGB();
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
