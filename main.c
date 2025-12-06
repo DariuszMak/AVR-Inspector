@@ -23,6 +23,7 @@ int main( void )
 
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
     int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
+    int u; //inna (dodatkowa) zmienna pomocnicza
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
     int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
@@ -155,21 +156,11 @@ int main( void )
                     LCD_WriteData( original_text[1][t] );
                 }
 
-
-
-                for ( t = 0; t < 2; ++t )
-                {
-                    free( original_text[t] );
-                }
-                free( original_text );
-
-
-                rozmiar = 16;
+                rozmiar = 40;
 
                 while( 1 )
                 {
-
-                    char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablica dwuwymiarowa z testowym napisem
+                    char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwywymiarowa jako bufor do odczytu z wyświetlacza
 
                     for ( t = 0; t < 2; ++t )
                     {
@@ -194,6 +185,14 @@ int main( void )
 
                     for( t = 0; t < rozmiar; ++t )
                     {
+                        u = 0;
+                        if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 1;;
+                    }
+
+                    if (u) break;
+
+                    for( t = 0; t < rozmiar; ++t )
+                    {
                         LCD_WriteData( buffer_table[0][t] );
                     }
 
@@ -210,6 +209,13 @@ int main( void )
                     }
                     free( buffer_table );
                 }
+
+                for ( t = 0; t < 2; ++t )
+                {
+                    free( original_text[t] );
+                }
+                free( original_text );
+
                 break;
             case 12:
                 LCD_Clear();
