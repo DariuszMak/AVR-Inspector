@@ -187,6 +187,11 @@ uint8_t lockers_convert_address_to_index_of_frame(uint16_t add)
     return ((add - INTERNAL_EEPROM_MIN_INDEX) / SIZE_OF_FRAME);
 }
 
+uint16_t lockers_convert_index_of_frame_to_address(uint8_t index)
+{
+    return SIZE_OF_FRAME * index + INTERNAL_EEPROM_MIN_INDEX;
+}
+
 void lockers_queue_read(uint8_t index)
 {
     uint16_t temp_index = index + lockers_head();
@@ -199,8 +204,7 @@ void lockers_queue_read(uint8_t index)
 
 void lockers_read_frame(uint8_t index)
 {
-    uint16_t temp_address = SIZE_OF_FRAME * index + INTERNAL_EEPROM_MIN_INDEX;
-
+    uint16_t temp_address = lockers_convert_index_of_frame_to_address(index);
 
     eeprom_busy_wait();
 
@@ -299,7 +303,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
     frame.year = rok;
     frame.information = (uint8_t)save_info_table[i] * 100;
     frame.information += i + 1;
-    uint16_t temp_address = SIZE_OF_FRAME * index + INTERNAL_EEPROM_MIN_INDEX;//pobranie ostatniego adresu
+    uint16_t temp_address = lockers_convert_index_of_frame_to_address(index);//pobranie ostatniego adresu
 
 
     /*if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie

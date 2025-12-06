@@ -15,7 +15,9 @@
 
 #define AMOUNT_OF_LOCKERS 10//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
-#define INTERNAL_EEPROM_MAX_INDEX 1023//jeśli ustawi się tą zmienną na -1, to wylączy się tę pamięć z użytku
+
+//jeśli chce się wyłączyć całą pamięć z użytku, to należy utawić maksymalny index o jeden mniej niż minimalny index
+#define INTERNAL_EEPROM_MAX_INDEX 1023
 
 #define INTERNAL_EEPROM_MIN_INDEX 0
 
@@ -161,6 +163,9 @@ void lockers_queue_read(uint8_t index);
 void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapis do struktury
 
 uint8_t lockers_convert_address_to_index_of_frame(uint16_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
+
+uint16_t lockers_convert_index_of_frame_to_address(uint8_t index);
+
 
 uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
 
