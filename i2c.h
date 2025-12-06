@@ -12,49 +12,22 @@
 /**
     Inicjalizacja TWI
 */
-void i2cSetBitrate(uint16_t bitrateKHz)
-{
-    uint8_t bitrate_div;
+void i2cSetBitrate(uint16_t bitrateKHz);
 
-    bitrate_div = ((F_CPU/1000l)/bitrateKHz);
-    if(bitrate_div >= 16)
-        bitrate_div = (bitrate_div-16)/2;
-
-    TWBR = bitrate_div;
-}
 /**
     Procedura transmisji sygnału START
 */
-static void i2cStart(void)
-{
-    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-    while (!(TWCR & (1<<TWINT)));
-}
+ void i2cStart(void);
 /**
     Procedura transmisji sygnału STOP
 */
-static void i2cStop(void)
-{
-    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
-    while ((TWCR & (1<<TWSTO)));
-}
+ void i2cStop(void);
 /**
     Procedura transmisji bajtu danych
 */
-static void i2cWrite(char data)
-{
-    TWDR = data;
-    TWCR = (1<<TWINT) | (1<<TWEN);
-    while (!(TWCR & (1<<TWINT)));
-}
+ void i2cWrite(char data);
 /**
     Procedura odczytu bajtu danych
 */
-static char i2cRead(char ack)
-{
-    TWCR = ack ? ((1 << TWINT) | (1 << TWEN) | (1 << TWEA)) : ((1 << TWINT) | (1 << TWEN)) ;
-    while (!(TWCR & (1<<TWINT)));
-    return TWDR;
-}
-
+ char i2cRead(char ack);
 #endif // I2C_H_INCLUDED
