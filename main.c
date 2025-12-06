@@ -956,12 +956,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     LCD_GoTo(12, 0);
-    LCD_Double(-23.301,2);
-    LCD_Double(-23.3015,2);
-    LCD_Double(-299.9015,4);
-    LCD_Double(-299.901,3);
-    LCD_Double(299.901,3);
-    LCD_Double(200.324,3);
+    LCD_Double(ds18b20_temperature(),1);
 
     //LCD_Int( pwm1 );
     //LCD_Int( pwm2 );
