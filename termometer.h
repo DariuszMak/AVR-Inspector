@@ -3,6 +3,9 @@
 
 #include <avr/io.h>
 #include "delay_lib.h"
+#include <avr/interrupt.h>
+//#include "lockers.h"
+//#include "ir_decode.h"
 
 #define ONEWIRE_DIR DDRA
 #define ONEWIRE_PORT PORTA

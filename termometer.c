@@ -132,7 +132,10 @@ unsigned char OneWireReadByte(void)
 
 void ds18b20_temperature(void)
 {
+    //uint8_t pilot_status_temp = lockers_is_flag_bit(3);
+    //if(pilot_status_temp == 1) pilot_off();
     double temp = 0;
+    //cli();
     if(ds18b20_ConvertT())
     {
         /* 750ms - czas konwersji */
@@ -151,5 +154,7 @@ void ds18b20_temperature(void)
         int i = 0;
         for(; i<2; i++) ds18b20_pad[i] = 0;
     }
+    //sei();
     termometer_temperature = temp;
+    //if(pilot_status_temp == 1) pilot_on();
 }

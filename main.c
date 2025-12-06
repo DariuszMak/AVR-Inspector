@@ -2320,7 +2320,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
 void pilot( int com, int tog )//
 {
-//    if(pilot_state == 1) pilot_off();
+    //if(lockers_is_flag_bit(3) == 1) pilot_off();
     backlight(2);
 
     if(start_program != 3) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
@@ -2331,7 +2331,7 @@ void pilot( int com, int tog )//
         //backlight(2);
     }
 
-    // if(pilot_state == 1) pilot_on();
+    //if(lockers_is_flag_bit(3) == 1) pilot_on();
 }
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
