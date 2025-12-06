@@ -85,6 +85,8 @@ void USART_Transmit(uint8_t c, FILE *stream);
 
 uint8_t USART_Recieve(FILE *stream);
 
+uint8_t USART_Recieve_without_waiting(void);
+
 void lockers_init();//inicjalizacja wejść
 
 void lockers_beginning_actions(void);//przypisanie wartości początkowych dla przycisków

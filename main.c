@@ -1176,6 +1176,9 @@ void zczytaj_komende( void )
         cnt = 0;
         interr = 0;
 
+        if(USART_Recieve_without_waiting() == 'r') lockers_print_all_memory();
+
+
         if( menu == 2 )
         {
             lockers_check_events();
@@ -1290,13 +1293,7 @@ int main( void )
 
     //główna pętla programu
 
-    char input;
 
-    while(1) {
-        puts("Hello world!");
-        input = getchar();
-        printf("You wrote %c\n", input);
-    }
 
     while( 1 )
     {

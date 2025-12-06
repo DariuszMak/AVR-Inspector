@@ -15,7 +15,6 @@ void USART_init(uint16_t myubrr)
     UCSRC = (1<<URSEL)|(3<<UCSZ0);
 }
 
-
 /* Wysyła znak do portu szeregowego */
 void USART_Transmit(uint8_t c, FILE *stream)
 {
@@ -32,6 +31,16 @@ uint8_t USART_Recieve(FILE *stream)
     while(!(UCSRA & (1<<RXC)));
     return UDR;
 }
+
+uint8_t USART_Recieve_without_waiting(void)
+{
+    if(UCSRA & (1<<RXC))
+            {
+                return UDR;
+            }
+            else return 0;
+}
+
 
 void lockers_init()
 {
