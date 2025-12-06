@@ -492,8 +492,6 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     LCD_GoTo(12, 0);
     LCD_Double(ds18b20_temperature(),1);
 
-    if(PCF8583_is_alarm_set() == 1) buzzer();
-
     //LCD_Int( pwm1 );
     //LCD_Int( pwm2 );
     //OCR0 = pwm1;//zmienna przepełnienia Timera 0
@@ -1182,17 +1180,19 @@ void zczytaj_komende( void )
             lockers_check_events();
             refresh_screen = 1;
         }
+        if(backlight_of_lcd > 0) --backlight_of_lcd;
+        if(backlight_of_lcd == 0) LCD_BacklightOff();
+        else LCD_BacklightOn();
+        if(PCF8583_is_alarm_set() == 1) buzzer();
     }
 
     if(refresh_screen == 1 )
     {
-        if(pilot_state == 1) pilot_off();
+
         refresh_screen = 0;
+
         wysw();
-        if(backlight_of_lcd > 0) --backlight_of_lcd;
-        if(backlight_of_lcd == 0) LCD_BacklightOff();
-        else LCD_BacklightOn();
-        if(pilot_state == 1) pilot_on();
+
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
