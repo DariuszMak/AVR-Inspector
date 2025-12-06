@@ -165,16 +165,17 @@ void show_alarm_format(uint8_t case_of_format)
 
 void setting_information(uint8_t case_of_time, uint8_t u)
 {
+
     if(u == 0) LCD_WriteText("GODZINY");
     else if(u == 1) LCD_WriteText("MINUTY");
     else if(u == 2) LCD_WriteText("SEKUNDY");
     else if(u == 3) LCD_WriteText("SETNE SEKUND");
 
-    if(case_of_time == 1 || case_of_time == 3)
+    if(case_of_time == 0 || case_of_time == 3)
     {
         if(u == 4) LCD_WriteText("DZIEN");
         else if(u == 5) LCD_WriteText("MIESIAC");
-        if(case_of_time == 1)
+        if(case_of_time == 0)
         {
             if(u == 6) LCD_WriteText("ROK");
             else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
@@ -204,11 +205,11 @@ void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
     else if(u == 2) sek += temp;
     else if(u == 3) hsek += temp;
 
-    if(case_of_time == 1 || case_of_time == 3)
+    if(case_of_time == 0 || case_of_time == 3)
     {
         if(u == 4) dzien += temp;
         else if(u == 5) miesiac += temp;
-        if(case_of_time == 1)
+        if(case_of_time == 0)
         {
             if(u == 6)rok += temp;
             else if(u == 7) dzien_tygodnia += temp;
@@ -253,10 +254,27 @@ void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
         }
     }
 }
+void check_step_value(uint8_t case_of_time, uint8_t u)
+{
+
+    if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
+
+
+    if(case_of_time == 0 || case_of_time == 3)
+    {
+        if(( u == 4 || u == 5 )&& zwiekszanie > 10) wysw_skok(10);
+        if(case_of_time == 0)
+        {
+            if(u == 7 && zwiekszanie > 1) wysw_skok(1);
+        }
+    }
+
+}
 
 uint8_t end_of_settings(uint8_t case_of_time)
 {
-    if(case_of_time == 1) return 8;
+    if(case_of_time == 0) return 8;
+    else if(case_of_time == 1) return 5;
     else if(case_of_time == 2) return 11;
     else if(case_of_time == 3) return 6;
     else return 0;
@@ -321,7 +339,7 @@ void correction_of_date(uint8_t check_with_year)//uwzględnianie dnia miesiąca 
 void show_frame( int8_t number)
 {
     LCD_Int(number);
-    LCD_WriteText(". ");
+    LCD_WriteText(".");
     if(frame.hours < 10) LCD_Int(0);
     LCD_Int(frame.hours);
     LCD_WriteText(":");
@@ -346,7 +364,7 @@ void show_frame( int8_t number)
     if(number != 0)
     {
 
-        LCD_WriteText("NR: ");
+        LCD_WriteText("NR ");
         LCD_Int(number);
         LCD_WriteText(" ");
         t = frame.information / 100;
@@ -519,7 +537,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         if (u < 0) u = 0;
 
-        if(u == end_of_settings(1))
+        if(u == end_of_settings(0))
         {
             PCF8583_set_time(godz,min,sek,hsek);
             PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
@@ -532,20 +550,18 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         if( w == 1 )
         {
-            LCD_EraseAll();
             LCD_GoTo(moveStep, 0);
-            setting_information(1, u);
+            setting_information(0, u);
             w = 0;
             delay_ms_var(400);
             LCD_EraseAll();
         }
 
-        if((u == 0 || u == 1 || u == 2 || u == 3 || u == 4 || u == 5 )&& zwiekszanie > 10) wysw_skok(10);
-        else if(u == 7 && zwiekszanie > 1) wysw_skok(1);
+        check_step_value(0, u);
 
         if( s != 0 )
         {
-            set_appropriate_values_of_time(1, u, s);
+            set_appropriate_values_of_time(0, u, s);
 
             s = 0;
         }
@@ -924,7 +940,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             s = 2;
             break;
         case 59:
-            u = end_of_settings(1);
+            u = end_of_settings(0);
             break;
         }
         wysw();
