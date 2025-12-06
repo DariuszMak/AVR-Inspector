@@ -19,7 +19,7 @@
   Return value :  kod binarny z kodu BCD
 
 --------------------------------------------------------------------------------------------------*/
- uint8_t bcd2bin(uint8_t bcd)
+uint8_t bcd2bin(uint8_t bcd)
 {
     return ( 10 * ( bcd >> 4 ) + ( bcd & 0x0f ) );
 }
@@ -34,7 +34,7 @@
   Return value :  kod BCD, bity: 7654 - dziesiatki, 3210 -jednosci
 
 --------------------------------------------------------------------------------------------------*/
- uint8_t bin2bcd(uint8_t bin)
+uint8_t bin2bcd(uint8_t bin)
 {
     return ( ( ( bin / 10 ) << 4) | ( bin % 10 ) );
 }
@@ -44,7 +44,7 @@
  \param address adres komórki w układzie
  \return odczytany bajt
 */
- uint8_t PCF8583_read(uint8_t address)
+uint8_t PCF8583_read(uint8_t address)
 {
     uint8_t a;
     a = (PCF8583_A0 << 1) | PCF8583_ADDRESS;
@@ -64,7 +64,7 @@
  \param address adres komórki w układzie
  \param data bajt do wpisania
 */
- void PCF8583_write(uint8_t address,uint8_t data)
+void PCF8583_write(uint8_t address,uint8_t data)
 {
     i2cStart();
     i2cWrite((PCF8583_A0 << 1) | PCF8583_ADDRESS);
@@ -79,7 +79,7 @@
  \param address adres komórki w układzie
  \return odczytany bajt
 */
- uint8_t PCF8583_read_bcd(uint8_t address)
+uint8_t PCF8583_read_bcd(uint8_t address)
 {
     return bcd2bin(PCF8583_read(address));
 }
@@ -89,7 +89,7 @@
  \param address adres komórki w układzie
  \param data bajt do wpisania
 */
- void PCF8583_write_bcd(uint8_t address,uint8_t data)
+void PCF8583_write_bcd(uint8_t address,uint8_t data)
 {
     PCF8583_write(address,bin2bcd(data));
 }
@@ -98,7 +98,7 @@
 /**
  Inicjalizuje układ
 */
- void PCF8583_init(void)
+void PCF8583_init(void)
 {
 //    PCF8583_alarm=0;
     PCF8583_write(0, 0);
@@ -112,7 +112,7 @@
 /**
  Zatrzymuje układ
 */
- void PCF8583_stop(void)
+void PCF8583_stop(void)
 {
     PCF8583_write(0, PCF8583_read(0) | 0x80);
 }
@@ -120,7 +120,7 @@
 /**
  Startuje układ
 */
- void PCF8583_start(void)
+void PCF8583_start(void)
 {
     PCF8583_write(0, PCF8583_read(0) & ~0x80);
 }
@@ -128,7 +128,7 @@
 /**
  Odwiesza układ
 */
- void PCF8583_hold_off(void)
+void PCF8583_hold_off(void)
 {
     PCF8583_write(0, PCF8583_read(0) & ~0x40);//pozwala dalej zliczać układowi
 }
@@ -136,7 +136,7 @@
 /**
  Zawiesza układu
 */
- void PCF8583_hold_on(void)//przechowanie w zatrzaskach wyniku ostatniego zliczania
+void PCF8583_hold_on(void)//przechowanie w zatrzaskach wyniku ostatniego zliczania
 {
     PCF8583_write(0, PCF8583_read(0) | 0x40);
 }
@@ -144,7 +144,7 @@
 /**
  Odwiesza układ
 */
- void PCF8583_mask_off(void)
+void PCF8583_mask_off(void)
 {
     PCF8583_write(0, PCF8583_read(0) & ~0x08);//wyłącza maskę - dostępne są wszystkie rejestry
 }
@@ -152,7 +152,7 @@
 /**
  Zawiesza układu
 */
- void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
+void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
 {
     PCF8583_write(0, PCF8583_read(0) | 0x08);
 }
@@ -161,7 +161,7 @@
 /**
  Wyłącza alarm
 */
- void PCF8583_alarm_off(void)
+void PCF8583_alarm_off(void)
 {
     PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
 }
@@ -169,7 +169,7 @@
 /**
  Załącza alarm codzienny
 */
- void PCF8583_alarm_every_day(void)
+void PCF8583_alarm_every_day(void)
 {
     PCF8583_write(8, PCF8583_read(8) | 0b00010000);//alarm codzienny
     PCF8583_write(8, PCF8583_read(8) & ~0b00100000);//alarm codzienny
@@ -179,7 +179,7 @@
 /**
  Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
 */
- void PCF8583_alarm_weekly(void)
+void PCF8583_alarm_weekly(void)
 {
     PCF8583_write(8, PCF8583_read(8) & ~0b00010000);//alarm codzienny
     PCF8583_write(8, PCF8583_read(8) | 0b00100000);//alarm codzienny
@@ -188,7 +188,7 @@
 /**
  Załącza alarm dla dni w miesiącu
 */
- void PCF8583_alarm_monthly(void)
+void PCF8583_alarm_monthly(void)
 {
     PCF8583_write(8, PCF8583_read(8) | 0b00110000);//alarm codzienny
 }
@@ -196,7 +196,7 @@
 /**
  Wyłacza wskaźnik alarmu
 */
- void PCF8583_alarm_flag_off(void)
+void PCF8583_alarm_flag_off(void)
 {
     PCF8583_write(0, PCF8583_read(0) & ~0b00000010);//alarm codzienny
 }
@@ -206,7 +206,7 @@
  \param address adres komórki w układzie
  \param data słowo do wpisania
 */
- void PCF8583_write_word(uint8_t address,uint16_t data)
+void PCF8583_write_word(uint8_t address,uint16_t data)
 {
     PCF8583_write(address, (uint8_t)(data & 0xFF));
     PCF8583_write(++address, (uint8_t)(data >> 8));
@@ -219,7 +219,7 @@
  \param day dzień
  \param year rok
 */
- void PCF8583_write_date(uint8_t address,uint8_t day,uint16_t year)
+void PCF8583_write_date(uint8_t address,uint8_t day,uint16_t year)
 {
     PCF8583_write(address, bin2bcd(day) | ( ( (uint8_t)year & 0x03) << 6 ) );
 }
@@ -230,7 +230,7 @@
  \param day dzień
  \param month miesiąc
 */
- void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_week)
+void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_week)
 {
     PCF8583_write(address, bin2bcd(month) | ( ( (uint8_t)day_of_week & 0x07) << 5 ) );
 }
@@ -242,7 +242,7 @@
  \param sec sekunda
  \param hsec setne części sekundy
 */
- void PCF8583_get_time(uint8_t *hour,uint8_t *min,uint8_t *sec,uint8_t *hsec)
+void PCF8583_get_time(uint8_t *hour,uint8_t *min,uint8_t *sec,uint8_t *hsec)
 {
     PCF8583_hold_on();
     *hsec=PCF8583_read_bcd(1);
@@ -259,7 +259,7 @@
  \param sec sekunda
  \param hsec setne części sekundy
 */
- void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
+void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
 {
     PCF8583_stop();
     PCF8583_write_bcd(1,hsec);
@@ -274,7 +274,7 @@
  \param month miesiąc
  \param year rok
 */
- void PCF8583_get_date(uint8_t *day, uint8_t *day_of_week, uint8_t *month, uint16_t *year)
+void PCF8583_get_date(uint8_t *day, uint8_t *day_of_week, uint8_t *month, uint16_t *year)
 {
     uint16_t y1;
     uint8_t dy;
@@ -282,9 +282,7 @@
     PCF8583_hold_on();
     *day = bcd2bin(PCF8583_read(5));
     *month = bcd2bin(PCF8583_read(6));
-    PCF8583_hold_off();
     PCF8583_mask_off();
-    PCF8583_hold_on();
     *day_of_week = (PCF8583_read(6) & 0b11100000) >> 5;
 
     dy = (PCF8583_read(5) & 0b11000000) >> 6;
@@ -301,7 +299,7 @@
  \param month miesiąc
  \param year rok
 */
- void PCF8583_set_date(uint8_t day, uint8_t day_of_week, uint8_t month,uint16_t year)
+void PCF8583_set_date(uint8_t day, uint8_t day_of_week, uint8_t month,uint16_t year)
 {
     PCF8583_write_word(16, year);
     PCF8583_stop();
@@ -317,7 +315,7 @@
  \param sec sekunda
  \param hsec setne części sekundy
 */
- void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec)
+void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec)
 {
     *hsec=PCF8583_read_bcd(0x9);
     *sec=PCF8583_read_bcd(0xA);
@@ -325,27 +323,14 @@
     *hour=PCF8583_read_bcd(0xC);
 }
 
-/**
- Ustawia czas alarmu w układzie
- \param hour godzina
- \param min minuta
- \param sec sekunda
- \param hsec setne części sekundy
-*/
- void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
-{
-    PCF8583_write_bcd(0x9, hsec);
-    PCF8583_write_bcd(0xA, sec);
-    PCF8583_write_bcd(0xB, min);
-    PCF8583_write_bcd(0xC, hour);
-}
+
 
 /**
  Czyta datê alarmu z układu
  \param day dzień
  \param month miesiąc
 */
- void PCF8583_get_alarm_date(uint8_t *day, uint8_t *month)
+void PCF8583_get_alarm_date(uint8_t *day, uint8_t *month)
 {
     *day = bcd2bin( PCF8583_read(0xD) & 0x3F );
     *month = bcd2bin( PCF8583_read(0xE) & 0x1F );
@@ -356,18 +341,57 @@
  \param day dzień
  \param month miesiąc
 */
- void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
+void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
 {
-    PCF8583_write_date( 0xD, day, 0 );
+    PCF8583_write_bcd( 0xD, day );
     PCF8583_write_bcd( 0xE, month );
 }
 
+
+
+/*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
+
+/**
+ Ustawia czas alarmu w układzie
+ \param hour godzina
+ \param min minuta
+ \param sec sekunda
+ \param hsec setne części sekundy
+*/
+void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
+{
+    PCF8583_write_bcd(0x9, hsec);
+    PCF8583_write_bcd(0xA, sec);
+    PCF8583_write_bcd(0xB, min);
+    PCF8583_write_bcd(0xC, hour);
+}
+
+
+void PCF8583_set_weekly_alarm(uint8_t days_of_week, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
+{
+    PCF8583_set_alarm_time( hour,  min,  sec,  hsec);
+    PCF8583_write(0xE, days_of_week);
+}
+
+
+void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
+{
+    PCF8583_set_alarm_time( hour,  min,  sec,  hsec);
+    PCF8583_set_alarm_date(day, month);
+}
+
+void PCF8583_get_wall_alarm(void)
+{
+    PCF8583_get_alarm_time( &godz, &min, &sek, &hsek );//należy pamiętać, że w trybie alarmu dziennego w zmiennej miesac przechowywane są dni tygodnia, w których będzie aktywny alarm
+    PCF8583_get_alarm_date( &dzien, &miesiac );
+}
 
 void PCF8583_get_wall_time(void)
 {
     PCF8583_get_time( &godz, &min, &sek, &hsek );
     PCF8583_get_date( &dzien,&dzien_tygodnia, &miesiac, &rok );
 }
+
 
 /*@}*/
 
