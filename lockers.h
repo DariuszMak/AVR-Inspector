@@ -78,10 +78,10 @@ uint8_t state_temp;
 
 
 /* Inicjuje port szeregowy AVRa */
-void USART_init(unsigned int myubrr);
+void USART_init(uint16_t myubrr);
 
 /* Wysyła znak do portu szeregowego */
-uint8_t USART_Transmit(char c, FILE *stream);
+uint8_t USART_Transmit(uint8_t c, FILE *stream);
 
 void lockers_init();//inicjalizacja wejść
 

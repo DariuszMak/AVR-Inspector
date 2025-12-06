@@ -36,8 +36,6 @@ void backlight(int8_t state)
     }
 }
 
-
-
 void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 {
     PORTD |= ( 1 << PD7 );

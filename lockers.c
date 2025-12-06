@@ -2,14 +2,14 @@
 
 
 /* Inicjuje port szeregowy AVRa */
-void USART_init(unsigned int myubrr)
+void USART_init(uint16_t myubrr)
 {
     /* Ustala prędkość transmisji */
-    UBRRH = (unsigned char)(myubrr>>8);
-    UBRRL = (unsigned char)myubrr;
+    UBRRH = (uint8_t)(myubrr>>8);
+    UBRRL = (uint8_t)myubrr;
 
     /* Włącza nadajnika */
-    UCSRB = (1<<TXEN);
+    UCSRB = (1<<RXEN) | (1<<TXEN);
 
     /* Format ramki: 8 bitów danych, 1 bit stopu, brak bitu parzystości */
     UCSRC = (1<<URSEL)|(3<<UCSZ0);
@@ -17,7 +17,7 @@ void USART_init(unsigned int myubrr)
 
 
 /* Wysyła znak do portu szeregowego */
-uint8_t USART_Transmit(char c, FILE *stream)
+uint8_t USART_Transmit(uint8_t c, FILE *stream)
 {
     while(!(UCSRA & (1<<UDRE)));
     UDR = c;
