@@ -635,10 +635,11 @@ uint8_t end_of_settings(void)
             if(c == 0) return 0;
             else if(c == 1) return 1;
         }
+        //else return u;
     }
-    else if(menu == 6) return 0;
+    else if(menu == 6 && ( e >= 0 && e <= 5)) return 0;
     else if(menu == 7) return 2;
-    return 0;
+    return u;
 }
 
 void show_setting_alarm_case(uint8_t index)
