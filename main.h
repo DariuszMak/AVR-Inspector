@@ -55,8 +55,9 @@ int8_t e;//inna (dodatkowa zmienna)
 
 uint8_t refresh_screen;
 
-
 int main( void );
+
+void random_color(void);
 
 void backlight(int8_t);
 

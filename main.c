@@ -23,6 +23,16 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
+void random_color(void)
+{
+    do
+    {
+    RGB_Red = rand() % 256;
+    RGB_Green = rand() % 256;
+    RGB_Blue = rand() % 256;
+    }while(RGB_Red + RGB_Green + RGB_Green < 128 || RGB_Red + RGB_Green + RGB_Green > 640);
+}
+
 void backlight(int8_t state)
 {
     if(state == 0) backlight_of_lcd = 0;
@@ -1719,9 +1729,7 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
-        RGB_Red = (rand() % 32) * 8;
-        RGB_Green = (rand() % 32) * 8;
-        RGB_Blue = (rand() % 32) * 8;
+
 
 
         /*if(rano_wieczor == 0 )RGB_Red =  255;
@@ -1738,7 +1746,7 @@ void sczytaj_komende( void )
         {
             buzzer();
             backlight(2);
-
+            random_color();
         }
         else
         {
@@ -1901,8 +1909,6 @@ int main( void )
 
     lockers_beginning_actions();
     sei();//włącza przerwania
-
-
 
     while( 1 )
     {

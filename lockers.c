@@ -172,6 +172,7 @@ void lockers_check_events()
     if(action)
     {
         lockers_queue_enque();
+        random_color();
         refresh_screen = 1;
     }
 }
