@@ -147,7 +147,6 @@ void show_time_only_format(void)
     LCD_WriteText(":");
     if(hsek < 10) LCD_Int(0);
     LCD_Int(hsek);
-
 }
 
 void show_time_format(void)
@@ -220,7 +219,6 @@ void setting_information(uint8_t case_of_time, int8_t step)
     }
     else
     {
-
         if(step == 0) LCD_WriteText("GODZINY");
         else if(step == 1) LCD_WriteText("MINUTY");
         else if(step == 2) LCD_WriteText("SEKUNDY");
@@ -234,6 +232,7 @@ void setting_information(uint8_t case_of_time, int8_t step)
             {
                 if(step == 6) LCD_WriteText("ROK");
                 else if(step == 7) LCD_WriteText("DZIEN TYGODNIA");
+                else if(step == 8) LCD_WriteText("TIMER");
             }
         }
         else if( case_of_time == 2)
@@ -272,6 +271,7 @@ void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s)
         {
             if(u == 6)rok += temp;
             else if(u == 7) dzien_tygodnia += temp;
+            else if(u == 8) timer += temp;
         }
     }
     else if( case_of_time == 2)
@@ -313,6 +313,7 @@ void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s)
         }
     }
 }
+
 void check_step_value(uint8_t case_of_time, int8_t u)
 {
     if(u == -1 && zwiekszanie > 1) wysw_skok(1);
@@ -331,7 +332,7 @@ void check_step_value(uint8_t case_of_time, int8_t u)
 
 uint8_t end_of_settings(uint8_t case_of_time)
 {
-    if(case_of_time == 0) return 8;
+    if(case_of_time == 0) return 9;
     else if(case_of_time == 1) return 4;
     else if(case_of_time == 2) return 11;
     else if(case_of_time == 3) return 6;
@@ -384,17 +385,31 @@ void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca wzg
     if(dzien < 1) dzien = case_of_day;
     else if(dzien > case_of_day) dzien = 1;
 
-    if(rok < -9999) rok = 9999;
-    else if(rok > 9999) rok = -9999;
+    if(rok < -999) rok = 9999;
+    else if(rok > 9999) rok = -999;
 
     if(dzien_tygodnia < 0) dzien_tygodnia = 6;
     else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
+
+     if(timer < 0) timer = 99;
+    else if(dzien_tygodnia > 99) dzien_tygodnia = 0;
+
 }
 
 void show_frame( int16_t number )
 {
     LCD_Int(number);
     LCD_WriteText(".");
+
+    LCD_Int(frame.year);
+    LCD_WriteText(":");
+    if(frame.month < 10) LCD_Int(0);
+    LCD_Int(frame.month);
+    LCD_WriteText(":");
+    if(frame.day < 10) LCD_Int(0);
+    LCD_Int(frame.day);
+    LCD_WriteText(" ");
+
     if(frame.hours < 10) LCD_Int(0);
     LCD_Int(frame.hours);
     LCD_WriteText(":");
@@ -403,15 +418,6 @@ void show_frame( int16_t number )
     LCD_WriteText(":");
     if(frame.seconds < 10) LCD_Int(0);
     LCD_Int(frame.seconds);
-    LCD_WriteText(" ");
-
-    if(frame.day < 10) LCD_Int(0);
-    LCD_Int(frame.day);
-    LCD_WriteText(":");
-    if(frame.month < 10) LCD_Int(0);
-    LCD_Int(frame.month);
-    LCD_WriteText(":");
-    LCD_Int(frame.year);
 
     LCD_WriteText(" ");
 
@@ -1223,7 +1229,8 @@ void zczytaj_komende( void )
         {
             buzzer();
             backlight(2);
-            printf("Oczekiwanie...\n");
+            printf("Oczekiwanie... ");
+            lockers_print_date_of_report();
         }
         else
         {

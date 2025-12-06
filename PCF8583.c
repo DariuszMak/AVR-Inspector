@@ -80,27 +80,6 @@ void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
 }
 
 /**
- Czyta bajt z układu w formacie BCD
- \param address adres komórki w układzie
- \return odczytany bajt
-*/
-uint8_t PCF8583_read_bcd(uint8_t address)
-{
-    return bcd2bin(PCF8583_read(address));
-}
-
-/**
- Zapisuje bajt do układu w formacie BCD
- \param address adres komórki w układzie
- \param data bajt do wpisania
-*/
-void PCF8583_write_bcd(uint8_t address,uint8_t data)
-{
-    PCF8583_write(address,bin2bcd(data));
-}
-
-
-/**
  Inicjalizuje układ
 */
 void PCF8583_init(void)

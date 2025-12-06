@@ -216,7 +216,7 @@ void lockers_read_frame(uint8_t index)
 void lockers_print_entire_frame(void)
 {
     buzzer_time(0.5);
-    printf("%02d:%02d:%02d %02d:%02d:%d", frame.hours, frame.minutes, frame.seconds, frame.day, frame.month, frame.year);
+    printf("%d:%02d:%02d %02d:%02d:%02d", frame.year, frame.month, frame.day, frame.hours, frame.minutes, frame.seconds);
 
     uint8_t number = frame.information % 100;
 
@@ -252,7 +252,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 void lockers_print_date_of_report()
 {
     PCF8583_get_wall_time();
-    printf("%02d:%02d:%02d %02d:%02d:%d\n", godz, min, sek, dzien, miesiac, rok);
+    printf("%d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }
 
 void lockers_print_all_memory(void)
@@ -265,10 +265,14 @@ void lockers_print_all_memory(void)
 
 void lockers_print_latest_data(void)
 {
-    printf("Raport. ");
-    lockers_print_date_of_report();
-    lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
-    lockers_queue_empty();
+    if(lockers_is_queue_empty() == 0)
+    {
+        printf("Raport. ");
+        lockers_print_date_of_report();
+        lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
+        lockers_queue_empty();
+    }
+    else buzzer_time(5);
 }
 
 uint8_t lockers_tail(void)
@@ -284,6 +288,12 @@ uint8_t lockers_head(void)
 void lockers_queue_empty(void)
 {
     PCF8583_write_word(PCF8583_HEAD, PCF8583_read_word(PCF8583_TAIL));
+}
+
+uint8_t lockers_is_queue_empty(void)
+{
+    if(lockers_head() == lockers_tail()) return 1;
+    else return 0;
 }
 
 uint8_t lockers_queue_number_of_records(void)

@@ -111,6 +111,8 @@ void lockers_init();//inicjalizacja wejść
 
 void lockers_beginning_actions(void);//przypisanie wartości początkowych dla przycisków
 
+void lockers_print_date_of_report();
+
 void lockers_print_entire_frame(void);
 
 void lockers_print_all_memory(void);
@@ -122,6 +124,8 @@ uint8_t lockers_tail(void);
 uint8_t lockers_head(void);
 
 void lockers_queue_empty(void);
+
+uint8_t lockers_is_queue_empty(void);
 
 uint8_t lockers_queue_number_of_records(void);
 
@@ -165,7 +169,6 @@ void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapi
 uint8_t lockers_convert_address_to_index_of_frame(uint16_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
 
 uint16_t lockers_convert_index_of_frame_to_address(uint8_t index);
-
 
 uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
 
