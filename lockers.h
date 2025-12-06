@@ -1,5 +1,5 @@
-#ifndef INVERTER_H_
-#define INVERTER_H_
+#ifndef LOCKERS_H_
+#define LOCKERS_H_
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -14,6 +14,6 @@
 #define LOCKER_2_BUTTON_PIN PIND
 #define LOCKER_2_BUTTON_IN (1 << PD3)
 
-void inverter_init();
+void lockers_init();
 
-#endif // INVERTER_H_
+#endif // LOCKERS_H_
