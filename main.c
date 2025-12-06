@@ -487,7 +487,12 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             LCD_WriteText("TEMPERATURA");
             LCD_GoTo(0,1);
         }
-        if(number == 3)
+
+        else if(number == 2)
+        {
+            LCD_WriteText("RC5");
+        }
+        else if(number == 3)
         {
             LCD_WriteText("PILOT");
             LCD_GoTo(6,0);
@@ -504,7 +509,11 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             {
                 LCD_WriteText("KRYTYCZNA!!!");
             }
-            else if(number == 2) LCD_WriteText("RC5 & TERMINAL");
+            else if(number == 2)
+            {
+                LCD_GoTo(4,0);
+                LCD_WriteText("& TERMINAL");
+            }
             else if(number == 3)
             {
                 LCD_WriteText("ON");
@@ -520,7 +529,6 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             {
                 LCD_WriteText("USTABILIZOWANA!");
             }
-            else if(number == 2) LCD_WriteText("RC5");
             else if(number == 3)
             {
                 LCD_WriteText("OFF");
@@ -1296,8 +1304,8 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     PCF8583_get_wall_time();
     LCD_Clear();
     LCD_GoTo(11,0);
-    if(lockers_is_flag_bit(3) == 0) LCD_WriteText("!");
-    else LCD_WriteText("|");
+    //if(lockers_is_flag_bit(3) == 0) LCD_WriteText("!");
+    LCD_WriteText("|");
 
     show_time_format();
 
