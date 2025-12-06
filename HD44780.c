@@ -10,26 +10,7 @@
 // Kompilator : avr-gcc
 // Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
-
-#if BUFFERING == 1
-volatile uint8_t pwm1, pwm2;
-
-void pwm_led_init ( void )
-{
-	//DDRD |= ( 1 << PD2 ) | ( 1 << PD3 ); // dwie diody dterowane PWM
-	//PORTD |= ( 1 << PD2 ) | ( 1 << PD3 ); // dwie diody dterowane PWM
-	TCCR2 |= ( 1 << WGM21 );// tryb CTC
-	TCCR2 |= ( 1 << CS20 ) | ( 1 << CS22 ); // preskaler 1
-	OCR2 = 10;
-	TIMSK |= ( 1 << OCIE2 );
-}
-
-ISR( _VECTOR( 4 ) )
-{
-	LCDUpdateTask();
-}
-#endif
-
+const int LCD_CHARSPERLINE = 40;// liczba znaków w pojedynczej linii bufora wyświetlacza
 
 void delay_ms_var( uint16_t count )
 {
@@ -88,7 +69,7 @@ void delay_us_var_double( double __us )
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja wystawiaj¹ca pó³bajt na magistralê danych
+// Funkcja wystawiaj¹ca półbajt na magistralę danych
 //
 //-------------------------------------------------------------------------------------------------
 void _LCD_OutNibble( unsigned char nibbleToWrite )
@@ -116,7 +97,7 @@ void _LCD_OutNibble( unsigned char nibbleToWrite )
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja wystawiaj¹ca pó³bajt na magistralê danych
+// Funkcja wystawiaj¹ca półbajt na magistralę danych
 //
 //-------------------------------------------------------------------------------------------------
 #if USE_RW == 1
@@ -137,12 +118,12 @@ unsigned char _LCD_InNibble( void )
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja zapisu bajtu do wyœwietacza (bez rozró¿nienia instrukcja/dane).
+// Funkcja zapisu bajtu do wyświetacza (bez rozróżnienia instrukcja/dane).
 //
 //-------------------------------------------------------------------------------------------------
 void _LCD_Write( unsigned char dataToWrite )
 {
-#if ( USE_RW == 1 ) || ( BUFFERING == 1 )
+#if USE_RW == 1
 	LCD_DB4_DIR |= LCD_DB4;
 	LCD_DB5_DIR |= LCD_DB5;
 	LCD_DB6_DIR |= LCD_DB6;
@@ -155,7 +136,7 @@ void _LCD_Write( unsigned char dataToWrite )
 	LCD_E_PORT |= LCD_E;
 	_LCD_OutNibble( dataToWrite );
 	LCD_E_PORT &= ~LCD_E;
-#if ( USE_RW == 1 ) || ( BUFFERING == 1 )
+#if USE_RW == 1
 	while( LCD_ReadStatus() & HD44780_DDRAM_SET );
 #else
 	_delay_us( 50 );
@@ -187,7 +168,6 @@ unsigned char _LCD_Read( void )
 	return tmp;
 }
 #endif
-
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu rozkazu do wyœwietlacza
@@ -198,7 +178,6 @@ void LCD_WriteCommand( unsigned char commandToWrite )
 	LCD_RS_PORT &= ~LCD_RS;
 	_LCD_Write( commandToWrite );
 }
-
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja odczytu bajtu statusowego
@@ -213,7 +192,7 @@ unsigned char LCD_ReadStatus( void )
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja zapisu danych do pamiêci wyœwietlacza
+// Funkcja zapisu danych do pamięci wyœwietlacza
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_WriteData( unsigned char dataToWrite )
@@ -223,7 +202,7 @@ void LCD_WriteData( unsigned char dataToWrite )
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja odczytu danych z pamiêci wyœwietlacza
+// Funkcja odczytu danych z pamięci wyświetlacza
 //
 //-------------------------------------------------------------------------------------------------
 #if USE_RW == 1
@@ -235,45 +214,14 @@ unsigned char LCD_ReadData( void )
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Zmienne potrzebne do buforowania danych na wyświetlaczu
+// Funkcja wyświetlenia napisu na wyswietlaczu
 //
 //-------------------------------------------------------------------------------------------------
-#if BUFFERING == 1
-unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];//tablica dwuwymiarowa stanowiąca bufor (znaki do wyświetlania)
-unsigned char LCDNeedUpdate[LCD_LINES];//tablica wielkości ilości linii wyświetlacza (stwierdzenie, czy dana linia wymaga odświeżenia)
-signed 	 char LCDCharIndex[LCD_LINES];//w tej tablicy przechowywana jest pozycja w danej linii wyświetlacza
-unsigned char LCDLineIndex = 0;//zmienna pomocnicza w iteracjach
-unsigned char LCDLineAddress[2] = {0x00, 0x40/*, 0x14, 0x54*/};//adresy (w pamięci DDRAM wyświetlacza) poszczególnych linii
-
-int x_position = 0;
-int y_position = 0;
-
-#endif
-//-------------------------------------------------------------------------------------------------
-//
-// Funkcja wyœwietlenia napisu na wyswietlaczu
-//
-//-------------------------------------------------------------------------------------------------
-
 void LCD_WriteText( char * text )
 {
 
-#if BUFFERING == 0
 	while( *text )
 		LCD_WriteData( *text++ );
-#endif
-#if BUFFERING == 1
-    int x = x_position;
-    int y = y_position;
-	int cnt = 0;//zmienna pomocnicza
-	while( *text != 0 && cnt + x < LCD_CHARSPERLINE ) //w pętli o ilości iteracji równej długości łąńcucha, jeśli łańcuch jest zbyt długi, to się nie prześle
-	{
-		LCDBuffer[y][x + cnt] = *text;//do tablicy bufora o określonej linii i od określonego miejsca zapisywane zostają dane
-		++text;
-		++cnt;
-	}
-	LCDNeedUpdate[y] = 1;
-#endif
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -283,18 +231,13 @@ void LCD_WriteText( char * text )
 //-------------------------------------------------------------------------------------------------
 void LCD_GoTo( unsigned char x, unsigned char y )
 {
-#if BUFFERING == 0
+
 	LCD_WriteCommand( HD44780_DDRAM_SET | ( x + ( HD44780_CGRAM_SET * y ) ) );
-#endif
-#if BUFFERING == 1
-	x_position = x;
-	y_position = y;
-#endif
 
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja czyszczenia ekranu wyœwietlacza.
+// Funkcja czyszczenia ekranu wyświetlacza.
 //
 //-------------------------------------------------------------------------------------------------
 
@@ -302,13 +245,7 @@ void LCD_Clear( void )
 {
 	LCD_WriteCommand( HD44780_CLEAR );
 	_delay_ms( 2 );
-#if BUFFERING == 1
-	void LCDClearBuffer();
-    x_position = 0;
-    y_position = 0;
-#endif
 }
-
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja przywrócenia pocz¹tkowych wspó³rzêdnych wyœwietlacza.
@@ -318,10 +255,6 @@ void LCD_Home( void )
 {
 	LCD_WriteCommand( HD44780_HOME );
 	_delay_ms( 2 );
-	#if BUFFERING == 1
-    x_position = 0;
-    y_position = 0;
-#endif
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -395,7 +328,7 @@ void LCD_Hex( int value )
 
 //-------------------------------------------------------------------------------------------------
 //
-// Efekt przesuniêcia zawartoœci o okreœlonej czêstotliwoœci kroku oraz liczbie kroków
+// Efekt przesunięcia zawartości o okreœlonej częstotliwoœci kroku oraz liczbie kroków
 //
 //-------------------------------------------------------------------------------------------------
 #if USE_LCD_MoveRight == 1
@@ -412,7 +345,7 @@ void LCD_MoveRight ( unsigned int freq, unsigned int step, unsigned int way )
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Efekt przesuniêcia zawartoœci o ca³y ekran w prawo
+// Efekt przesuniêcia zawartości o cały ekran w prawo
 //
 //-------------------------------------------------------------------------------------------------
 #if USE_LCD_MoveLeft == 1
@@ -429,7 +362,7 @@ void LCD_MoveLeft ( unsigned int freq, unsigned int step, unsigned int way )
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Czyszczenie zawartoœci okna
+// Czyszczenie zawartości okna
 //
 //-------------------------------------------------------------------------------------------------
 #if USE_LCD_Erase == 1
@@ -441,45 +374,26 @@ void LCD_Erase ( unsigned int row )
 		LCD_GoTo( 0, 0 );
 		for ( temp = 0; temp < LCD_CHARSPERLINE; ++temp )
 		{
-#if BUFFERING == 0
 			LCD_WriteData( 32 );//znak "spacji"
-#endif
-#if BUFFERING == 1
 
-			LCDBuffer[0][temp] = 32;//wypełnienie bufora znakami "spacji"
-#endif
 		}
-		#if BUFFERING == 1
-
-		LCDNeedUpdate[0] = 1;
-		#endif
 
 	}
-
 
 	if ( row == 0 || row == 2 )
 	{
 		LCD_GoTo( 0, 1 );
 		for ( temp = 0; temp < LCD_CHARSPERLINE; ++temp )
 		{
-		    #if BUFFERING == 0
+
 			LCD_WriteData( 32 );//znak "spacji"
-			#endif
-			#if BUFFERING == 1
-
-			LCDBuffer[1][temp] = 32;//wypełnienie bufora znakami "spacji"
-#endif
 		}
-		#if BUFFERING == 1
-
-		LCDNeedUpdate[1] = 1;
-		#endif
 	}
 }
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Ró¿ne opcje wyœwielania
+// Różne opcje wyświelania
 //
 //-------------------------------------------------------------------------------------------------
 #if USE_LCD_Displaying == 1
@@ -506,58 +420,7 @@ void LCD_Displaying ( unsigned int option )
 }
 #endif
 
-#if BUFFERING == 1
-//-------------------------------------------------------------------------------------------------
-// Wywoływane funkcje zewnętrzne :
-//		LCD_NotBusy - zwraca 0 jeśli wyświetlacz jest zajęty, w przeciwnym razie zwraca 1
-//		LCD_JustWriteCommand - zapisuje rozkaz do sterownika wyświetlacza (bezzwłocznie)
-//		LCD_JustWriteData	 - zapisuje dane do sterownika wyświetlacza (bezzwłocznie)
-//=================================================================================================
 
-void LCDClearBuffer( void )
-{
-	int i, j;
-	for( j = 0; j < LCD_LINES; ++j )
-	{
-		for( i = 0; i < LCD_CHARSPERLINE; ++i )
-		{
-			LCDBuffer[j][i] = 32;//wypełnienie bufora znakami "spacji"
-		}
-		LCDNeedUpdate[j] = 1;
-	}
-}
-
-//=================================================================================================
-// Należy wywoływać cykliczne w pętli głównej
-//=================================================================================================
-
-void LCDUpdateTask( void )
-{
-	if( LCDNeedUpdate[LCDLineIndex] )//jeśli któraś linia potrzebuje "aktualizacji"
-	{
-		if( LCD_ReadStatus() != HD44780_DDRAM_SET )// jeśli wyświetlacz nie jest zajęty
-		{
-			if( LCDCharIndex[LCDLineIndex] == -1 )//jeśli jest to pozycja pierwsza w danej linii
-			{
-				LCD_WriteCommand( HD44780_DDRAM_SET | LCDLineAddress[LCDLineIndex] );//ustawienie kursora na początku
-				LCDCharIndex[LCDLineIndex]++;//zwiększenie kursora w tablicy z położeniem o jeden
-				return;//wyjście z funkcji
-			}
-			LCD_WriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );//zapis na wyświetlaczu pojedynczego znaku
-			if( LCDCharIndex[LCDLineIndex] == ( LCD_CHARSPERLINE ) )//jeśli w tablicy położenia jest już ostatni indeks
-			{
-				LCDCharIndex[LCDLineIndex] 		= -1;//położenie w danej linii zostanie przywrócone na początek
-				LCDNeedUpdate[LCDLineIndex] 	= 0;//dana linia nie potrzebuje już aktualizacji
-			}
-		}
-		return;
-	}
-	++LCDLineIndex;//inkrementacja linii
-	if( LCDLineIndex == LCD_LINES )//jeśli indeks przyjmuje wartoś spoza zakresu, należy przypisać mu wartość zero
-		LCDLineIndex = 0;
-}
-
-#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.c

@@ -22,11 +22,6 @@
 //-------------------------------------------------------------------------------------------------
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
 
-#define BUFFERING 0 // włączanie trybu buforowania danych na wyświetlaczu 0 - normalny tryb (istnieje konieczność zakomentowania niektórych funkji w programie), 1 - tryb buforowania włączony
-
-#define 	  LCD_LINES				2// liczba wierszy bufora wyświetlacza
-#define 	  LCD_CHARSPERLINE		40// liczba znaków w pojedynczej linii bufora wyświetlacza
-
 #define USE_LCD_Int 1
 #define USE_LCD_Hex 1
 #define USE_LCD_MoveRight 1
@@ -41,7 +36,6 @@
 #define LCD_RW_PIN		PINA
 #define LCD_RW			(1 << PA1)
 #endif
-
 
 #define LCD_RS_DIR		DDRA
 #define LCD_RS_PORT 	PORTA
@@ -127,22 +121,11 @@ void delay_us_var( uint16_t ); // czekaj określoną ilość mikrosekund
 void delay_ms_var_double( double ); // czekaj określoną ilość milisekund
 void delay_us_var_double( double ); // czekaj określoną ilość mikrosekund
 
-#if BUFFERING == 1
-extern volatile uint8_t pwm1, pwm2;
-
-void pwm_led_init ( void );
-#endif
-
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
 unsigned char _LCD_InNibble( void );
 #endif
 void _LCD_Write( unsigned char );
-#if BUFFERING == 1
-void LCDWriteToBuffer( char * );
-void LCDClearBuffer( void );
-void LCDUpdateTask( void );
-#endif
 #if USE_RW == 1
 unsigned char _LCD_Read( void );
 #endif
@@ -150,6 +133,7 @@ void LCD_WriteCommand( unsigned char );
 #if USE_RW == 1
 unsigned char LCD_ReadStatus( void );
 #endif
+
 void LCD_WriteData( unsigned char ); // odczytywanie danych po kolei w zależności od pozycji kursora
 #if USE_RW == 1
 unsigned char LCD_ReadData( void ); // zapisywanie danych po kolei w zależności od pozycji kursora
@@ -199,9 +183,10 @@ void LCD_Displaying( unsigned int );
 #define LCD_Blink() LCD_Displaying(4) // tryb pracy z migającym prostokątem
 #define LCD_CursorBlink() LCD_Displaying(5) // tryb pracy z kursorem i z migającym prostokątem
 #endif
+
+#endif // HD44780_h_
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.h
 //
 //-------------------------------------------------------------------------------------------------
-#endif // HD44780_h_

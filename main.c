@@ -411,9 +411,6 @@ int main( void )
 
 
 
-
-
-
 		if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
 		{
 			start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
