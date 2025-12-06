@@ -13,7 +13,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-
 //-------------------------------------------------------------------------------------------------
 //
 // Konfiguracja sygnałów sterujących wyświetlaczem.
@@ -21,8 +20,6 @@
 //
 //-------------------------------------------------------------------------------------------------
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
-
-#define USE_8_BIT_MODE 0 // 1 - sterowanie w trybie 8-bitowym, 0 - sterowanie w trybie 4 bitowym
 
 #define USE_LCD_Int 1
 #define USE_LCD_Hex 1
@@ -33,30 +30,22 @@
 
 
 #if USE_RW == 1
-#define LCD_RW_DIR		DDRD
-#define LCD_RW_PORT		PORTD
-#if USE_8_BIT_MODE == 0
-#define LCD_RW_PIN		PIND
-#endif // USE_8_BIT_MODE
-#define LCD_RW			(1 << PD5)
+#define LCD_RS_DIR		DDRA
+#define LCD_RS_PORT 	PORTA
+#define LCD_RS_PIN		PINA
+#define LCD_RS			(1 << PA1)
+
+#define LCD_RW_DIR		DDRA
+#define LCD_RW_PORT		PORTA
+#define LCD_RW_PIN		PINA
+#define LCD_RW			(1 << PA2)
 #endif
 
+#define LCD_E_DIR		DDRA
+#define LCD_E_PORT		PORTA
+#define LCD_E_PIN		PINA
+#define LCD_E			(1 << PA3)
 
-#define LCD_RS_DIR		DDRD
-#define LCD_RS_PORT 	PORTD
-#if USE_8_BIT_MODE == 0
-#define LCD_RS_PIN		PIND
-#endif // USE_8_BIT_MODE
-#define LCD_RS			(1 << PD3)
-
-#define LCD_E_DIR		DDRD
-#define LCD_E_PORT		PORTD
-#if USE_8_BIT_MODE == 0
-#define LCD_E_PIN		PIND
-#endif // USE_8_BIT_MODE
-#define LCD_E			(1 << PD4)
-
-#if USE_8_BIT_MODE == 0
 #define LCD_DB4_DIR		DDRA
 #define LCD_DB4_PORT	PORTA
 #define LCD_DB4_PIN		PINA
@@ -76,13 +65,6 @@
 #define LCD_DB7_PORT	PORTA
 #define LCD_DB7_PIN		PINA
 #define LCD_DB7			(1 << PA7)
-#endif // USE_8_BIT_MODE
-
-#if USE_8_BIT_MODE == 1
-#define LCD_DATA_DIR	DDRA
-#define LCD_DATA_PORT	PORTA
-#define LCD_DATA_PIN	PINA
-#endif // USE_8_BIT_MODE
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -138,19 +120,14 @@ void delay_us_var( uint16_t ); // czekaj określoną ilość mikrosekund
 void delay_ms_var_double( double ); // czekaj określoną ilość milisekund
 void delay_us_var_double( double ); // czekaj określoną ilość mikrosekund
 
-#if USE_8_BIT_MODE == 0
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
 unsigned char _LCD_InNibble( void );
 #endif
-#endif // USE_8_BIT_MODE
-
 void _LCD_Write( unsigned char );
 #if USE_RW == 1
 unsigned char _LCD_Read( void );
 #endif
-
-
 void LCD_WriteCommand( unsigned char );
 #if USE_RW == 1
 unsigned char LCD_ReadStatus( void );
@@ -161,12 +138,12 @@ void LCD_WriteData( unsigned char ); // odczytywanie danych po kolei w zależno�
 unsigned char LCD_ReadData( void ); // zapisywanie danych po kolei w zależności od pozycji kursora
 #endif
 
+void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
+
 void LCD_WriteText( char * );//Wypisanie tekstu (łańcuch znaków)
 void LCD_GoTo( unsigned char, unsigned char ); // pozycja X, pozycja Y
 void LCD_Clear( void ); // czyści wszystko sprzętowo
 void LCD_Home( void ); // sprętowa funkcje powrotu ns początek (ekran i kursor)
-
-void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
 
 #if USE_LCD_Int == 1
 void LCD_Int( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)

@@ -6,7 +6,7 @@
 #include "HD44780.h"
 #include "ir_decode.h"
 #include "d_led.h"
-//#include "pwm_led.h"
+#include "pwm_led.h"
 #include <stdlib.h>
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
@@ -88,9 +88,9 @@ int main( void )
 		case 3:
 			LCD_EraseAll();
 			LCD_GoTo( 0, 0 );
-//			LCD_Int( pwm1 );
+			LCD_Int( pwm1 );
 			LCD_GoTo( 0, 1 );
-//			LCD_Int( pwm2 );
+			LCD_Int( pwm2 );
 			//OCR0 = pwm1;//zmienna przepełnienia Timera 0
 			break;
 		}
@@ -324,16 +324,16 @@ int main( void )
 				wysw_skok( 1 );
 				break;
 			case 17:
-//				pwm1 -= zwiekszanie;
+				pwm1 -= zwiekszanie;
 				break;
 			case 16:
-//				pwm1 += zwiekszanie;
+				pwm1 += zwiekszanie;
 				break;
 			case 32:
-//				pwm2 += zwiekszanie;
+				pwm2 += zwiekszanie;
 				break;
 			case 33:
-				//pwm2 -= zwiekszanie;
+				pwm2 -= zwiekszanie;
 				break;
 			}
 			wysw( *men, com );
@@ -469,7 +469,7 @@ int main( void )
 
 	DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
 
-//	pwm_led_init();//inicjaliacja diod pwm
+	pwm_led_init();//inicjaliacja diod pwm
 	LCD_Initalize();//inicjalizacja wyświetlacza
 	ir_init();//inicjalizacja odbioru sygnału z pilota
 	d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
