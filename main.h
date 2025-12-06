@@ -64,7 +64,7 @@ struct double_format maximum_temperature;
 
 int main( void );
 
-uint8_t number_of_digits(uint32_t);//funkcja zwracjąca ilość cyfr dla danej liczby
+uint8_t number_of_digits(int32_t);//funkcja zwracjąca ilość cyfr dla danej liczby
 
 void show_double(double, uint8_t);//funkcja wyświetlająca format (rozbity na dwie części), przjmuje liczbę i miejsca po przecinku
 

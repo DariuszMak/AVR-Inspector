@@ -24,16 +24,18 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 //definicje funkcji
 
 
-uint8_t number_of_digits(uint32_t number)
+uint8_t number_of_digits(int32_t number)
 {
+    int32_t temp_number = abs(number);
     uint32_t ten2 = 10;
 
     int d = 1;
-    while ( number >= ten2 )
+    while ( temp_number >= ten2 )
     {
         d += 1;
         ten2 *= 10;
     }
+    if (number < 0) ++d;
     return d;
 }
 
@@ -303,8 +305,11 @@ void show_time_format(void)
     if(miesiac < 10) LCD_Int(0);
     LCD_Int(miesiac);
     LCD_WriteText(":");
+    for(t = 0; t < 4 - number_of_digits(rok); ++t)
+    {
+        LCD_WriteText(" ");
+    }
     LCD_Int(rok);
-    LCD_GoTo(moveStep + 10, 1);
     LCD_WriteText("|");
     show_day_of_week(dzien_tygodnia);
     LCD_WriteText("|");
@@ -796,7 +801,10 @@ void show_frame( int16_t number )
 {
     LCD_Int(number);
     LCD_WriteText(".");
-
+    for(t = 0; t < 4 - number_of_digits(frame.year); ++t)
+    {
+        LCD_WriteText(" ");
+    }
     LCD_Int(frame.year);
     LCD_WriteText(":");
     if(frame.month < 10) LCD_Int(0);
