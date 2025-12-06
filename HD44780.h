@@ -132,7 +132,8 @@ void LCD_Clear(void); // czyści wszystko sprzętowo
 void LCD_Home(void); // sprętowa funkcje powrotu ns początek (ekran i kursor)
 
 void LCD_Initalize(void); // Inicjalizacja wyświetlacza
-
+void LCD_Int(int); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
+void LCD_Hex(int); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
 
 void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
 void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran

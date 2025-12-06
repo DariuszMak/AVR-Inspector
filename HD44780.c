@@ -212,57 +212,13 @@ unsigned char LCD_ReadData(void)
 #endif
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja wyœwietlenia napisu na wyswietlaczu.
+// Funkcja wyœwietlenia napisu na wyswietlaczu
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_WriteText(char * text)
 {
-    register char sign;
-    while((sign=*(text++)))
-        LCD_WriteData(((sign>=0x80) && (sign<=0x87)) ? (sign & 0x07) : sign);
-}
-
-#include <avr/pgmspace.h>
-void LCD_WriteText_P(char * text)
-{
-    register char sign;
-    while((sign=pgm_read_byte(text++)))
-        LCD_WriteData((sign>=0x80 && sign<=0x87) ? (sign & 0x07) : sign);
-}
-/*
-#include <avr/eeprom.h>
-void LCD_WriteText_E(char * text)
-{
-    register char sign;
-    while(1){
-        sign = eeprom_read_byte((uint8_t *)(text++));
-        if(!sign || sign == 0xFF) break;
-        else
-        LCD_WriteData((sign>=0x80 && sign<=0x87) ? (sign & 0x07) : sign);
-    }
-}*/
-
-void LCD_INT(int value)
-{
-    char bufor[17];
-    LCD_WriteText( itoa(value, bufor, 10));
-}
-
-void LCD_HEX(int value)
-{
-    char bufor[17];
-    LCD_WriteText( itoa(value, bufor, 16));
-}
-void LCD_DefChar (uint8_t nr, uint8_t *def_sign)
-{
-    register uint8_t i,c;
-    LCD_WriteCommand( 0x40);
-    for(i=0;i<8;i++)
-    {
-        c = *(def_sign++);
-        LCD_WriteData(c);
-    }
-    LCD_WriteCommand( 0x80);
+    while(*text)
+        LCD_WriteData(*text++);
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -337,6 +293,26 @@ void LCD_Initalize(void)
 #endif
     LCD_WriteCommand(HD44780_ENTRY_MODE | HD44780_EM_SHIFT_CURSOR | HD44780_EM_INCREMENT);// inkrementaja adresu i przesuwanie kursora
     LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK); // w³¹cz LCD, bez kursora i mrugania
+}
+//-------------------------------------------------------------------------------------------------
+//
+// Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_Int(int value)
+{
+    char bufor[17];
+    LCD_WriteText( itoa(value, bufor, 10));
+}
+//-------------------------------------------------------------------------------------------------
+//
+// Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_Hex(int value)
+{
+    char bufor[17];
+    LCD_WriteText( itoa(value, bufor, 16));
 }
 //-------------------------------------------------------------------------------------------------
 //
