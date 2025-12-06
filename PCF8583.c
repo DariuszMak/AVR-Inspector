@@ -236,7 +236,7 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
     PCF8583_mask_off();
     PCF8583_hold_on();
     PCF8583_read_buf(0x01, 6, (uint8_t*)&time_f);
-                PCF8583_hold_off();
+    PCF8583_hold_off();
     PCF8583_mask_on();
     PCF8583_read_buf(0x10, 2, year_table);
 
@@ -256,8 +256,6 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
     if ( ( (uint8_t) y1 & 3 ) != dy )
         PCF8583_write_word(0x10, ++y1);
     *year = y1;
-
-
 }
 
 /**

@@ -17,6 +17,8 @@
 
 #define INTERNAL_EEPROM_MAX_INDEX 1023//jeśli ustawi się tą zmienną na -1, to wylączy się tę pamięć z użytku
 
+#define INTERNAL_EEPROM_MIN_INDEX 0
+
 #define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
 
 #define PCF8583_HEAD 252//komórka głowy
@@ -25,7 +27,7 @@
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
-#define SAFETY_BIT 0
+#define SAFETY_BIT 1
 
 #define LOCKER_1_BUTTON_DIR DDRD
 #define LOCKER_1_BUTTON_PORT PORTD
@@ -90,6 +92,7 @@ void lockers_safety_bit_on(void);
 void lockers_safety_bit_off(void);
 
 uint8_t lockers_is_safety_bit(void);
+
 #endif
 
 /* Inicjuje port szeregowy AVRa */
@@ -160,8 +163,6 @@ void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapi
 uint8_t lockers_convert_address_to_index_of_frame(uint16_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
 
 uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
-
-uint8_t lockers_number_of_frames_internal_EEPROM(void);
 
 void lockers_clear_all_memory(void);
 

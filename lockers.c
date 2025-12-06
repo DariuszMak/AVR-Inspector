@@ -66,9 +66,9 @@ uint8_t USART_Recieve_without_waiting(void)
 void lockers_init()
 {
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
-    if(PCF8583_read_word( PCF8583_HEAD) > temp || PCF8583_read_word(PCF8583_TAIL) > temp )
+    if(PCF8583_read_word(PCF8583_HEAD) > temp || PCF8583_read_word(PCF8583_TAIL) > temp || PCF8583_read_word(PCF8583_HEAD) < INTERNAL_EEPROM_MIN_INDEX || PCF8583_read_word(PCF8583_TAIL) < INTERNAL_EEPROM_MIN_INDEX )
     {
-        PCF8583_write_word(PCF8583_TAIL, 0);
+        PCF8583_write_word(PCF8583_TAIL, INTERNAL_EEPROM_MIN_INDEX);
         lockers_queue_empty();
         buzzer_time(1000);
     }
@@ -179,17 +179,12 @@ void lockers_check_events()
 
 uint8_t lockers_number_of_frames(void)
 {
-    return lockers_number_of_frames_internal_EEPROM();
-}
-
-uint8_t lockers_number_of_frames_internal_EEPROM(void)
-{
-    return ((INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
+    return ((INTERNAL_EEPROM_MAX_INDEX + 1 - INTERNAL_EEPROM_MIN_INDEX) / SIZE_OF_FRAME);
 }
 
 uint8_t lockers_convert_address_to_index_of_frame(uint16_t add)
 {
-    return (add / SIZE_OF_FRAME);
+    return ((add - INTERNAL_EEPROM_MIN_INDEX) / SIZE_OF_FRAME);
 }
 
 void lockers_queue_read(uint8_t index)
@@ -204,7 +199,7 @@ void lockers_queue_read(uint8_t index)
 
 void lockers_read_frame(uint8_t index)
 {
-    uint16_t temp_address = SIZE_OF_FRAME * index;
+    uint16_t temp_address = SIZE_OF_FRAME * index + INTERNAL_EEPROM_MIN_INDEX;
 
 
     eeprom_busy_wait();
@@ -304,17 +299,14 @@ void lockers_save_frame(uint8_t index, uint8_t i)
     frame.year = rok;
     frame.information = (uint8_t)save_info_table[i] * 100;
     frame.information += i + 1;
-    uint16_t temp_address = SIZE_OF_FRAME * index;//pobranie ostatniego adresu
-    //uint8_t overflow_flag = 0;//jeśli == 1 - bramka zmieści się na "styk"
-
-    // eeprom_read_word( (uint16_t*)21);
+    uint16_t temp_address = SIZE_OF_FRAME * index + INTERNAL_EEPROM_MIN_INDEX;//pobranie ostatniego adresu
 
 
-    if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
+    /*if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
     {
         buzzer_time(500);
-        temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
-    }
+        temp_address = INTERNAL_EEPROM_MIN_INDEX;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+    }*/
 
     eeprom_busy_wait();
 
@@ -322,6 +314,11 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 
     temp_address += SIZE_OF_FRAME;
 
+    if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
+    {
+        buzzer_time(500);
+        temp_address = INTERNAL_EEPROM_MIN_INDEX;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+    }
 
     PCF8583_write_word(PCF8583_TAIL, temp_address);
 }
@@ -336,6 +333,7 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
     {
         if(save_info_table[i])
         {
+            //printf("%d %d %d \n",lockers_tail(), lockers_head(), lockers_number_of_frames());
             uint8_t end_of_mem = 0;
             buzzer();
             delay_ms_var(5);
@@ -368,7 +366,6 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
                     lockers_print_latest_data();
                     lockers_save_frame(lockers_tail(), i);
                 }
-
             }
             else lockers_save_frame(lockers_tail(), i);
         }
@@ -478,15 +475,13 @@ uint8_t locker_10_button(void)//przycisk fizycznie umieszczony na płytce
 
 void lockers_clear_all_memory(void)
 {
-    int16_t i = 0;
+    int16_t i = INTERNAL_EEPROM_MIN_INDEX;
 
     for(; i <= INTERNAL_EEPROM_MAX_INDEX; ++i)
     {
         eeprom_busy_wait();
         eeprom_update_byte((uint8_t*)i, 0);
     }
-
-
 
     lockers_queue_empty();
 }
