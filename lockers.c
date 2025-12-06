@@ -110,13 +110,13 @@ void lockers_check_events(void)
     for(; i < AMOUNT_OF_LOCKERS; ++i)//sprawdzanie stanów przycisków i odpowiednie wypełnianie tablicy
     {
         state = lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
-        if( state != states_table[i] && save_info_table[i] == 0)//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
+        if( state != states_table[i] && save_info_table[i] == 0)//jeśli stan przycisku różni się od poprzednich wartości i wartość jeszcze nie jest zapisana, należy wypełnić tabelę
         {
             if (state == 1) save_info_table[i] = 2;//szafka otwarta
             else if(state == 0) save_info_table[i] = 1;//szafka zamknięta
+            states_table[i] = state;
         }
         //else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
-        states_table[i] = state;
     }
 }
 
@@ -127,12 +127,16 @@ void lockers_save_events(void)
 
     uint8_t * dynamically_temp_table = ( uint8_t* ) malloc ( AMOUNT_OF_LOCKERS * sizeof ( *dynamically_temp_table ) );
 
+    //zatrzymanie timera
+
     for(; i < AMOUNT_OF_LOCKERS; ++i)//przepisanie zawartości tabeli
     {
         dynamically_temp_table[i] = save_info_table[i];
         save_info_table[i] = 0;//przypisanie wartości początkowych
         if(dynamically_temp_table[i]) action = 1;
     }
+
+    //wznowienie timera
 
     if(action)
     {
@@ -142,7 +146,7 @@ void lockers_save_events(void)
         buzzer_time(300);
         lockers_queue_enque(dynamically_temp_table);
         change_color_RGB();
-    }else free(dynamically_temp_table);
+    }else free(dynamically_temp_table);//usunięcie tymczasowej tablicy, a jeśli jest inaczej, zostanie usunięta w innym kroku
 }
 
 uint8_t lockers_number_of_frames(void)
