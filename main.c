@@ -60,9 +60,7 @@ void send_all_screen(void)
         buffer_table[1][t] = LCD_ReadData();
     }
 
-    LCD_Home();
-    if(temp_position < rozmiar / 2) LCD_MoveLeft ( 0, temp_position, 1 );
-    else LCD_MoveRight(0,  rozmiar - temp_position, 1);
+    LCD_set_appropiate_position(temp_position);
 
 
     for( t = 0; t < rozmiar; ++t )
@@ -372,20 +370,19 @@ void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (
 
 void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
 {
-    uint8_t d = number_of_digits(number);
+    uint8_t d = LCD_position;
 
     zwiekszanie = number;
-    LCD_EraseAll();
-    for ( t = 0; t < 40 - (d + 1); t += d + 3 )
-    {
-        LCD_GoTo( t, 0 );
-        LCD_Int( zwiekszanie );
-        LCD_GoTo( t, 1 );
-        LCD_Int( zwiekszanie );
-    }
+
+    LCD_Home();
+    LCD_Clear();
+    LCD_WriteText("Krok:");
+    LCD_GoTo(0,1);
+    LCD_Int(number);
     send_all_screen();
     delay_ms_var_double( 500 );
     pilot_reset();
+    LCD_set_appropiate_position(d);
     //refresh_screen = 1;
 }
 
@@ -408,6 +405,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
     refresh_screen = 0;
     if(start_program != 1)
     {
+        LCD_Home();
         LCD_Clear();
         LCD_WriteText( "Program: " );
         LCD_Int( number );
@@ -430,6 +428,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         }
         delay_ms_var_double( 500 );
         LCD_PageUpScreen();
+        LCD_Home();
         LCD_Clear();
     }
     pilot_reset();
@@ -529,8 +528,10 @@ void show_alarm_format(uint8_t case_of_format)
 void setting_information()
 {
     refresh_screen = 0;
-    LCD_EraseAll();
-    LCD_GoTo(0, 0);
+    uint8_t temp_positon = LCD_position;
+
+    LCD_Home();
+    LCD_Clear();
 
     if(u == -1)
     {
@@ -636,6 +637,7 @@ void setting_information()
     send_all_screen();
     delay_ms_var(400);
     pilot_reset();
+    LCD_set_appropiate_position(temp_positon);
     //refresh_screen = 1;
 }
 
@@ -1148,7 +1150,7 @@ void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     if(zwiekszanie > 1) wysw_skok(1);
     if (switch_menu > liczbaPodprogramow) switch_menu = 0;
     else if (switch_menu < 0) switch_menu = liczbaPodprogramow;
-    LCD_EraseAll();
+    LCD_Clear();
     LCD_GoTo( 0, 0 );
     LCD_WriteText( "Wybierz program:" );
     LCD_GoTo( 4, 1 );
@@ -1163,7 +1165,7 @@ void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw1( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    LCD_EraseAll();
+    LCD_Clear();
     LCD_GoTo( 0, 0 );
     LCD_Int( command );
     LCD_GoTo( 6, 0 );
@@ -1176,7 +1178,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 {
     moveStep=0;
     PCF8583_get_wall_time();
-    LCD_EraseAll();
+    LCD_Clear();
     LCD_GoTo(11,0);
     if(pilot_state == 0) LCD_WriteText("!");
     else if(pilot_state == 1) LCD_WriteText("|");
@@ -1226,7 +1228,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    LCD_EraseAll();
+    LCD_Clear();
     if(zwiekszanie > 10) wysw_skok(10);
 
     if(c < -1) c = lockers_queue_number_of_records() - 1;
@@ -1260,7 +1262,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         start = 1;
     }
 
-    LCD_EraseAll();
+    LCD_Clear();
 
     correction_of_time();
 
@@ -1293,7 +1295,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         s = 0;
     }
 
-    LCD_EraseAll();
+    LCD_Clear();
 
     if(u == -2)
     {
@@ -1397,7 +1399,7 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         s = 0;
     }
 
-    LCD_EraseAll();
+    LCD_Clear();
 
     if(u == -2)
     {
@@ -1489,7 +1491,8 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         set_appropriate_values_of_time();
         s = 0;
     }
-    LCD_EraseAll();
+
+    LCD_Clear();
 
     if(u == end_of_settings())
     {
@@ -1512,14 +1515,14 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         if(lockers_is_flag_bit(0) == 1)
         {
-            LCD_EraseAll();
+            LCD_Clear();
             LCD_WriteText("USB - Potwierdz");
             LCD_GoTo(0, 1);
             LCD_WriteText("przechwytywanie");
         }
         else if(lockers_is_flag_bit(0) == 0)
         {
-            LCD_EraseAll();
+            LCD_Clear();
             LCD_WriteText("RESTART");
             green_colors_RGB();
         }
@@ -1821,7 +1824,7 @@ void czynnosc1( int com, int tog )
         delay_ms_var_double( 1500 );
 
         LCD_Cursor();
-        LCD_EraseAll();
+        LCD_Clear();
         delay_ms_var_double( 1500 );
         LCD_GoTo( 0, 1 );
         pisz();
@@ -1840,14 +1843,13 @@ void czynnosc1( int com, int tog )
         delay_ms_var_double( 1500 );
         LCD_PageUpScreen ();
         LCD_PageDownScreen();
-        LCD_EraseUp();
+        LCD_Clear();
         LCD_Blink();
         delay_ms_var_double( 1000 );
         LCD_PageDownScreen();
         LCD_PageUpScreen();
         LCD_Cursor();
-        LCD_EraseDown();
-        delay_ms_var_double( 500 );
+
 
         LCD_Clear();
         LCD_ScreenOn();
@@ -2542,6 +2544,7 @@ int main( void )
     LCD_WriteText("Dariusz M.");
     delay_ms_var(1000);
     LCD_PageUpScreen();
+    LCD_Home();
     LCD_Clear();
 
     sczytaj_komende();

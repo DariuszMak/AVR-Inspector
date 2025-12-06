@@ -31,7 +31,6 @@
 #define USE_LCD_Hex 1
 #define USE_LCD_MoveRight 1
 #define USE_LCD_MoveLeft 1
-#define USE_LCD_Erase 1
 #define USE_LCD_Displaying 1
 #define USE_LCD_Backlight 1
 
@@ -133,6 +132,8 @@ void LCD_position_decrease(void);
 
 void LCD_position_increase(void);
 
+void LCD_set_appropiate_position(uint8_t position);
+
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
 unsigned char _LCD_InNibble( void );
@@ -189,13 +190,6 @@ void LCD_MoveLeft( unsigned int, unsigned int, unsigned int ); // częstotliwoś
 #define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
 #define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
 #endif // USE_LCD_MoveLeft
-
-#if USE_LCD_Erase == 1
-void LCD_Erase( unsigned int ); // uzupełnianie spacjami wyświetlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
-#define LCD_EraseAll() LCD_Erase(0) // uzupełnianie spacjami wyświetlacza - dwa wiersze
-#define LCD_EraseUp() LCD_Erase(1) // uzupełnianie spacjami wyświetlacza 1 - górny wiersz
-#define LCD_EraseDown() LCD_Erase(2) // uzupełnianie spacjami wyświetlacza 2 - dolny wiersz
-#endif // USE_LCD_Erase
 
 #if USE_LCD_Displaying == 1
 void LCD_Displaying( unsigned int );

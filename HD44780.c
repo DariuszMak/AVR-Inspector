@@ -20,6 +20,14 @@ void LCD_position_increase(void)
     else ++LCD_position;
 }
 
+void LCD_set_appropiate_position(uint8_t position)
+{
+    uint8_t rozmiar = LCD_CHARSPERLINE;
+    LCD_Home();
+    if(position < rozmiar / 2) LCD_MoveLeft ( 0, position, 1 );
+    else LCD_MoveRight(0,  rozmiar - position, 1);
+}
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wystawiaj¹ca półbajt na magistralę danych
@@ -196,7 +204,7 @@ void LCD_Clear( void )
 {
     LCD_WriteCommand( HD44780_CLEAR );
     _delay_ms( 2 );
-    LCD_position = 0;
+    LCD_set_appropiate_position(LCD_position);
 }
 //-------------------------------------------------------------------------------------------------
 //
