@@ -60,7 +60,7 @@ int main( void );
 
 void backlight(int8_t);
 
-void buzzer();//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
+void buzzer(void);//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 
 void buzzer_time( double time );//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
 
@@ -88,11 +88,11 @@ void show_alarm_options(uint8_t index);
 
 void correction_of_time(void);
 
-void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
+void correction_of_date(void);//uwzględnianie dnia miesiąca względem roku
 
-void setting_information();
+void setting_information(void);
 
-void set_appropriate_values_of_time();
+void set_appropriate_values_of_time(void);
 
 void check_step_value(void);
 
@@ -142,5 +142,5 @@ void toggle_action(void);
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
 
-void zczytaj_komende( void );
+void sczytaj_komende( void );
 #endif

@@ -410,7 +410,7 @@ void show_setting_alarm_case(uint8_t index)
     }
     else if(index == 1)
     {
-        LCD_WriteText("Ustaw timer");
+        LCD_WriteText("Ustaw alarm tim.");
     }
 }
 
@@ -418,11 +418,11 @@ void show_timer_options(uint8_t index)
 {
     if(index == 0)
     {
-        LCD_WriteText("Timer wylaczony");
+        LCD_WriteText("Alarm Tim. WYL");
     }
     else if(index == 1)
     {
-        LCD_WriteText("Timer wlaczony");
+        LCD_WriteText("Alarm Tim. WL");
     }
 }
 
@@ -458,15 +458,15 @@ void correction_of_time(void)
     else if(hsek > 99) hsek = 0;
 }
 
-void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca względem roku
+void correction_of_date(void)//uwzględnianie dnia miesiąca względem roku
 {
-    if(miesiac < 1 && case_of_time != 2) miesiac = 12;
-    else if(miesiac > 12 && case_of_time != 2) miesiac = 1;
+    if(miesiac < 1 && c != 2) miesiac = 12;
+    else if(miesiac > 12 && c != 2) miesiac = 1;
 
     uint8_t case_of_day = 0;
     if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
     else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
-    else if (miesiac == 2 && (rok % 4) != 0 && case_of_time == 0) case_of_day = 28;
+    else if (miesiac == 2 && (rok % 4) != 0 && c == 0) case_of_day = 28;
     else case_of_day = 29;
 
     if(dzien < 1) dzien = case_of_day;
@@ -687,7 +687,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         correction_of_time();
 
-        correction_of_date(0);
+        correction_of_date();
 
         moveStep = 0;
         show_time_format();
@@ -760,7 +760,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 {
                     correction_of_time();
 
-                    correction_of_date(c);
+                    correction_of_date();
 
                     moveStep = 0;
                     show_alarm_format(c);
@@ -794,7 +794,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 }
                 else
                 {
-                    correction_of_date(c);
+                    correction_of_date();
                     moveStep = 0;
                     show_timer_alarm_format();
                 }
@@ -1385,7 +1385,7 @@ void pilot( int com, int tog )//
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
 
-void zczytaj_komende( void )
+void sczytaj_komende( void )
 {
     if(refresh_screen == 1 )
     {
@@ -1537,7 +1537,7 @@ int main( void )
     LCD_PageUpScreen();
     LCD_Clear();
 
-    zczytaj_komende();
+    sczytaj_komende();
     switch_menu = 2;
     pilot( 59, 0 );//przejście do podprogramu nr 3
 
@@ -1552,7 +1552,7 @@ int main( void )
 
     while( 1 )
     {
-        zczytaj_komende();
+        sczytaj_komende();
     }
 
     return 0;
