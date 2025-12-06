@@ -11,8 +11,6 @@
 
 #define AMOUNT_OF_LOCKERS 2//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
-#define EEPROM_MAX_ADDRESS 255
-
 #define PCF8583_CELL 254
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych

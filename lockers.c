@@ -67,21 +67,20 @@ uint8_t lockers_convert_address_to_index_of_frame(uint8_t add)
 void lockers_read_frame(uint8_t index)
 {
     uint8_t temp_address = SIZE_OF_FRAME * index;
-    frame.seconds = EEPROM_read(temp_address);
-    ++temp_address;
-    frame.minutes = EEPROM_read(temp_address);
-    ++temp_address;
-    frame.hours = EEPROM_read(temp_address);
-    ++temp_address;
-    frame.day = EEPROM_read(temp_address);
-    ++temp_address;
-    frame.month = EEPROM_read(temp_address);
-    ++temp_address;
-    frame.year = EEPROM_read_word(temp_address);
-    ++temp_address;
-    ++temp_address;
-    frame.information = EEPROM_read(temp_address);
-    ++temp_address;
+    frame.seconds = EEPROM_read(&temp_address);
+
+    frame.minutes = EEPROM_read(&temp_address);
+
+    frame.hours = EEPROM_read(&temp_address);
+
+    frame.day = EEPROM_read(&temp_address);
+
+    frame.month = EEPROM_read(&temp_address);
+
+    frame.year = EEPROM_read_word(&temp_address);
+
+    frame.information = EEPROM_read(&temp_address);
+
 }
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
@@ -97,7 +96,8 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
         temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
-    }else if((EEPROM_MAX_ADDRESS - temp_address) == (SIZE_OF_FRAME - 1))
+    }
+    else if((EEPROM_MAX_ADDRESS - temp_address) == (SIZE_OF_FRAME - 1))
     {
         overflow_flag = 1;
     }
@@ -111,23 +111,21 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             buzzer();
             delay_ms_var(50);
             PCF8583_get_wall_time();
-            EEPROM_write(temp_address,sek);
-            ++temp_address;
-            EEPROM_write(temp_address,min);
-            ++temp_address;
-            EEPROM_write(temp_address,godz);
-            ++temp_address;
-            EEPROM_write(temp_address,dzien);
-            ++temp_address;
-            EEPROM_write(temp_address,miesiac);
-            ++temp_address;
-            EEPROM_write_word(temp_address, rok);
-            ++temp_address;
-            ++temp_address;
+            EEPROM_write(&temp_address,sek);
+
+            EEPROM_write(&temp_address,min);
+
+            EEPROM_write(&temp_address,godz);
+
+            EEPROM_write(&temp_address,dzien);
+
+            EEPROM_write(&temp_address,miesiac);
+
+            EEPROM_write_word(&temp_address, rok);
+
             uint8_t information = (uint8_t)save_info_table[i] * 100;
             information += i + 1;
-            EEPROM_write(temp_address,information);
-            ++temp_address;
+            EEPROM_write(&temp_address,information);
         }
     }
     PCF8583_write(PCF8583_CELL, temp_address);
