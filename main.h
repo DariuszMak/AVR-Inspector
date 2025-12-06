@@ -45,6 +45,7 @@ uint8_t temp_char;//zmienna pamiętająca pojedynczy znak z klawiatury
 uint8_t reset_variable;//zmienna pomocna przy sprawdzeniu zresetaownia urządzenia (po wpisaniu znaku na klawiaturze)
 uint8_t temp_position;//zmienna pomocna przy utrzymaniu tymczasowej pozycji na ekranie
 uint8_t pilot_button_pressed;//zmienna pamiętająca naciśnięcie przycisku
+uint8_t beginning_report;//pomocnicza zmienna statyczna 0, gdy jeszcze nie wykonano żadnego raportu, 1 - gdy wykonano już pierwszy raport, 2 - gdy w czasie oczekiwania na pierwszy raport nastąpiło przekrocznie temperatury krytycznej
 //zmienne zarezerwowane dla podprogramu nr 2:
 
 //zmienne spełniające określone funkcje

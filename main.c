@@ -21,6 +21,7 @@ uint8_t pilot_button_pressed = 0;//zmienna pamiętająca naciśnięcie przycisku
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
 int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+uint8_t beginning_report = 0;//pomocnicza zmienna statyczna 0, gdy jeszcze nie wykonano żadnego raportu, 1 - gdy wykonano już pierwszy raport, 2 - gdy w czasie oczekiwania na pierwszy raport nastąpiło przekrocznie temperatury krytycznej
 
 
 //definicje funkcji
@@ -2479,8 +2480,6 @@ void sczytaj_komende( void )
         overflow_timer_2 = 0;
         interr = 0;
 
-
-
         //lockers_print_amount_of_first_frames(20);
 
         //restartowanie
@@ -2555,7 +2554,6 @@ void sczytaj_komende( void )
                 double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
                 double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
 
-                static uint8_t beginning_report = 0;//pomocnicza zmienna statyczna 0, gdy jeszcze nie wykonano żadnego raportu, 1 - gdy wykonano już pierwszy raport, 2 - gdy w czasie oczekiwania na pierwszy raport nastąpiło przekrocznie temperatury krytycznej
                 uint8_t changing_temperature_state = 0;//zmienna pomocnicza przyjmująca wartość 1, gdy nastąpiła zmiana flagi odnośnie temperatury na przeciwną
 
 
@@ -2669,16 +2667,6 @@ void sczytaj_komende( void )
         pilot(59,0);
         switch_menu = u;
         refresh_screen = 1;// wyświetlenie ekranu
-    }
-
-    if (stop_button())
-    {
-        delay_ms_var(30);
-        if (stop_button())
-        {
-            pilot_button_pressed = 1;//zmienna pamiętająca naciśnięcie przycisku
-            delay_ms_var(100);
-        }
     }
 }
 
