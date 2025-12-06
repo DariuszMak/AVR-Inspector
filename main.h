@@ -65,6 +65,14 @@ struct double_format maximum_temperature;
 
 int main( void );
 
+void wysw_skok( uint16_t number ); // funkcja wyświetlająca numer kroku o danej wartości
+
+void wybor( int number ); //funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
+
+
+
+
+
 void send_all_screen(void);
 
 void set_time_by_uart(void);
@@ -97,13 +105,9 @@ void buzzer(void);//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną m
 
 void buzzer_time( double time );//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
 
-void wysw_skok( uint16_t number ); // funkcja wyświetlająca numer kroku o danej wartości
-
 void step_increase(void);//zwiekszenie zmiennej "zwiększanie o jeden"
 
 void step_decrease(void);//zmniejszanie zmiennej "zwiększanie o jeden"
-
-void wybor( int number ); //funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 
 void show_day_of_week( uint8_t day );//wyświetlanie dnia tygodnia w krótkiej postaci
 

@@ -355,9 +355,10 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
         LCD_GoTo( t, 1 );
         LCD_Int( zwiekszanie );
     }
+    send_all_screen();
     delay_ms_var_double( 500 );
     pilot_reset();
-    refresh_screen = 1;
+    //refresh_screen = 1;
 }
 
 void step_increase(void)
@@ -391,6 +392,8 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
         else if(number == 6) LCD_WriteText("USTAWIENIA FLAG");
         else if(number == 7) LCD_WriteText("TEMP. KRYTYCZNA");
+
+        send_all_screen();
 
         for ( t = 0; t < 5; ++t )
         {
@@ -1098,6 +1101,8 @@ void show_list(int16_t current_index, int16_t max_index)
         {
             LCD_GoTo(0, 0);
             show_list_case(current_index);
+            LCD_GoTo((LCD_position + 15) % 40, 0);
+            LCD_WriteText("<");
         }
 
         if(current_index != max_index)
@@ -2044,6 +2049,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_WriteText( "Na poczatek" );
         LCD_GoTo( 0, 1 );
         LCD_WriteText( "ekranu..." );
+        send_all_screen();
         delay_ms_var_double( 250 );
         LCD_PageUpScreen();
         LCD_PageDownScreen();

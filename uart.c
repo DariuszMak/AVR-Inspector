@@ -153,5 +153,3 @@ ISR(USART_UDRE_vect)
         UCSRB &= ~(1<<UDRIE);
     }
 }
-
-
