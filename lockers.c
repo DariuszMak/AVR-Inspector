@@ -55,7 +55,7 @@ void lockers_check_events()
 
 uint16_t lockers_number_of_frames(void)
 {
-    return ((EEPROM_MAX_ADDRESS + 1 + INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
+    return (EEPROM_MAX_ADDRESS + 1 ) / SIZE_OF_FRAME + (INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME;
 }
 
 uint8_t lockers_number_of_frames_exteral_EEPROM(void)

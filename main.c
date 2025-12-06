@@ -1391,15 +1391,11 @@ int main( void )
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
-
-
     //PCF8583_alarm_monthly();
 
     zczytaj_komende();
 
     //eeprom_write_word((uint16_t*)257,5);
-
-
 
     //pilot( eeprom_read_word((uint16_t*)257), 0 );//przejście do podprogramu nr 3
 

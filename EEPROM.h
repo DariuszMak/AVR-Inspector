@@ -7,7 +7,7 @@
 
 #include "i2c.h"//sprzętowa obsługa magistrali TWI (I2C)
 
-#define EEPROM_MAX_ADDRESS 255
+#define EEPROM_MAX_ADDRESS 255//UWAGA!!! Adres nie może być w tym przypadku większy niż 255, gdyż zmienne są jednobajtowe
 
 #define EEPROM_ADDRESS 0xAC
 
