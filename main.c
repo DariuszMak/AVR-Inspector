@@ -89,8 +89,8 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
     else if(number == 6) LCD_WriteText("DANE - EEPROM");
     for ( t = 0; t < 5; ++t )
     {
-        delay_ms_var_double( 10 );
-        buzzer();
+        delay_ms_var_double( 30 );
+        buzzer_time(5);
     }
     delay_ms_var_double( 500 );
     refresh_screen = 1;
