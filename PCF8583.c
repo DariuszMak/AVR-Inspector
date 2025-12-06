@@ -325,8 +325,7 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
     time_f.hseconds=bin2bcd(hsec);
     time_f.seconds=bin2bcd(sec);
     time_f.minutes=bin2bcd(min);
-    time_f.hours=(bin2bcd(hour) & 0b00111111) | ((AM_PM << 6)  & 0b01000000);
-    time_f.hours = (PCF8583_is_12h_24h_format() << 7) | (time_f.hours & 0b01111111);
+    time_f.hours=(bin2bcd(hour) & 0b00111111) | ((AM_PM << 6) & 0b01000000) | (PCF8583_read(0x0C) & 0b10000000);
 
     if(type_of_alarm == 2)
     {
@@ -390,17 +389,19 @@ uint8_t PCF8583_is_timer_interrupt(void)
 
 void PCF8583_24h_format(void)
 {
-     PCF8583_write(0x04, PCF8583_read(0x04) & ~0b10000000);
+    PCF8583_write(0x04, PCF8583_read(0x04) & ~0b10000000);
+    PCF8583_write(0x0C, PCF8583_read(0x0C) & ~0b10000000);
 }
 
 void PCF8583_12h_format(void)
 {
-        PCF8583_write(0x04, PCF8583_read(0x04) | 0b10000000);
+    PCF8583_write(0x04, PCF8583_read(0x04) | 0b10000000);
+    PCF8583_write(0x0C, PCF8583_read(0x0C) | 0b10000000);
 }
 
 uint8_t PCF8583_is_12h_24h_format(void)
 {
-    if(PCF8583_read(0x04) & 0b10000000) return 1;
+    if((PCF8583_read(0x04) & 0b10000000) && (PCF8583_read(0x0C) & 0b10000000)) return 1;
     else return 0;
 }
 
