@@ -336,9 +336,20 @@ void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
 
+
 uint8_t PCF8583_recognise_type_of_alarm(void)
 {
     return ((PCF8583_read(8) & 0x30) >> 4);
+}
+
+/**
+ Sprawdza, czy alarm jest włączony
+*/
+
+uint8_t PCF8583_is_alarm_set(void)
+{
+    if(PCF8583_read(0) & 0b00000010) return 1;
+    else return 0;
 }
 
 /**

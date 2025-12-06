@@ -239,6 +239,12 @@ void PCF8583_set_alarm_date (uint8_t day, uint8_t month );
 uint8_t PCF8583_recognise_type_of_alarm(void);
 
 /**
+ Sprawdza, czy alarm jest włączony
+*/
+
+uint8_t PCF8583_is_alarm_set(void);
+
+/**
  Wyłącza alarm
 */
 void PCF8583_alarm_off(void);
