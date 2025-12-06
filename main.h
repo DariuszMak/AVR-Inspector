@@ -96,7 +96,7 @@ void set_appropriate_values_of_time();
 
 void check_step_value(void);
 
-uint8_t end_of_settings(uint8_t case_of_time);
+uint8_t end_of_settings(void);
 
 void show_frame( int16_t number);
 

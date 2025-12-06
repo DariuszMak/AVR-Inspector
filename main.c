@@ -215,45 +215,46 @@ void setting_information()
     LCD_GoTo(moveStep, 0);
     if( e == 0)
     {
-    if(u == end_of_settings(c))
-    {
-        if(c == 0)
+        if(u == end_of_settings())
         {
-            if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
-            else if( menu == 5 ) LCD_WriteText("WYLACZONO ALARM");
-        }
-        else LCD_WriteText("ZAPISANO ALARM");
-    }
-    else
-    {
-        if(u == 0) LCD_WriteText("GODZINY");
-        else if(u == 1) LCD_WriteText("MINUTY");
-        else if(u == 2) LCD_WriteText("SEKUNDY");
-        else if(u == 3) LCD_WriteText("SETNE SEKUND");
-
-        if(c == 0 || c == 3)
-        {
-            if(u == 4) LCD_WriteText("DZIEN");
-            else if(u == 5) LCD_WriteText("MIESIAC");
             if(c == 0)
             {
-                if(u == 6) LCD_WriteText("ROK");
-                else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
-                else if(u == 8) LCD_WriteText("TIMER");
+                if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
+                else if( menu == 5 ) LCD_WriteText("WYLACZONO ALARM");
+            }
+            else LCD_WriteText("ZAPISANO ALARM");
+        }
+        else
+        {
+            if(u == 0) LCD_WriteText("GODZINY");
+            else if(u == 1) LCD_WriteText("MINUTY");
+            else if(u == 2) LCD_WriteText("SEKUNDY");
+            else if(u == 3) LCD_WriteText("SETNE SEKUND");
+
+            if(c == 0 || c == 3)
+            {
+                if(u == 4) LCD_WriteText("DZIEN");
+                else if(u == 5) LCD_WriteText("MIESIAC");
+                if(c == 0)
+                {
+                    if(u == 6) LCD_WriteText("ROK");
+                    else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+                    else if(u == 8) LCD_WriteText("TIMER");
+                }
+            }
+            else if( c == 2)
+            {
+                if(u == 4) LCD_WriteText("PONIEDZIALEK");
+                else if(u == 5) LCD_WriteText("WTOREK");
+                else if(u == 6) LCD_WriteText("SRODA");
+                else if(u == 7) LCD_WriteText("CZWARTEK");
+                else if(u == 8) LCD_WriteText("PIATEK");
+                else if(u == 9) LCD_WriteText("SOBOTA");
+                else if(u == 10) LCD_WriteText("NIEDZIELA");
             }
         }
-        else if( c == 2)
-        {
-            if(u == 4) LCD_WriteText("PONIEDZIALEK");
-            else if(u == 5) LCD_WriteText("WTOREK");
-            else if(u == 6) LCD_WriteText("SRODA");
-            else if(u == 7) LCD_WriteText("CZWARTEK");
-            else if(u == 8) LCD_WriteText("PIATEK");
-            else if(u == 9) LCD_WriteText("SOBOTA");
-            else if(u == 10) LCD_WriteText("NIEDZIELA");
-        }
     }
-    }else if(e == 1)
+    else if(e == 1)
     {
         if(u == 0) LCD_WriteText("TIMER");
     }
@@ -363,13 +364,28 @@ void check_step_value(void)
     }
 }
 
-uint8_t end_of_settings(uint8_t case_of_time)
+uint8_t end_of_settings(void)
 {
-    if(case_of_time == 0) return 9;
-    else if(case_of_time == 1) return 4;
-    else if(case_of_time == 2) return 11;
-    else if(case_of_time == 3) return 6;
-    else return 0;
+    if(menu == 4)
+    {
+        return 9;
+    }
+    else if(menu == 5)
+    {
+        if(e == 0)
+        {
+            if(c == 0) return 0;
+            else if(c == 1) return 4;
+            else if(c == 2) return 11;
+            else if(c == 3) return 6;
+        }
+        else if(e == 1)
+        {
+            if(d == 0) return 0;
+            else if(d == 1) return 1;
+        }
+    }
+    return 0;
 }
 
 void show_setting_alarm_case(uint8_t index)
@@ -638,7 +654,14 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     check_step_value();
     LCD_EraseAll();
 
-    if(u == end_of_settings(0))
+    if( s != 0 )
+    {
+        set_appropriate_values_of_time();
+
+        s = 0;
+    }
+
+    if(u == end_of_settings())
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok, timer);
         PCF8583_start();
@@ -647,20 +670,15 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         w = 1;
         start = 1;
     }
-
-    if( s != 0 )
+    else
     {
-        set_appropriate_values_of_time();
+        correction_of_time();
 
-        s = 0;
+        correction_of_date(0);
+
+        moveStep = 0;
+        show_time_format();
     }
-
-    correction_of_time();
-
-    correction_of_date(0);
-
-    moveStep = 0;
-    show_time_format();
 
     if( w == 1 )
     {
@@ -704,7 +722,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             }
             else
             {
-                if(u == end_of_settings(c) || c == 0 || c == -1)
+                if(u == end_of_settings() || c == 0 || c == -1)
                 {
                     start = 1;
                     w = 1;
@@ -717,15 +735,15 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                         }
                     }
                 }
+                else
+                {
+                    correction_of_time();
 
-                correction_of_time();
+                    correction_of_date(c);
 
-                correction_of_date(c);
-
-                moveStep = 0;
-                show_alarm_format(c);
-
-
+                    moveStep = 0;
+                    show_alarm_format(c);
+                }
             }
         }
         else if( e == 1)
@@ -740,7 +758,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
     }
 
-    if( w == 1 )
+    if( w == 1  && u >= 0)
     {
         if(e == 0)
         {
@@ -1156,7 +1174,7 @@ void czynnosc4( int com, int tog )
     }
     if ( com == 59 )
     {
-        u = end_of_settings(0);
+        u = end_of_settings();
     }
     refresh_screen = 1;
 }
@@ -1183,8 +1201,7 @@ void czynnosc5( int com, int tog )
     }
     if ( com == 59 )
     {
-        u = end_of_settings(c);
-
+        u = end_of_settings();
     }
     refresh_screen = 1;
 }
