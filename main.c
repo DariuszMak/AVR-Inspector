@@ -17,18 +17,6 @@ int t, rozmiar = 6;
 
 int main( void )
 {
-
-	char i[rozmiar];
-
-	void pisz( void )
-	{
-		for( t = 0; t < rozmiar; t++ )
-		{
-			LCD_WriteData( i[t] );
-			_delay_ms( 50 );
-		}
-	}
-
 	LCD_Initalize();
 	ir_init();
 	d_led_init();
@@ -102,6 +90,18 @@ int main( void )
 
 					LCD_GoTo( 9, 1 );
 
+
+					char * i =  ( char* ) malloc( rozmiar * sizeof * i );
+
+					void pisz( void )
+					{
+						for( t = 0; t < rozmiar; t++ )
+						{
+							LCD_WriteData( i[t] );
+							_delay_ms( 50 );
+						}
+					}
+
 					for( t = 0; t < rozmiar; t++ )
 					{
 						i[t] = LCD_ReadData();
@@ -123,6 +123,8 @@ int main( void )
 					pisz();
 					LCD_GoTo( 1, 0 );
 					pisz();
+
+					free( i );
 
 					LCD_Cursor();
 					_delay_ms( 1500 );
@@ -182,6 +184,7 @@ int main( void )
 			address = 0xff;
 		}
 	}
+
 	return 0;
 }
 
