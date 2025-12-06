@@ -10,6 +10,7 @@
 #include "inverter.h"
 #include "PCF8583.h"
 #include "i2c.h"
+#include "termometer.h"
 #include <stdlib.h>
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
@@ -225,9 +226,8 @@ int main( void )
                 LCD_WriteText(":");
                 LCD_Int(rok);
                 LCD_WriteText(" ");
-                LCD_Double(12.12, 9);
-                LCD_WriteText(" ");
-                LCD_Double(12.12, 1);
+                LCD_Double(ds18b20_temperature(), 2);
+
             }
 
             //LCD_Int( pwm1 );
