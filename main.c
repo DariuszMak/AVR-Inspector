@@ -28,7 +28,7 @@ int main( void )
     uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
-    uint16_t zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
+    uint16_t zwiekszanie = 1; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
     uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
     uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
@@ -64,7 +64,7 @@ int main( void )
         PORTD &= ~( 1 << PD7 );
     }
 
-    void wysw_skok( unsigned int number ) // funkcja wyświetlająca numer kroku o danej wartości
+    void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
     {
         int d = 1;
         t = 10;
@@ -84,6 +84,20 @@ int main( void )
             LCD_Int( number );
         }
         delay_ms_var_double( 500 );
+    }
+
+    void step_increase(void)
+    {
+        zwiekszanie *= 10;
+        if(zwiekszanie > 1000) zwiekszanie = 1000;
+        wysw_skok(zwiekszanie);
+    }
+
+    void step_decrease(void)
+    {
+        zwiekszanie /= 10;
+        if (zwiekszanie < 1 ) zwiekszanie = 1;
+        wysw_skok(zwiekszanie);
     }
 
     void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
@@ -174,6 +188,7 @@ int main( void )
 
         if(rok < -9999) rok = 9999;
         else if(rok > 9999) rok = -9999;
+
         if(dzien_tygodnia < 0) dzien_tygodnia = 6;
         else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
     }
@@ -399,6 +414,9 @@ int main( void )
                 delay_ms_var(400);
                 LCD_EraseAll();
             }
+
+            if((u == 0 || u == 1 || u == 2 || u == 3 || u == 4 || u == 5 )&& zwiekszanie > 10) wysw_skok(10);
+                else if(u == 7 && zwiekszanie > 1) wysw_skok(1);
 
             if( s != 0 )
             {
@@ -818,22 +836,6 @@ int main( void )
         case 4:
             switch ( com )
             {
-            case 55:
-                zwiekszanie = 1000;
-                wysw_skok( zwiekszanie );
-                break;
-            case 54:
-                zwiekszanie = 100;
-                wysw_skok( zwiekszanie );
-                break;
-            case 50:
-                zwiekszanie = 10;
-                wysw_skok( zwiekszanie );
-                break;
-            case 52:
-                zwiekszanie = 1;
-                wysw_skok( zwiekszanie );
-                break;
             case 16:
                 ++u;
                 w = 1;//wymuszenie wyświetlenia komunikatu
@@ -882,10 +884,10 @@ int main( void )
                 }
                 break;
             case 32:
-                u -= 1;
+                u -= zwiekszanie;
                 break;
             case 33:
-                u += 1;
+                u += zwiekszanie;
                 break;
             }
 
@@ -922,6 +924,14 @@ int main( void )
             break;
         case 36:
             LCD_PageDownScreen();
+            break;
+        case 44:
+            step_increase();
+            wysw( *men );
+            break;
+        case 45:
+            step_decrease();
+            wysw( *men );
             break;
 
         case 14:
