@@ -1063,20 +1063,27 @@ void correction_of_temperature(void)
 
 void correction_of_time(void)
 {
-    if(godz < 0) godz = 23;
-    else if(godz > 23) godz = 0;
-    if(min < 0) min = 59;
-    else if(min > 59) min = 0;
-    if(sek < 0) sek = 59;
-    else if(sek > 59) sek = 0;
-    if(hsek < 0) hsek = 99;
-    else if(hsek > 99) hsek = 0;
+    if(!(menu == 5 && c == 0))
+    {
+        if(godz < 0) godz = 23;
+        else if(godz > 23) godz = 0;
+        if(min < 0) min = 59;
+        else if(min > 59) min = 0;
+        if(sek < 0) sek = 59;
+        else if(sek > 59) sek = 0;
+        if(hsek < 0) hsek = 99;
+        else if(hsek > 99) hsek = 0;
+    }
 }
 
 void correction_of_date(void)//uwzględnianie dnia miesiąca względem roku
 {
-    if(miesiac < 1 && c != 2) miesiac = 12;
-    else if(miesiac > 12 && c != 2) miesiac = 1;
+
+    if(!(menu == 5 && ((e == 0 && (c != 3)) || e == 1)))
+    {
+        if(miesiac < 1 && c != 2) miesiac = 12;
+        else if(miesiac > 12 && c != 2) miesiac = 1;
+    }
 
     uint8_t case_of_day = 0;
     if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
@@ -1422,9 +1429,9 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 }
                 else
                 {
-                    if( c != 0 )correction_of_time();
+                    correction_of_time();
 
-                    if( c == 3 ) correction_of_date();
+                    correction_of_date();
 
                     moveStep = 0;
                     show_alarm_format(c);
