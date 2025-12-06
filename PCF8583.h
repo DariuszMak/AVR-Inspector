@@ -24,7 +24,7 @@
 */
 // volatile uint8_t PCF8583_alarm;
 
- uint8_t godz, min, sek, hsek;
+    uint8_t godz, min, sek, hsek;
     uint8_t dzien, miesiac;
     uint16_t rok;
 

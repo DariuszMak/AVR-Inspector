@@ -1,19 +1,35 @@
 #include "lockers.h"
 
+struct frame
+{
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+
+    uint8_t day;
+    uint8_t month;
+    uint16_t year;
+    uint8_t information;
+} frame; //8
+
+
 void lockers_init()
 {
+
     LOCKER_1_BUTTON_DIR  &= ~LOCKER_1_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_1_BUTTON_PORT |= LOCKER_1_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
+    delay_ms_var(1);
+
     int i = 0;
     for(; i < AMOUNT_OF_LOCKERS; ++i)
     {
-        if(i == 0) states_table[i] = locker_1_button();
-        else if(i ==1) states_table[i] = locker_2_button();
+        states_table[i] = (uint8_t) lockers_state_of_single_button(i);//przypisanie wartości początkowych
     }
+    lockers_find_latest_data();
 
 }
 
@@ -28,28 +44,68 @@ void lockers_check_events()
 {
     int i = 0;//zmienna pmocnicza w pętlach
     int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
-    char state = 0;//stan przycisku z danej chwili
+    uint8_t state = 0;//stan przycisku z danej chwili
     for(; i < AMOUNT_OF_LOCKERS; ++i)//sprawdzanie stanów przycisków i odpowiednie wypełnianie tablicy
     {
-        state = (char)lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
+        state = (uint8_t)lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
         if( state != states_table[i] )//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
         {
+            buzzer();
+
             action = 1;//akcja będzie podjęta
             if (state) save_info_table[i] = 2;//szafka zamknięta
             else save_info_table[i] = 1;//szafka otwarta
-        }else save_info_table[i] = 0;//nie zapisuj żadnej informacji dla tej szufladki
+        }
+        else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
+        states_table[i] = state;
     }
 
-    if(action) lockers_check_events();
+    if(action) lockers_save_events();
+}
 
-    for(; i < AMOUNT_OF_LOCKERS; ++i)
-    {
-        states_table[i] = (char)lockers_state_of_single_button(i);
-    }
+void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
+{
+    PORTD |= ( 1 << PD7 );
+    _delay_ms( 1 );
+    PORTD &= ~( 1 << PD7 );
+}
+
+void lockers_find_latest_data(void)
+{
+    PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, 0);
 }
 
 void lockers_save_events(void)
 {
+    uint8_t temp_address = PCF8583_read(PCF8583_SAVED_ADDRESS_CELL);
+    int i = 0;
+    for( ; i < AMOUNT_OF_LOCKERS; ++i)
+    {
+        if(save_info_table[i])
+        {
+            PCF8583_get_wall_time();
+            PCF8583_write(temp_address,sek);
+            ++temp_address;
+            PCF8583_write(temp_address,min);
+            ++temp_address;
+            PCF8583_write(temp_address,godz);
+            ++temp_address;
+            PCF8583_write(temp_address,dzien);
+            ++temp_address;
+            PCF8583_write(temp_address,miesiac);
+            ++temp_address;
+            PCF8583_write_word(temp_address,sek);
+            ++temp_address;
+            ++temp_address;
+            uint8_t information = (uint8_t)save_info_table[i] * 100;
+            information += i;
+            PCF8583_write(temp_address,information);
+            ++temp_address;
+        }
+
+    }
+    PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, temp_address);
+    delay_ms_var(50);
 
 }
 
