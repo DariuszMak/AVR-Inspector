@@ -1407,13 +1407,13 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             }
             else
             {
-                if(u == end_of_settings() || c == 0)
+                if( u == end_of_settings() )
                 {
                     start = 1;
                     w = 1;
 
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
                     PCF8583_set_type_of_alarm(c);
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
 
                     if(c == 0)
                     {
@@ -1422,9 +1422,9 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 }
                 else
                 {
-                    correction_of_time();
+                    if( c != 0 )correction_of_time();
 
-                    correction_of_date();
+                    if( c == 3 ) correction_of_date();
 
                     moveStep = 0;
                     show_alarm_format(c);
@@ -1446,8 +1446,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     start = 1;
                     w = 1;
 
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
-
                     if(c == 0)
                     {
                         PCF8583_timer_alarm_off();
@@ -1457,6 +1455,8 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     {
                         PCF8583_timer_alarm_on();
                     }
+
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer,rano_wieczor);
                 }
                 else
                 {
@@ -2616,7 +2616,7 @@ int main( void )
 
     PCF8583_24h_format();
     //PCF8583_write_word(PCF8583_TAIL, 1500);
-    PCF8583_write(0x0E,0xFF);
+    //PCF8583_write(0x0E,0xFF);
 
     RGB_init();
 

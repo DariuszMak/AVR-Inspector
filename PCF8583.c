@@ -78,7 +78,7 @@ uint8_t PCF8583_address(void)
 */
 void PCF8583_stop(void)
 {
-    PCF8583_write(0x00, PCF8583_read(0x00) | 0b10000000);
+    PCF8583_write(0x00, PCF8583_read(0x00) | (1 << 7));
 }
 
 /**
@@ -86,13 +86,12 @@ void PCF8583_stop(void)
 */
 void PCF8583_start(void)
 {
-    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b10000000);
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~(1 << 7));
 }
 
 uint8_t PCF8583_is_clock_counting(void)
 {
-    if(PCF8583_read(0x00) & 0b10000000) return 0;
-    else return 1;
+    return (PCF8583_read(0x00) & (1 << 7)) >> 7;
 }
 
 uint8_t PCF8583_timer_mode(void)
@@ -146,7 +145,7 @@ void PCF8583_mask_on(void)//maskuje dane - można bezpośrednio odczytywać
 */
 void PCF8583_timer_flag_off(void)
 {
-    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b00000001);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~(1 << 0));//alarm codzienny
 }
 
 /**
@@ -154,7 +153,7 @@ void PCF8583_timer_flag_off(void)
 */
 void PCF8583_timer_flag_on(void)
 {
-    PCF8583_write(0x00, PCF8583_read(0x00) | 0b00000001);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) | (1 << 0));//alarm codzienny
 }
 
 /**
@@ -162,7 +161,7 @@ void PCF8583_timer_flag_on(void)
 */
 void PCF8583_alarm_flag_off(void)
 {
-    PCF8583_write(0x00, PCF8583_read(0x00) & ~0b00000010);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) & ~(1 << 1));//alarm codzienny
 }
 
 /**
@@ -170,7 +169,7 @@ void PCF8583_alarm_flag_off(void)
 */
 void PCF8583_alarm_flag_on(void)
 {
-    PCF8583_write(0x00, PCF8583_read(0x00) | 0b00000010);//alarm codzienny
+    PCF8583_write(0x00, PCF8583_read(0x00) | (1 << 1));//alarm codzienny
 }
 
 /**
@@ -326,65 +325,63 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
 
 void PCF8583_timer_alarm_off(void)
 {
-    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b01000000);
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~(1 << 6));
 }
 
 void PCF8583_timer_alarm_on(void)
 {
-    PCF8583_write(0x08, PCF8583_read(0x08) | 0b01000000);
+    PCF8583_write(0x08, PCF8583_read(0x08) | (1 << 6));
 }
 
 
 void PCF8583_alarm_interrupt_off(void)
 {
-    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b10000000);
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~(1 << 7));
 }
 
 void PCF8583_alarm_interrupt_on(void)
 {
-    PCF8583_write(0x08, PCF8583_read(0x08) | 0b10000000);
+    PCF8583_write(0x08, PCF8583_read(0x08) | (1 << 7));
 }
 
 uint8_t PCF8583_is_alarm_interrupt(void)
 {
-    if(PCF8583_read(0x08) & 0b10000000) return 1;
-    else return 0;
+    return (PCF8583_read(0x08) & (1 << 7)) >> 7;
 }
 
 void PCF8583_timer_interrupt_off(void)
 {
-    PCF8583_write(0x08, PCF8583_read(0x08) & ~0b00001000);
+    PCF8583_write(0x08, PCF8583_read(0x08) & ~(1 << 3));
 }
 
 void PCF8583_timer_interrupt_on(void)
 {
-    PCF8583_write(0x08, PCF8583_read(0x08) | 0b00001000);
+    PCF8583_write(0x08, PCF8583_read(0x08) | (1 << 3));
 }
 
 uint8_t PCF8583_is_timer_interrupt(void)
 {
-    if(PCF8583_read(0x08) & 0b00001000) return 1;
-    else return 0;
+    return (PCF8583_read(0x08) & (1 << 3)) >> 3;
 }
 
 //ustawianie formatu godzin 24h/12h
 
 void PCF8583_24h_format(void)
 {
-    PCF8583_write(0x04, PCF8583_read(0x04) & ~0b10000000);
-    PCF8583_write(0x0C, PCF8583_read(0x0C) & ~0b10000000);
+    PCF8583_write(0x04, PCF8583_read(0x04) & ~(1 << 7));
+    PCF8583_write(0x0C, PCF8583_read(0x0C) & ~(1 << 7));
 }
 
 void PCF8583_12h_format(void)
 {
-    PCF8583_write(0x04, PCF8583_read(0x04) | 0b10000000);
-    PCF8583_write(0x0C, PCF8583_read(0x0C) | 0b10000000);
+    PCF8583_write(0x04, PCF8583_read(0x04) | (1 << 7));
+    PCF8583_write(0x0C, PCF8583_read(0x0C) | (1 << 7));
 }
 
 uint8_t PCF8583_is_12h_24h_format(void)
 {
-    if((PCF8583_read(0x04) & 0b10000000) && (PCF8583_read(0x0C) & 0b10000000)) return 1;
-    else if(!(PCF8583_read(0x04) & 0b10000000) && !(PCF8583_read(0x0C) & 0b10000000)) return 0;
+    if((PCF8583_read(0x04) & (1 << 7)) && (PCF8583_read(0x0C) & (1 << 7))) return 1;
+    else if(!(PCF8583_read(0x04) & (1 << 7)) && !(PCF8583_read(0x0C) & (1 << 7))) return 0;
     else return 255;
 }
 
@@ -404,14 +401,12 @@ uint8_t PCF8583_recognise_type_of_alarm(void)
 
 uint8_t PCF8583_recognise_type_of_timer_alarm(void)
 {
-    if(PCF8583_read(0x08) & 0b01000000) return 1;
-    else return 0;
+    return (PCF8583_read(0x08) & (1 << 6)) >> 6;
 }
 
 uint8_t PCF8583_is_timer_flag_set(void)
 {
-    if(PCF8583_read(0x00) & 0b00000001) return 1;
-    else return 0;
+    return (PCF8583_read(0x00) & (1 << 0)) >> 0;
 }
 
 /**
@@ -420,8 +415,7 @@ uint8_t PCF8583_is_timer_flag_set(void)
 
 uint8_t PCF8583_is_alarm_flag_set(void)
 {
-    if(PCF8583_read(0x00) & 0b00000010) return 1;
-    else return 0;
+    return (PCF8583_read(0x00) & (1 << 1)) >> 1;
 }
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
