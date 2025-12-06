@@ -267,7 +267,6 @@ int main( void )
 
             break;
         case 3:
-            u = PCF8583_recognise_type_of_alarm();
             moveStep=0;
             PCF8583_get_wall_time();
             LCD_EraseAll();
@@ -398,10 +397,22 @@ int main( void )
             else if(sek > 59) sek = 0;
             if(hsek < 0) hsek = 99;
             else if(hsek > 99) hsek = 0;
-            if(dzien < 1) dzien = 31;
-            else if(dzien > 31) dzien = 1;
+
+
+            uint8_t case_of_day = 0;
+            if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
+            else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
+            else if (miesiac == 2 && (rok % 4) != 0) case_of_day = 28;
+            else if (miesiac == 2 && (rok % 4) == 0) case_of_day = 29;
+
+            if(dzien < 1) dzien = case_of_day;
+            else if(dzien > case_of_day) dzien = 1;
+
+
             if(miesiac < 1) miesiac = 12;
             else if(miesiac > 12) miesiac = 1;
+
+
             if(rok < -9999) rok = 9999;
             else if(rok > 9999) rok = -9999;
             if(dzien_tygodnia < 0) dzien_tygodnia = 6;
@@ -936,6 +947,7 @@ int main( void )
                     lockers_beginning_actions();
                     TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
                     checking_lockers_state = 1;
+                    u = PCF8583_recognise_type_of_alarm();
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 case 4:
