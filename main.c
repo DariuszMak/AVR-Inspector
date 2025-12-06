@@ -6,6 +6,7 @@
 
 //zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
 //zmienne zarezerwowane globalnie dla całego programu
+int8_t switch_menu = 0;//zmienna służąca do wchodzenia do poszczególnych podprogramów
 const int liczbaPodprogramow = 6;
 uint8_t refresh_screen = 0;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
@@ -476,12 +477,16 @@ void cube_position(uint8_t case_of_effect)
 
 void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
+    if(zwiekszanie > 1) wysw_skok(1);
+    if (switch_menu > liczbaPodprogramow) switch_menu = 0;
+    else if (switch_menu < 0) switch_menu = liczbaPodprogramow;
     LCD_EraseAll();
     LCD_GoTo( 0, 0 );
-    LCD_WriteText( "Wybierz:" );
+    LCD_WriteText( "Wybierz program:" );
     LCD_GoTo( 0, 1 );
-    LCD_WriteText( "0 - " );
-    LCD_Int(liczbaPodprogramow);
+    LCD_WriteText(">>>");
+    LCD_Int(switch_menu);
+    LCD_WriteText("<<<");
 
     //LCDWriteToBuffer( 0, 0, "napis" );
     //LCD_WriteText ( "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
@@ -703,6 +708,77 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void czynnosc0( int com, int tog )
 {
+
+    //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
+
+    if( com == 59 )//wybieramy środkowy przycisk
+    {
+        menu = switch_menu;//przypisanie zmiennej menu nowej wartości
+        wybor( menu );
+
+        if ( menu == 1 )
+        {
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+        else if ( menu == 2 )
+        {
+            rozmiar = 4;
+            u = 0;
+
+            t = 0;
+            TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
+            cube_position(1);
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+        else if ( menu == 3 )
+        {
+
+            lockers_beginning_actions();
+            //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
+//                checking_lockers_state = 1;
+            refreshing_interrupt_on();
+            u = PCF8583_recognise_type_of_alarm();
+            czynnosc( 100, tog );
+            //refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+        else if ( menu == 4 )
+        {
+            u = 0;
+            w = 1;//wymuszenie wyświetlenia komunikatu
+            s = 0;
+            PCF8583_get_wall_time();
+            //czynnosc( 52, tog );
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+        else if ( menu == 5 )
+        {
+            PCF8583_get_wall_alarm();
+            //czynnosc( men, 50, tog );
+            u = -1;
+            w = 1;//wymuszenie wyświetlenia komunikatu
+            s = 0;
+            c = PCF8583_recognise_type_of_alarm();
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+        else if ( menu == 6 )
+        {
+            //czynnosc( men, 50, tog );
+            //lockers_find_latest_data();
+            c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+        }
+    }
+
+
+
+    if( com == 32 )
+    {
+        switch_menu += zwiekszanie;
+    }
+    if( com == 33 )
+    {
+        switch_menu -= zwiekszanie;
+    }
 
     refresh_screen = 1;
 }
@@ -1238,70 +1314,8 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 void pilot( int com, int tog )//
 {
     if(pilot_state == 1) pilot_off();
-    if( menu == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
-    {
-//ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
-        if( com >= 0 && com <= liczbaPodprogramow )//jeśli komenda była z zakresu numerów podprogramów
-        {
-            menu = com;//przypisanie zmiennej menu nowej wartości
-            wybor( menu );
-
-            if ( menu == 1 )
-            {
-                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-            }
-            else if ( menu == 2 )
-            {
-                rozmiar = 4;
-                u = 0;
-
-                t = 0;
-                TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-                cube_position(1);
-                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-            }
-            else if ( menu == 3 )
-            {
-
-                lockers_beginning_actions();
-                //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
-//                checking_lockers_state = 1;
-                refreshing_interrupt_on();
-                u = PCF8583_recognise_type_of_alarm();
-                czynnosc( 100, tog );
-                //refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-            }
-            else if ( menu == 4 )
-            {
-                u = 0;
-                w = 1;//wymuszenie wyświetlenia komunikatu
-                s = 0;
-                PCF8583_get_wall_time();
-                //czynnosc( 52, tog );
-                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-            }
-            else if ( menu == 5 )
-            {
-                PCF8583_get_wall_alarm();
-                //czynnosc( men, 50, tog );
-                u = -1;
-                w = 1;//wymuszenie wyświetlenia komunikatu
-                s = 0;
-                c = PCF8583_recognise_type_of_alarm();
-                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-            }
-            else if ( menu == 6 )
-            {
-                //czynnosc( men, 50, tog );
-                //lockers_find_latest_data();
-                c = lockers_convert_address_to_index_of_frame(PCF8583_read_word(PCF8583_CELL));
-                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-            }
-        }
-    }
-
-    if( start == 0 ) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+    czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     if(pilot_state == 1) pilot_on();
 }
@@ -1333,13 +1347,14 @@ void zczytaj_komende( void )
         cy1 = 10;
         cy1 = 10;
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
-        menu = 0;//
+        menu = 0;
+        switch_menu = 0;
         zwiekszanie = 1;
 //        checking_lockers_state = 0;
         delay_ms_var(10);//chwilowe odczekanie na wygaszenie się wyświetlacza
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
         refreshing_interrupt_off();
-        pilot(0,0);
+        pilot(59,0);
         //refresh_screen = 1;// wyświetlenie ekranu
     }
 
@@ -1359,8 +1374,8 @@ void zczytaj_komende( void )
         {
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
             toggle_action();
-            Ir_key_press_flag = 0;
             pilot( command, t );//wywołanie funkcji pilot
+            Ir_key_press_flag = 0;
             command = 0xff;
             address = 0xff;
         }
@@ -1412,7 +1427,8 @@ int main( void )
 
     sei();//włącza przerwania
     zczytaj_komende();
-    pilot( 3, 0 );//przejście do podprogramu nr 3
+    switch_menu = 3;
+    pilot( 59, 0 );//przejście do podprogramu nr 3
 
 
     //PCF8583_write_word(254, 1256);
