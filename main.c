@@ -278,7 +278,6 @@ void check_step_value(uint8_t case_of_time, int8_t u)
             if(u == 7 && zwiekszanie > 1) wysw_skok(1);
         }
     }
-
 }
 
 uint8_t end_of_settings(uint8_t case_of_time)
@@ -292,7 +291,6 @@ uint8_t end_of_settings(uint8_t case_of_time)
 
 void show_alarm_options(uint8_t index)
 {
-
     if(index == 0)
     {
         LCD_WriteText("Alarm wylaczony");
@@ -325,7 +323,6 @@ void correction_of_time(void)
 
 void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca względem roku
 {
-
     if(miesiac < 1 && case_of_time != 2) miesiac = 12;
     else if(miesiac > 12 && case_of_time != 2) miesiac = 1;
 
@@ -372,7 +369,6 @@ void show_frame( int8_t number)
     number = frame.information % 100;
     if(number != 0)
     {
-
         LCD_WriteText("NR ");
         LCD_Int(number);
         LCD_WriteText(" ");
@@ -409,13 +405,12 @@ void show_list(int16_t current_index, int16_t max_index)
     {
         LCD_GoTo(0, 1);
         show_list_case(current_index + 1);
-
-
     }
 }
 
 void cube_position(uint8_t case_of_effect)
 {
+    wysw();
     char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomocnicza do umiejscowienia cyfry
 
     for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
@@ -424,25 +419,25 @@ void cube_position(uint8_t case_of_effect)
         else tablicaTemp[s] = '0';
     }
 
-        for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
+    for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
+    {
+        if(tablicaTemp[s] == '1')
         {
-            if(tablicaTemp[s] == '1')
-            {
-                if (s == 0) cy1 = cyfra;
-                if (s == 1) cy2 = cyfra;
-                if (s == 2) cy3 = cyfra;
-                if (s == 3) cy4 = cyfra;
-            }
-            else
-            {
-                if (s == 0 || cyfra == 0) cy1 = 10;
-                if (s == 1 || cyfra == 0) cy2 = 10;
-                if (s == 2 || cyfra == 0) cy3 = 10;
-                if (s == 3 || cyfra == 0) cy4 = 10;
-            }
+            if (s == 0) cy1 = cyfra;
+            if (s == 1) cy2 = cyfra;
+            if (s == 2) cy3 = cyfra;
+            if (s == 3) cy4 = cyfra;
         }
+        else
+        {
+            if (s == 0 || cyfra == 0) cy1 = 10;
+            if (s == 1 || cyfra == 0) cy2 = 10;
+            if (s == 2 || cyfra == 0) cy3 = 10;
+            if (s == 3 || cyfra == 0) cy4 = 10;
+        }
+    }
 
-     if(case_of_effect == 1)
+    if(case_of_effect == 1)
     {
         for(s = 0; s < rozmiar; ++s)
         {
@@ -499,14 +494,15 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 
 
-    /*if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
+
+    LCD_GoTo(0,0);
+    LCD_Int( cyfra );
+    if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
     {
         LCD_GoTo(4,0);
         LCD_Int((int) (t * 100 / 250));
         LCD_WriteText("%");
-    }*/
-    LCD_GoTo(0,0);
-    LCD_Int( cyfra );
+    }
 }
 
 void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -931,7 +927,7 @@ void czynnosc2( int com, int tog )
         {
             buzzer_time(0.4);
             ++t;
-            refresh_screen = 1;
+            wysw();
             delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
         }
         while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
@@ -953,6 +949,7 @@ void czynnosc2( int com, int tog )
                 pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                 cyfra = w;
                 cube_position(0);
+                wysw();
                 buzzer_time(0.8);
             }
             --t;
@@ -965,7 +962,6 @@ void czynnosc2( int com, int tog )
 
         u = 0;
         refresh_screen = 1;
-
 
         //cy1 = 8;
     }
@@ -1314,10 +1310,15 @@ void zczytaj_komende( void )
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
     {
+        cy1 = 10;
+        cy1 = 10;
+        cy1 = 10;
+        cy1 = 10;
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         menu = 0;//
         zwiekszanie = 1;
         checking_lockers_state = 0;
+        delay_ms_var(10);//chwilowe odczekanie na wygaszenie się wyświetlacza
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
         //TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera preskaler 1024, timer do odświeżania
         pilot(0,0);
@@ -1391,10 +1392,9 @@ int main( void )
 
     //PCF8583_alarm_monthly();
 
-
-
     zczytaj_komende();
-    pilot( 3, 0 );//przejście do podprogramu nr 3
+
+    //pilot( 3, 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;

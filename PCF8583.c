@@ -101,7 +101,7 @@ void PCF8583_write_bcd(uint8_t address,uint8_t data)
 void PCF8583_init(void)
 {
 //    PCF8583_alarm=0;
-    PCF8583_write(0, 0);
+    PCF8583_write(0, PCF8583_read(0) & ~0b11111101);//bez zerowania flagi alarmu
     PCF8583_write(0, PCF8583_read(0) | 0x04);//komórki do alarmu dozwolone
     PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
     PCF8583_mask_off();//maskowanie dni i roku wyłączone
