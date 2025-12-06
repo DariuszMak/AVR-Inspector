@@ -7,7 +7,7 @@ void lockers_safety_bit_on(void)
 
 void lockers_safety_bit_off(void)
 {
-PCF8583_write(PCF8583_SAFETY_CELL,PCF8583_read(PCF8583_SAFETY_CELL) & ~(1 << 0));
+    PCF8583_write(PCF8583_SAFETY_CELL,PCF8583_read(PCF8583_SAFETY_CELL) & ~(1 << 0));
 }
 
 uint8_t lockers_is_safety_bit(void)
@@ -169,6 +169,7 @@ void lockers_check_events()
         all_colors_RGB();
         lockers_queue_enque();
         refresh_screen = 1;
+        buzzer_time(10);
     }
 }
 
@@ -251,10 +252,18 @@ void lockers_print_date_of_report()
     printf("%04d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }
 
+void lockers_print_temperature(void)
+{
+    printf("\nTEMPERATURA.");
+    lockers_print_date_of_report();
+    struct double_format temp_double_format = get_double_format(termometer_temperature, 2);
+    printf("%d.%d stopni Celcjusza\n", temp_double_format.integer_number, temp_double_format.decimal_number);
+}
+
 void lockers_print_all_memory(void)
 {
     //uint16_t temp = 0;
-    printf("Raport awaryjny. ");
+    printf("\nRAPORT AWARYJNY. ");
     lockers_print_date_of_report();
     lockers_print_amount_of_first_frames(lockers_number_of_frames());
 }
@@ -263,7 +272,7 @@ void lockers_print_latest_data(void)
 {
     if(lockers_is_queue_empty() == 0)
     {
-        printf("Raport. ");
+        printf("\nRAPORT. ");
         lockers_print_date_of_report();
         lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
         lockers_queue_empty();
@@ -362,8 +371,8 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
         if(save_info_table[i])
         {
             //printf("%d %d %d \n",lockers_tail(), lockers_head(), lockers_number_of_frames());
-            buzzer();
-            delay_ms_var(5);
+            //buzzer_time(5);
+            //delay_ms_var(5);
 
 
             if( lockers_is_queue_full() == 1)

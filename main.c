@@ -39,17 +39,24 @@ uint8_t number_of_digits(uint32_t number)
 
 void show_double(double number, uint8_t approximation)
 {
-    put_double_format(number, approximation);
-    LCD_Int (double_format_global.integer_number);
+    struct double_format temp_double_format = get_double_format(number, approximation);
+    LCD_Int (temp_double_format.integer_number);
     LCD_WriteText(".");
-    LCD_Int (double_format_global.decimal_number);
+    LCD_Int (temp_double_format.decimal_number);
 }
 
-void put_double_format( double value, uint8_t approximation)
+struct double_format get_double_format( double value, uint8_t approximation)
 {
-    if((int16_t) abs(value) > 300) return;
+    struct double_format double_format_temp;
+    if((int16_t) abs(value) > 300)
+    {
+        double_format_temp.integer_number = 0;
+        double_format_temp.decimal_number = 0;
+        return double_format_temp;
+    }
+
     if(approximation > 2) approximation = 2;
-    double_format_global.integer_number = (int16_t)value;
+    double_format_temp.integer_number = (int16_t)value;
 
     uint16_t value_temp = abs(value);
     uint16_t ten = 1;
@@ -85,7 +92,9 @@ void put_double_format( double value, uint8_t approximation)
         ten *= 10;
     }
 
-    double_format_global.decimal_number = ((uint8_t) value) * (ten);
+    double_format_temp.decimal_number = ((uint8_t) value) * (ten);
+
+    return double_format_temp;
 
     //LCD_Int((uint16_t)value);
     //}
@@ -1719,16 +1728,9 @@ void czynnosc6( int com, int tog )
     refresh_screen = 1;
 }
 
-
-
-
 void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 {
     buzzer();
-
-
-
-
     if( menu == 0)
     {
         czynnosc0(com, tog);
@@ -1920,9 +1922,9 @@ void sczytaj_komende( void )
         {
             if(menu != 4 && menu != 5)
             {
+                change_color_RGB();
                 ds18b20_temperature();
                 lockers_check_events();
-                change_color_RGB();
                 if(start_program == 2)
                 {
                     temp_char = USART_Recieve_without_waiting();
@@ -1936,8 +1938,15 @@ void sczytaj_komende( void )
                         backlight(2);
                         buzzer();
                         lockers_print_latest_data();
-                        PCF8583_alarm_flag_off();
                         PCF8583_timer_flag_off();
+                    }
+
+                    if(PCF8583_is_alarm_flag_set() == 1)
+                    {
+                        backlight(2);
+                        buzzer();
+                        lockers_print_temperature();
+                        PCF8583_alarm_flag_off();
                     }
                 }
             }
@@ -2055,7 +2064,7 @@ int main( void )
 
     start_program = 1;
 
-    double test_of_double = -310.0;
+    /*double test_of_double = -310.0;
 
     while(test_of_double < 310.0)
     {
@@ -2064,7 +2073,7 @@ int main( void )
         show_double(test_of_double, 2);
         test_of_double += 0.11;
         delay_ms_var(2);
-    }
+    }*/
 
 
     LCD_WriteText("AVR INSPECTOR");

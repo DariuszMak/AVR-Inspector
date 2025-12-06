@@ -121,6 +121,8 @@ void lockers_print_entire_frame(void);
 
 void lockers_print_all_memory(void);
 
+void lockers_print_temperature(void);
+
 void lockers_print_latest_data(void);
 
 uint8_t lockers_tail(void);
