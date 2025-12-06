@@ -1347,6 +1347,7 @@ void zczytaj_komende( void )
         cy1 = 10;
         cy1 = 10;
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
+        u = menu;
         menu = 0;
         switch_menu = 0;
         zwiekszanie = 1;
@@ -1355,7 +1356,8 @@ void zczytaj_komende( void )
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
         refreshing_interrupt_off();
         pilot(59,0);
-        //refresh_screen = 1;// wyświetlenie ekranu
+        switch_menu = u;
+        refresh_screen = 1;// wyświetlenie ekranu
     }
 
     if ( stop_button())
