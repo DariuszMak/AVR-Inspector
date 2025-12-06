@@ -258,8 +258,8 @@ void setting_information()
     {
         if(u == end_of_settings())
         {
-            if(c == 0) LCD_WriteText("ALARM T. WYL.");
-            else if(c == 1) LCD_WriteText("ALARM T. WL.");
+            if(c == 0) LCD_WriteText("ALARM TIM. WYL.");
+            else if(c == 1) LCD_WriteText("ALARM TIM. WL.");
         }
         else
         {
