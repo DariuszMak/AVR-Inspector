@@ -1765,6 +1765,7 @@ void czynnosc0( int com, int tog )
             c = 0;
             w = 1;//wymuszenie wyświetlenia komunikatu
             s = 0;
+            //beginning_report = 0;
             PCF8583_get_wall_time();
             //czynnosc( 52, tog );
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
@@ -1778,6 +1779,7 @@ void czynnosc0( int com, int tog )
             e = 0;//zmienna odpowiedzialna za wybór ustawiania albo alarmu alarmu albo alarmu timera
             //d = 0;
             c = 0;//zmienna odpowiedzialna za typ alarmu
+            //beginning_report = 0;
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
         }
         else if ( menu == 6 )
@@ -2564,7 +2566,7 @@ void sczytaj_komende( void )
             double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
             double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
 
-            uint8_t changing_temperature_state = 0;//zmienna pomocnicza przyjmująca wartość 1, gdy nastąpiła zmiana flagi odnośnie temperatury na przeciwną
+            static uint8_t changing_temperature_state = 0;//zmienna pomocnicza przyjmująca wartość 1, gdy nastąpiła zmiana flagi odnośnie temperatury na przeciwną
 
 
             if(current_temp_temperature > maximum_temp_temperature)
