@@ -12,36 +12,31 @@
 #define _delay_us delay_ms_var_double
 
 
-
 //Program glowny:
 
 
 int main( void )
 {
 
-
-
-	DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
-	d_led_init();
+	const int liczbaPodprogramow = 3;
 
 	int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
-	int rozmiar = 6; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
 	int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 	int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 	int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
 	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu, czy nie (dosyć zagmatwany mechanizm)
 
-//funkcje
+//definicje funkcji
 
 
-	void buzzer( void )
+	void buzzer( void )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę
 	{
 		PORTD |= ( 1 << PD7 );
 		_delay_ms( 1 );
 		PORTD &= ~( 1 << PD7 );
 	}
 
-	void wybor( int number ) // funkcja wyświetlająca na początku wchodenia w dany podprogram numeru podprogramu
+	void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 	{
 		LCD_Clear();
 		LCD_WriteText( "Program: " );
@@ -50,7 +45,7 @@ int main( void )
 		LCD_Clear();
 	}
 
-	void wysw( int men, int add ) // funkcja wyświetlająca dla każdego z podprogramów,
+	void wysw( int men, int add ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 	{
 		switch ( men )
 		{
@@ -86,12 +81,10 @@ int main( void )
 			LCD_GoTo( 0, 1 );
 			LCD_Int( pwm2 );
 			break;
-
-
 		}
 	}
 
-	void wysw_skok( int number ) // funkcja wyświetlająca numer skoku o jakąś wartość
+	void wysw_skok( int number ) // funkcja wyświetlająca numer kroku o danej wartości
 	{
 		LCD_EraseAll();
 		for ( t = 0; t < 40; t += 8 )
@@ -106,9 +99,9 @@ int main( void )
 
 // najważniejsza i najbardziej skomplikowana funkcja
 
-	void pilot( int *men , int com )
+	void pilot( int *men , int com )//
 	{
-		if( !start ) start = 2;//start przyjmuje wartość inną od 0 albo 1
+		if( !start ) start = 2;//jeśli start jest równe zero, ma przyjąć wartość 2
 		buzzer();
 		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
@@ -150,6 +143,7 @@ int main( void )
 
 				LCD_GoTo( 9, 1 );
 
+				int rozmiar = 6; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
 
 				char * i =  ( char* ) malloc( rozmiar * sizeof * i );
 
@@ -332,7 +326,7 @@ int main( void )
 			break;
 		}
 
-		if( menu == 0 )
+		if( menu == 0 )//jeśli wyszliśmy z programu lub weszliśmy do programu
 		{
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
@@ -344,7 +338,7 @@ int main( void )
 				pilot( &menu, 59 );
 			}
 
-			if( com > 0 && com <= 3 )
+			if( com > 0 && com <= liczbaPodprogramow )
 			{
 				*men = com;
 				start = 0;
@@ -353,33 +347,35 @@ int main( void )
 				switch( *men )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
 				{
 				case 1:
-					wysw( *men, com );
+					wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 
 				case 2:
 					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
 					pilot( &menu, 52 );
+					//wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 
 				case 3:
 					pilot( &menu, 1 );
 					pilot( &menu, 52 );
-					wysw( *men, com );
+					//wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 				}
-
 			}
 		}
 	}
 
-	void zczytaj_komende( void ) // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkacy, nie będzie można odzczytać innego przysisku
+// funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
+
+	void zczytaj_komende( void )
 	{
 		if( Ir_key_press_flag )
 		{
 			if( !address )
 			{
 				TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-				pilot( &menu, command );
+				pilot( &menu, command );//wywołanie funkcji pilot
 				Ir_key_press_flag = 0;
 				command = 0xff;
 				address = 0xff;
@@ -406,15 +402,22 @@ int main( void )
 		}
 	}
 
+//Koniec definicji metod
+
+//Inicjalizacja
 
 
+	DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
 
+	LCD_Initalize();//inicjalizacja wyświetlacza
+	ir_init();//inicjalizacja odbioru sygnału z pilota
+	d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
+	sei();//włącza przerwania
 
-	LCD_Initalize();
-	ir_init();
-	d_led_init();
-	sei();
-	pilot( &menu, 0 );
+	pilot( &menu, 0 );//rozpoczęcie programu od głównego menu
+
+	//główna pętla programu
+
 	while( 1 )
 	{
 		zczytaj_komende();
