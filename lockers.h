@@ -105,6 +105,12 @@ uint8_t USART_Recieve(FILE *stream);
 
 uint8_t USART_Recieve_without_waiting(void);
 
+void lockers_safety_bit_on(void);
+
+void lockers_safety_bit_off(void);
+
+uint8_t lockers_is_safety_bit(void);
+
 void lockers_init();//inicjalizacja wejść
 
 void lockers_beginning_actions(void);//przypisanie wartości początkowych dla przycisków

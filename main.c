@@ -1252,10 +1252,18 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 {
     if(start_program == 3)
     {
-        LCD_EraseAll();
-        LCD_WriteText("Sprawdz przech-");
-        LCD_GoTo(0, 1);
-        LCD_WriteText("wytywanie USB");
+        if(lockers_is_safety_bit() == 1)
+        {
+            LCD_EraseAll();
+            LCD_WriteText("Sprawdz przech-");
+            LCD_GoTo(0, 1);
+            LCD_WriteText("wytywanie USB");
+        }
+        else if(lockers_is_safety_bit() == 0)
+        {
+            LCD_EraseAll();
+            LCD_WriteText("RESTART");
+        }
     }
     else
     {
@@ -1716,123 +1724,116 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 {
     buzzer();
 
-    if(start_program == 3 )
-    {
-        start_program = 0;
-        backlight(2);
-    }
-    else
-    {
 
-        if( menu == 0)
-        {
-            czynnosc0(com, tog);
-        }
-        else if( menu == 1 )
-        {
-            czynnosc1(com, tog);
-        }
-        else if( menu == 2 )
-        {
-            czynnosc2(com, tog);
-        }
-        else if( menu == 3 )
-        {
-            czynnosc3(com, tog);
-        }
-        else if( menu == 4 )
-        {
-            czynnosc4(com, tog);
-        }
-        else if( menu == 5 )
-        {
-            czynnosc5(com, tog);
-        }
-        else if( menu == 6 )
-        {
-            czynnosc6(com, tog);
-        }
+
+
+    if( menu == 0)
+    {
+        czynnosc0(com, tog);
+    }
+    else if( menu == 1 )
+    {
+        czynnosc1(com, tog);
+    }
+    else if( menu == 2 )
+    {
+        czynnosc2(com, tog);
+    }
+    else if( menu == 3 )
+    {
+        czynnosc3(com, tog);
+    }
+    else if( menu == 4 )
+    {
+        czynnosc4(com, tog);
+    }
+    else if( menu == 5 )
+    {
+        czynnosc5(com, tog);
+    }
+    else if( menu == 6 )
+    {
+        czynnosc6(com, tog);
+    }
 
 //komendy wspólne dla wszystkich podprogramów
 
-        if ( com == 38 )
+    if ( com == 38 )
+    {
+        refresh_screen = 0;
+        LCD_Clear();
+        LCD_WriteText( "Na poczatek" );
+        LCD_GoTo( 0, 1 );
+        LCD_WriteText( "ekranu..." );
+        delay_ms_var_double( 250 );
+        LCD_PageUpScreen();
+        LCD_PageDownScreen();
+        refresh_screen = 1;
+    }
+    if( com == 15 )
+    {
+        if( tog == 0)
         {
-            refresh_screen = 0;
-            LCD_Clear();
-            LCD_WriteText( "Na poczatek" );
-            LCD_GoTo( 0, 1 );
-            LCD_WriteText( "ekranu..." );
-            delay_ms_var_double( 250 );
-            LCD_PageUpScreen();
-            LCD_PageDownScreen();
-            refresh_screen = 1;
+            backlight_of_lcd = 0;
+            backlight(2);
         }
-        if( com == 15 )
+        if( tog == 1)
         {
-            if( tog == 0)
-            {
-                backlight_of_lcd = 0;
-                backlight(2);
-            }
-            if( tog == 1)
-            {
-                backlight(1);
-            }
-        }
-        if ( com == 46 )
-        {
-            LCD_ShiftRightScreen();
-        }
-        if ( com == 34 )
-        {
-            LCD_ShiftLeftScreen();
-        }
-        if ( com == 36 )
-        {
-            LCD_PageUpScreen();
-        }
-        if ( com == 35 )
-        {
-            LCD_PageDownScreen();
-        }
-        if ( com == 44 )
-        {
-            step_increase();
-        }
-        if ( com == 45 )
-        {
-            step_decrease();
-        }
-        if ( com == 14 )
-        {
-            if( tog == 0)
-            {
-            }
-            if( tog == 1)
-            {
-                start = 1;//oznaka wyjścia z podprogramów
-            }
-        }
-        if ( com == 100 )
-        {
-            if(pilot_state == 1)
-            {
-                pilot_state = 0;
-                buzzer_time(500);
-                pilot_off();
-                backlight(0);
-            }
-            else if(pilot_state == 0)
-            {
-                pilot_state = 1;
-                pilot_on();
-                backlight(2);
-            }
+            backlight(1);
         }
     }
+    if ( com == 46 )
+    {
+        LCD_ShiftRightScreen();
+    }
+    if ( com == 34 )
+    {
+        LCD_ShiftLeftScreen();
+    }
+    if ( com == 36 )
+    {
+        LCD_PageUpScreen();
+    }
+    if ( com == 35 )
+    {
+        LCD_PageDownScreen();
+    }
+    if ( com == 44 )
+    {
+        step_increase();
+    }
+    if ( com == 45 )
+    {
+        step_decrease();
+    }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+        }
+        if( tog == 1)
+        {
+            start = 1;//oznaka wyjścia z podprogramów
+        }
+    }
+    if ( com == 100 )
+    {
+        if(pilot_state == 1)
+        {
+            pilot_state = 0;
+            buzzer_time(500);
+            pilot_off();
+            backlight(0);
+        }
+        else if(pilot_state == 0)
+        {
+            pilot_state = 1;
+            pilot_on();
+            backlight(2);
+        }
+
+    }
 }
-
-
 
 // funkcja obsługująca menu dwupoziomowe
 
@@ -1841,7 +1842,13 @@ void pilot( int com, int tog )//
 //    if(pilot_state == 1) pilot_off();
     if(backlight_of_lcd >= 0) backlight(2);
 
-    czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+    if( start_program == 3 && lockers_is_safety_bit() == 1)
+    {
+        start_program = 0;
+        backlight(2);
+    }
+
+    if(start_program != 3) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     // if(pilot_state == 1) pilot_on();
 }
@@ -1868,54 +1875,82 @@ void sczytaj_komende( void )
         overflow_timer_2 = 0;
         interr = 0;
 
-        if(start_program == 3)
-        {
-            buzzer();
-            backlight(2);
-            printf("#");
-        }
-        else
-        {
-            if(start_program == 0)
-            {
-                printf("\nPrzechwytywanie rozpoczete... ");
-                lockers_print_date_of_report();
+        uint8_t temp_char;
 
-                if(lockers_is_queue_full() == 1 )
+        static uint8_t temp = 0;
+
+        if(start_program == 3 && temp == 0)
+        {
+            if(lockers_is_safety_bit() == 1)
+            {
+                buzzer();
+                backlight(2);
+                printf("#");
+
+                temp_char = USART_Recieve_without_waiting();
+
+                if(temp_char == 'o')
                 {
-                    printf("UWAGA!!! Dane niekompletne!!!\n");
-                    lockers_print_latest_data();
+                    printf("Oczekiwanie na restart.");
+                    lockers_safety_bit_off();
+                    backlight(1);
+                    temp = 1;
+                    //start_program = 4;
                 }
             }
-            start_program = 2;
-
-            uint8_t temp_char = USART_Recieve_without_waiting();
-
-            if(temp_char == 'R') lockers_print_all_memory();
-            else if(temp_char == 'r') lockers_print_latest_data();
-            if(temp_char != 0) refresh_screen = 1;
-
-            if(PCF8583_is_alarm_flag_set() == 1 || PCF8583_is_timer_flag_set() == 1)
+            else if(lockers_is_safety_bit() == 0)
             {
-                backlight(2);
-                buzzer();
-                lockers_print_latest_data();
-                PCF8583_alarm_flag_off();
-                PCF8583_timer_flag_off();
+                lockers_safety_bit_on();
+                start_program = 0;
             }
         }
 
-        if(menu != 4 && menu != 5)
+        if(start_program == 0)
         {
-            ds18b20_temperature();
-            lockers_check_events();
+            printf("\nPrzechwytywanie rozpoczete... ");
+            lockers_print_date_of_report();
 
-            change_color_RGB();
+            if(lockers_is_queue_full() == 1 )
+            {
+                printf("UWAGA!!! Dane niekompletne!!!\n");
+                lockers_print_latest_data();
+            }
+            start_program = 2;
         }
-        else
+
+        if(start_program == 2 || start_program == 3)
         {
-            lockers_beginning_actions();
-            no_colors_RGB();
+            if(menu != 4 && menu != 5)
+            {
+                ds18b20_temperature();
+                lockers_check_events();
+
+                change_color_RGB();
+            }
+            else
+            {
+                lockers_beginning_actions();
+                no_colors_RGB();
+            }
+
+            if(start_program == 2)
+            {
+                temp_char = USART_Recieve_without_waiting();
+
+                if(temp_char == 'R') lockers_print_all_memory();
+                else if(temp_char == 'r') lockers_print_latest_data();
+                if(temp_char != 0) refresh_screen = 1;
+
+
+                if(PCF8583_is_timer_flag_set() == 1)
+                {
+                    backlight(2);
+                    buzzer();
+                    lockers_print_latest_data();
+                    PCF8583_alarm_flag_off();
+                    PCF8583_timer_flag_off();
+                }
+            }
         }
 
         if( menu == 2 )
