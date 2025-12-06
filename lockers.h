@@ -5,6 +5,7 @@
 #include "delay_lib.h"
 #include "PCF8583.h"
 #include "EEPROM.h"
+#include "avr/eeprom.h"
 #include "stdlib.h"
 #include "main.h"
 
@@ -12,7 +13,7 @@
 
 #define EEPROM_MAX_ADDRESS 255
 
-#define PCF8583_CELL 255
+#define PCF8583_CELL 254
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
@@ -49,11 +50,7 @@ uint8_t save_info_table[AMOUNT_OF_LOCKERS];//tablica pomocna do jednokrotnego za
 uint8_t locker_1_button(void);//przycisk fizycznie umieszczony na płytce
 uint8_t locker_2_button(void);//przycisk fizycznie umieszczony na płytce
 
-void lockers_find_latest_data(void);//funkcja zwracająca adres gotowy do zapisania nowych danych
-
-uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan poszczególnych
-
-uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci
+uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan poszczególnych wejść do szafek (zwraca 0 albo 1)
 
 void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian i nakazuje zapis
 
@@ -63,5 +60,6 @@ void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapi
 
 uint8_t lockers_convert_address_to_index_of_frame(uint8_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
 
+uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
 
 #endif // LOCKERS_H_
