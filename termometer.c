@@ -43,12 +43,12 @@ void OneWireStrong(char s)
 {
     if (s)
     {
-        SET_ONEWIRE_PORT;
-        SET_OUT_ONEWIRE_DDR;
+        ONEWIRE_PORT  |=  ONEWIRE;
+        ONEWIRE_DIR   |=  ONEWIRE;
     }
     else
     {
-        SET_IN_ONEWIRE_DDR;
+        ONEWIRE_DIR   &= ~ONEWIRE;
     }
 }
 
@@ -56,16 +56,16 @@ void OneWireStrong(char s)
 
 unsigned char OneWireReset()
 {
-    CLR_ONEWIRE_PORT;
+    ONEWIRE_PORT  &= ~ONEWIRE;
 
-    if (!(IS_SET_ONEWIRE_PIN)) return 0;
+    if (!(ONEWIRE_PIN   &   ONEWIRE)) return 0;
 
-    SET_OUT_ONEWIRE_DDR;
+    ONEWIRE_DIR   |=  ONEWIRE;
     _delay_us(500);
-    SET_IN_ONEWIRE_DDR;
+    ONEWIRE_DIR   &= ~ONEWIRE;
     _delay_us(70);
 
-    if(!(IS_SET_ONEWIRE_PIN))
+    if(!(ONEWIRE_PIN   &   ONEWIRE))
     {
         _delay_us(500);
         return(1);
@@ -82,22 +82,22 @@ void OneWireWriteByte(unsigned char byte)
 {
     unsigned char i;
 
-    CLR_ONEWIRE_PORT;
+    ONEWIRE_PORT  &= ~ONEWIRE;
 
     for (i=0; i<8; i++)
     {
-        SET_OUT_ONEWIRE_DDR;
+        ONEWIRE_DIR   |=  ONEWIRE;
 
         if (byte & 0x01)
         {
             _delay_us(7);
-            SET_IN_ONEWIRE_DDR;
+            ONEWIRE_DIR   &= ~ONEWIRE;
             _delay_us(70);
         }
         else
         {
             _delay_us(70);
-            SET_IN_ONEWIRE_DDR;
+            ONEWIRE_DIR   &= ~ONEWIRE;
             _delay_us(7);
         }
 
@@ -111,17 +111,17 @@ unsigned char OneWireReadByte(void)
 {
     unsigned char i, byte = 0;
 
-    SET_IN_ONEWIRE_DDR;
+    ONEWIRE_DIR   &= ~ONEWIRE;
 
     for (i=0; i<8; i++)
     {
-        SET_OUT_ONEWIRE_DDR;
+        ONEWIRE_DIR   |=  ONEWIRE;
         _delay_us(7);
-        SET_IN_ONEWIRE_DDR;
+        ONEWIRE_DIR   &= ~ONEWIRE;
         _delay_us(7);
         byte >>= 1;
 
-        if(IS_SET_ONEWIRE_PIN) byte |= 0x80;
+        if(ONEWIRE_PIN   &   ONEWIRE) byte |= 0x80;
 
         _delay_us(70);
     }

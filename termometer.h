@@ -4,12 +4,12 @@
 #include <avr/io.h>
 #include "delay_lib.h"
 
+#define ONEWIRE_DIR DDRA
+#define ONEWIRE_PORT PORTA
+#define ONEWIRE_PIN PINA
+#define ONEWIRE (1 << PA0)
+
 /* DS18B20 przyłączony do portu  PD7 AVRa  */
-#define SET_ONEWIRE_PORT     PORTA  |=  (1 << PA0)
-#define CLR_ONEWIRE_PORT     PORTA  &= ~(1 << PA0)
-#define IS_SET_ONEWIRE_PIN   PINA   &   (1 << PA0)
-#define SET_OUT_ONEWIRE_DDR  DDRA   |=  (1 << PA0)
-#define SET_IN_ONEWIRE_DDR   DDRA   &= ~(1 << PA0)
 
 unsigned char ds18b20_ConvertT(void);
 int ds18b20_Read();

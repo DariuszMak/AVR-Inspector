@@ -184,49 +184,44 @@ int main( void )
             break;
         case 3:
             LCD_EraseAll();
+            int moveStep=0;
+            PCF8583_get_wall_time();
 
-            for(t = 0; t < 2; ++t)
-            {
-                int moveStep=0;
-                if(t==0)
-                {
-                    PCF8583_get_wall_time();
-                    moveStep=0;
-                }
-                else if (t==1)
-                {
-                    hsek = EEPROM_read(10);
-                    sek = EEPROM_read(11);
-                    min = EEPROM_read(12);
-                    godz = EEPROM_read(13);
-                    dzien = EEPROM_read(14);
-                    miesiac = EEPROM_read(15);
-                    rok = EEPROM_read_word(16);
-                    moveStep=24;
-                }
-                LCD_GoTo( 0 + moveStep, 0 );
-                if(godz < 10) LCD_Int(0);
-                LCD_Int(godz);
-                LCD_WriteText(":");
-                if(min < 10) LCD_Int(0);
-                LCD_Int(min);
-                LCD_WriteText(":");
-                if(sek < 10) LCD_Int(0);
-                LCD_Int(sek);
-                LCD_WriteText(":");
-                if(hsek < 10) LCD_Int(0);
-                LCD_Int(hsek);
-                LCD_WriteText(":");
-                LCD_Int(dzien_tygodnia);
-                LCD_GoTo( 0 + moveStep, 1 );
-                if(dzien < 10) LCD_Int(0);
-                LCD_Int(dzien);
-                LCD_WriteText(":");
-                if(miesiac < 10) LCD_Int(0);
-                LCD_Int(miesiac);
-                LCD_WriteText(":");
-                LCD_Int(rok);
-            }
+            LCD_GoTo( 0 + moveStep, 0 );
+            if(godz < 10) LCD_Int(0);
+            LCD_Int(godz);
+            LCD_WriteText(":");
+            if(min < 10) LCD_Int(0);
+            LCD_Int(min);
+            LCD_WriteText(":");
+            if(sek < 10) LCD_Int(0);
+            LCD_Int(sek);
+            LCD_WriteText(":");
+            if(hsek < 10) LCD_Int(0);
+            LCD_Int(hsek);
+            LCD_WriteText(":");
+            LCD_Int(dzien_tygodnia);
+            LCD_GoTo( 0 + moveStep, 1 );
+            if(dzien < 10) LCD_Int(0);
+            LCD_Int(dzien);
+            LCD_WriteText(":");
+            if(miesiac < 10) LCD_Int(0);
+            LCD_Int(miesiac);
+            LCD_WriteText(":");
+            LCD_Int(rok);
+
+            LCD_WriteText(":");
+            LCD_Double(ds18b20_temperature(),2);
+
+            hsek = EEPROM_read(10);
+            sek = EEPROM_read(11);
+            min = EEPROM_read(12);
+            godz = EEPROM_read(13);
+            dzien = EEPROM_read(14);
+            miesiac = EEPROM_read(15);
+            rok = EEPROM_read_word(16);
+            moveStep=24;
+
 
             //LCD_Int( pwm1 );
             //LCD_Int( pwm2 );
@@ -768,6 +763,7 @@ int main( void )
 
 
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
+    ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
     LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
