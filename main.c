@@ -1078,7 +1078,6 @@ void correction_of_time(void)
 
 void correction_of_date(void)//uwzględnianie dnia miesiąca względem roku
 {
-
     if(!(menu == 5 && ((e == 0 && (c != 3)) || e == 1)))
     {
         if(miesiac < 1 && c != 2) miesiac = 12;
@@ -2335,6 +2334,8 @@ void sczytaj_komende( void )
         overflow_timer_2 = 0;
         interr = 0;
 
+        //lockers_print_amount_of_first_frames(20);
+
         //restartowanie
 
         static uint8_t temp = 0;//zmienna pomocna do resetu
@@ -2644,6 +2645,16 @@ int main( void )
     uart_init(57600);//inicjalizacja uart'u
 
     sei();//włącza przerwania
+
+    /*uint16_t lll = 55000;
+
+    for(; lll < 57600; ++lll)
+    {
+        uart_init(lll);
+        printf("%d\n", lll);
+    }*/
+
+
 
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 

@@ -27,7 +27,7 @@ void uart_init(uint16_t baud)
 
     /* Tworzy strumienia danych o nazwie 'mystdout' połączony
     z funkcją 'USART_Transmit' */
-    static FILE mystdout = FDEV_SETUP_STREAM(uart_putc, NULL, _FDEV_SETUP_WRITE);
+    static FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
 
     //static FILE mystdin = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
 

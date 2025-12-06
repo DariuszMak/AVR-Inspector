@@ -108,6 +108,8 @@ void lockers_print_date_of_report(void);
 
 void lockers_print_entire_frame(void);
 
+void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames);
+
 void lockers_print_all_memory(void);
 
 void lockers_print_temperature(void);
