@@ -45,6 +45,10 @@ extern volatile uint8_t Ir_key_press_flag;
 
 void ir_init( void );
 
+void pilot_on(void);
+
+void pilot_off(void);
+
 int stop_button();//funkcja zwraca "1" gdy przycisk jest naciśnięty (nie sprawdza drgań styków)
 
 #endif // IR_DECODE_H_

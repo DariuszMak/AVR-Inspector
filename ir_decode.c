@@ -8,29 +8,39 @@ volatile uint8_t Ir_key_press_flag;
 
 volatile uint8_t rc5cnt;
 
+void pilot_off(void)
+    {
+
+        TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
+    }
+
+void pilot_on(void)
+{
+#if TIMER1_PRESCALER == 1
+        TCCR1B |= ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 8
+        TCCR1B |= ( 1 << CS11 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 64
+        TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 256
+        TCCR1B |= ( 1 << CS12 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 1024
+        TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
+    }
+
 void ir_init()
 {
     IR_DIR &= ~IR_IN;
     IR_PORT |= IR_IN;
-#if TIMER1_PRESCALER == 1
-    TCCR1B |= ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 8
-    TCCR1B |= ( 1 << CS11 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 64
-    TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 256
-    TCCR1B |= ( 1 << CS12 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 1024
-    TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
 
     TCCR1B &= ~( 1 << ICES1 ); //zbocze opadaj¹ce na ICP
     rc5cnt = 0; // zerowanie licznika wystêpuj¹cych zboczy

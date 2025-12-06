@@ -30,6 +30,7 @@ int main( void )
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
     uint16_t zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
+    uint8_t pilot_state = 0;//stan pilota
 //zmienne zarezerwowane dla podprogramu nr 2:
     int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
@@ -44,6 +45,9 @@ int main( void )
 
 
 //definicje funkcji
+
+
+
 
     void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
     {
@@ -387,6 +391,7 @@ int main( void )
             switch ( com )
             {
             case 41:
+                pilot_off();
                 LCD_Clear();
                 rozmiar = LCD_CHARSPERLINE;
                 char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
@@ -488,9 +493,11 @@ int main( void )
                 buzzer();
                 delay_ms_var_double(10);
                 buzzer();
+                pilot_on();
 
                 break;
             case 12:
+                pilot_off();
                 LCD_Clear();
                 LCD_Blink();
                 LCD_GoTo( 9, 1 );
@@ -578,6 +585,7 @@ int main( void )
 
                 LCD_Clear();
                 LCD_ScreenOn();
+                pilot_on();
                 break;
             }
             wysw( *men );
@@ -701,6 +709,16 @@ int main( void )
             case 59:
                 PCF8583_alarm_flag_off();
                 break;
+            case 100:
+                if(pilot_state == 1)
+                {
+                    pilot_state = 0;
+                }
+                else if(pilot_state == 0)
+                {
+                    pilot_state = 1;
+                }
+                break;
 
             }
             wysw( *men );
@@ -794,12 +812,13 @@ int main( void )
         }
     }
 
+
+
 // funkcja obsługująca menu dwupoziomowe
 
     void pilot( uint8_t * const men , int com, int tog )//
     {
-        TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-
+        if(pilot_state == 1) pilot_off();
         if( *men == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
         {
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
@@ -852,25 +871,7 @@ int main( void )
             wybor( *men );
             wysw ( *men );// wyświetlenie ekranu
         }
-#if TIMER1_PRESCALER == 1
-        TCCR1B |= ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 8
-        TCCR1B |= ( 1 << CS11 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 64
-        TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 256
-        TCCR1B |= ( 1 << CS12 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 1024
-        TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
+        if(pilot_state == 1) pilot_on();
     }
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
@@ -935,7 +936,11 @@ int main( void )
 
     sei();//włącza przerwania
 
+
     pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu
+
+    pilot_state = 1;
+
 
     //główna pętla programu
 
