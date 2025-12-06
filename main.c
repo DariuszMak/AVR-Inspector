@@ -1927,6 +1927,7 @@ void czynnosc1( int com, int tog )
     */
     if ( com == 12 )
     {
+        no_colors_RGB();
         show_properties(18);
         pilot_off();
 //        refresh_screen = 0;
@@ -2370,9 +2371,6 @@ void sczytaj_komende( void )
         wysw();
         if( lockers_is_flag_bit(2) == 1 && start_program != 1 && start != 1 ) send_all_screen();
 
-
-
-
         //printf("%d\n",LCD_position);
         //printf("%d\n",LCD_position);
     }
@@ -2389,7 +2387,7 @@ void sczytaj_komende( void )
             }
             else
             {
-                lockers_beginning_actions();
+//                lockers_beginning_actions();
                 no_colors_RGB();
             }
         }
@@ -2810,9 +2808,6 @@ int main( void )
 
     //główna pętla programu
 //    start_program = 0;
-
-    lockers_beginning_actions();
-
     //printf("Inicjalizacja zakonczona.\n");
 
 

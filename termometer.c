@@ -136,6 +136,9 @@ void ds18b20_temperature(void)
     //if(pilot_status_temp == 1) pilot_off();
     double temp = 0;
     //cli();
+
+    checking_pins_interrupt_off();
+
     if(ds18b20_ConvertT())
     {
         /* 750ms - czas konwersji */
@@ -151,9 +154,10 @@ void ds18b20_temperature(void)
            dzielona jest przez 16 */
         temp = ((ds18b20_pad[1] << 8) + ds18b20_pad[0]) / 16.0 ;
         /* Formułuje komunikat w tablicy 'str' */
-        int i = 0;
+        uint8_t i = 0;
         for(; i<2; i++) ds18b20_pad[i] = 0;
     }
+    checking_pins_interrupt_on();
     //sei();
     termometer_temperature = temp;
     //if(pilot_status_temp == 1) pilot_on();

@@ -18,11 +18,6 @@ uint8_t lockers_is_flag_bit(uint8_t move)
 
 void lockers_init()
 {
-    int i = 0;
-    for(; i < AMOUNT_OF_LOCKERS; ++i)
-    {
-        save_info_table[i] = 0;//przypisanie wartości początkowych
-    }
 
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
     uint16_t tail_word = PCF8583_read_word(PCF8583_TAIL);
@@ -73,6 +68,14 @@ void lockers_init()
 
     timer_0_init();
 
+
+    uint8_t i = 0;
+    for(; i < AMOUNT_OF_LOCKERS; ++i)
+    {
+        save_info_table[i] = 0;//przypisanie wartości początkowych
+        states_table[i] = (uint8_t) lockers_state_of_single_button(i);//przypisanie wartości początkowych
+    }
+
     checking_pins_interrupt_on();
 
     /* Przekierowuje standardowe wejście do  'mystdin' */
@@ -80,15 +83,6 @@ void lockers_init()
     //stdin = &mystdin;
 
     //lockers_find_latest_data();
-}
-
-void lockers_beginning_actions(void)
-{
-    int i = 0;
-    for(; i < AMOUNT_OF_LOCKERS; ++i)
-    {
-        states_table[i] = (uint8_t) lockers_state_of_single_button(i);//przypisanie wartości początkowych
-    }
 }
 
 uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przycisku względem numeru indeksu
@@ -106,17 +100,14 @@ uint8_t lockers_state_of_single_button( uint8_t index )//zwraca stan danego przy
     return -1;//bląd
 }
 
-void lockers_check_events(void)
-{
-
-}
-
 void lockers_save_events(void)
 {
-    int i = 0;//zmienna pmocnicza w pętlach
+    uint8_t i = 0;//zmienna pmocnicza w pętlach
     uint8_t action = 0;
 
     uint8_t * dynamically_temp_table = ( uint8_t* ) malloc ( AMOUNT_OF_LOCKERS * sizeof ( *dynamically_temp_table ) );
+
+    checking_pins_interrupt_off();
 
     //zatrzymanie timera
 
@@ -127,9 +118,11 @@ void lockers_save_events(void)
         if(dynamically_temp_table[i]) action = 1;
     }
 
+    checking_pins_interrupt_on();
+
     //wznowienie timera
 
-    if(action)
+    if(action == 1)
     {
         blue_colors_RGB();
         show_properties(8);
@@ -138,7 +131,8 @@ void lockers_save_events(void)
         lockers_queue_enque(dynamically_temp_table);
         change_color_RGB();
     }
-    else free(dynamically_temp_table); //usunięcie tymczasowej tablicy, a jeśli jest inaczej, zostanie usunięta w innym kroku
+
+    free(dynamically_temp_table); //usunięcie tymczasowej tablicy, a jeśli jest inaczej, zostanie usunięta w innym kroku
 }
 
 uint8_t lockers_number_of_frames(void)
@@ -333,7 +327,7 @@ void lockers_queue_enque(uint8_t * temp_save_table)//funkcja zapisująca do pami
             frame.day = dzien;
             frame.month = miesiac;
             frame.year = rok;
-            frame.information = (uint8_t)save_info_table[i] * 100;
+            frame.information = (uint8_t)temp_save_table[i] * 100;
             frame.information += i + 1;
             uint16_t temp_address = lockers_convert_index_of_frame_to_address(lockers_tail());//pobranie ostatniego adresu
 
@@ -362,7 +356,6 @@ void lockers_queue_enque(uint8_t * temp_save_table)//funkcja zapisująca do pami
         }
     }
     backlight(2);
-    free(temp_save_table);
 }
 
 void lockers_queue_dequeue(void)

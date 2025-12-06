@@ -3,8 +3,6 @@
 void timer_0_init( void )
 {
 // set up timer with prescaler = 256
-
-
     // initialize counter
     TCNT0 = 0;
 
@@ -14,7 +12,8 @@ void timer_0_init( void )
 
 void checking_pins_interrupt_on()
 {
-     TCCR0 |= (1 << CS02);
+    TCCR0 |= (1 << CS02);
+    TCCR0 &= ~((1 << CS01) | (1 < CS00));
 }
 
 void checking_pins_interrupt_off()
@@ -26,7 +25,7 @@ void checking_pins_interrupt_off()
 // called whenever TCNT0 overflows
 ISR(TIMER0_OVF_vect)
 {
-int i = 0;//zmienna pmocnicza w pętlach
+    int i = 0;//zmienna pmocnicza w pętlach
     //int action = 0;//jeśli ta zmienna będzie inna od zera, to wykona się zapis
     uint8_t state;//stan przycisku z danej chwili
     for(; i < AMOUNT_OF_LOCKERS; ++i)//sprawdzanie stanów przycisków i odpowiednie wypełnianie tablicy
@@ -41,4 +40,3 @@ int i = 0;//zmienna pmocnicza w pętlach
         //else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
     }
 }
-

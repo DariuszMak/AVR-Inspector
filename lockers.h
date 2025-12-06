@@ -102,8 +102,6 @@ uint8_t lockers_is_flag_bit(uint8_t);//0, jeśli chodzi o restart, 1, jeśli cho
 
 void lockers_init();//inicjalizacja wejść
 
-void lockers_beginning_actions(void);//przypisanie wartości początkowych dla przycisków
-
 void lockers_print_date_of_report(void);
 
 void lockers_print_entire_frame(void);
@@ -156,8 +154,6 @@ uint8_t locker_9_button(void);//przycisk fizycznie umieszczony na płytce
 uint8_t locker_10_button(void);//przycisk fizycznie umieszczony na płytce
 
 uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan poszczególnych wejść do szafek (zwraca 0 albo 1)
-
-void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian
 
 void lockers_save_events(void);//funkcja zapisująca wszystkie dane na podstawie tablicy
 

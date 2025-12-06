@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include "delay_lib.h"
 #include <avr/interrupt.h>
+#include "timer_0.h"
 //#include "lockers.h"
 //#include "ir_decode.h"
 
