@@ -2395,8 +2395,8 @@ void sczytaj_komende( void )
 
     if(pilot_button_pressed == 1)
     {
-        pilot_button_pressed = 0;
         pilot(100, 0);
+        pilot_button_pressed = 0;
     }
 
     if( Ir_key_press_flag )
@@ -2670,6 +2670,7 @@ void sczytaj_komende( void )
         switch_menu = u;
         refresh_screen = 1;// wyświetlenie ekranu
     }
+
     if (stop_button())
     {
         delay_ms_var(30);

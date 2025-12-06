@@ -13,6 +13,7 @@
 #define STOP_BUTTON_PORT PORTB
 #define STOP_BUTTON_PIN PINB
 #define STOP_BUTTON_IN (1 << PB4)
+#define STOP_BUTTON_PLACE PB4
 
 
 //#define IR_PORT D // te dyrektywy s¹ autorstwa Miros³wa Kardasia
@@ -54,7 +55,7 @@ void pilot_on(void);
 
 void pilot_off(void);
 
-int stop_button();//funkcja zwraca "1" gdy przycisk jest naciśnięty (nie sprawdza drgań styków)
+uint8_t stop_button();//funkcja zwraca "1" gdy przycisk jest naciśnięty (nie sprawdza drgań styków)
 
 void pilot_reset(void);
 

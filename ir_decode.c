@@ -123,13 +123,8 @@ void pilot_reset(void)
     address = 0xff;
 }
 
-int stop_button()//przycisk fizycznie umieszczony na płytce
+uint8_t stop_button()//przycisk fizycznie umieszczony na płytce
 {
-    int temp = 0;
-    if(!( STOP_BUTTON_PIN & STOP_BUTTON_IN ))
-    {
-        temp = 1;
-    }
-    return temp;
+    return ((~STOP_BUTTON_PIN | ~STOP_BUTTON_IN) & STOP_BUTTON_IN) >> STOP_BUTTON_PLACE;
 }
 
