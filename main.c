@@ -9,6 +9,7 @@
 #include "random_generator.h"
 #include "inverter.h"
 #include "PCF8583.h"
+#include "EEPROM.h"
 #include "i2c.h"
 #include "termometer.h"
 #include <stdlib.h>
@@ -201,8 +202,13 @@ int main( void )
                 }
                 else if (t==1)
                 {
-                    PCF8583_get_alarm_time(&godz, &min, &sek, &hsek);
-                    PCF8583_get_alarm_date( &dzien, &miesiac );
+                    hsek = EEPROM_read(0);
+                    sek = EEPROM_read(1);
+                    min = EEPROM_read(2);
+                    godz = EEPROM_read(3);
+                    dzien = EEPROM_read(4);
+                    miesiac = EEPROM_read(5);
+                    rok = EEPROM_read_word(6);
                     moveStep=24;
                 }
                 LCD_GoTo( 0 + moveStep, 0 );
@@ -745,9 +751,6 @@ int main( void )
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
-
-    PCF8583_set_alarm_time(1,2,8,4);//dwadzieścia sekund czasu do alarmu
-    PCF8583_set_alarm_date(5,6);
 
 
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera

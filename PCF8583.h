@@ -6,6 +6,8 @@
 
 #include "i2c.h"//sprzętowa obsługa magistrali TWI (I2C)
 
+#define PCF8583_ADDRESS 0xA0
+
 #define PCF8583_A0 1//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
 
 
@@ -62,7 +64,7 @@ static uint8_t bin2bcd(uint8_t bin)
 static uint8_t PCF8583_read(uint8_t address)
 {
     uint8_t a;
-    a = (PCF8583_A0 << 1) | 0xA0;
+    a = (PCF8583_A0 << 1) | PCF8583_ADDRESS;
     i2cStart();
     i2cWrite(a);
     i2cWrite(address);
@@ -82,7 +84,7 @@ static uint8_t PCF8583_read(uint8_t address)
 static void PCF8583_write(uint8_t address,uint8_t data)
 {
     i2cStart();
-    i2cWrite((PCF8583_A0 << 1) | 0xA0);
+    i2cWrite((PCF8583_A0 << 1) | PCF8583_ADDRESS);
     i2cWrite(address);
     i2cWrite(data);
     i2cStop();
