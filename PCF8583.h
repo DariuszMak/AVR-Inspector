@@ -44,7 +44,6 @@ struct time_frame
 };
 
 
-
 /**-------------------------------------------------------------------------------------------------
 
   Name         :  uint8_t bcd2bin(uint8_t bcd)
@@ -205,15 +204,7 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
  \param sec sekunda
  \param hsec setne części sekundy
 */
-void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec);
-
-/**
- Ustawia datę alarmu w układzie
- \param day dzień
- \param month miesiąc
-*/
-
-void PCF8583_set_alarm_date (uint8_t day, uint8_t month );
+void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t type_of_alarm);
 
 
 
@@ -247,18 +238,6 @@ void PCF8583_alarm_weekly(void);
  Załącza alarm dla dni w miesiącu
 */
 void PCF8583_alarm_monthly(void);
-
-
-/**
- Ustawia czas alarmu w układzie
- \param hour godzina
- \param min minuta
- \param sec sekunda
- \param hsec setne części sekundy
-*/
-void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec);
-void PCF8583_set_weekly_alarm(uint8_t days_of_week, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec);
-void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec);
 
 void PCF8583_get_wall_alarm(void);
 

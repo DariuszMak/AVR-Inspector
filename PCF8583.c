@@ -222,8 +222,8 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
     *sec=bcd2bin(time_f.seconds);
     *min=bcd2bin(time_f.minuts);
     *hour=bcd2bin(time_f.hours);
-    *day = bcd2bin(time_f.days & 0b00111111);
-    *month = bcd2bin(time_f.months & 0b00011111);
+    *day=bcd2bin(time_f.days & 0b00111111);
+    *month=bcd2bin(time_f.months & 0b00011111);
     *day_of_week = (time_f.months & 0b11100000) >> 5;
 
     int16_t y1;
@@ -255,7 +255,7 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
     time_f.months = bin2bcd(month) | ( ( (uint8_t)day_of_week & 0x07) << 5 );
 
     year_table[0] = year;
-    year_table[1] = year>>8;
+    year_table[1] = year >> 8;
 
     PCF8583_stop();
     PCF8583_write_buf(0x01, 6, (uint8_t*)&time_f);
@@ -279,25 +279,54 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
     *sec=bcd2bin(time_f.seconds);
     *min=bcd2bin(time_f.minuts);
     *hour=bcd2bin(time_f.hours);
+    *day = bcd2bin(time_f.days);
 
-    *day = PCF8583_read_bcd(0xD);
     if(PCF8583_recognise_type_of_alarm() == 2)
     {
-        *month = PCF8583_read(0xe) & 0b01111111;
+        *month = time_f.months & 0b01111111;
     }
-    else *month = PCF8583_read_bcd(0xE);
+    else *month = bcd2bin(time_f.months);
 }
 
+
 /**
- Ustawia datę alarmu w układzie
- \param day dzień
- \param month miesiąc
+ Ustawia czas alarmu w układzie
+ \param hour godzina
+ \param min minuta
+ \param sec sekunda
+ \param hsec setne części sekundy
 */
-void PCF8583_set_alarm_date (uint8_t day, uint8_t month )
+void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t type_of_alarm)
 {
-    PCF8583_write_bcd( 0xD, day );
-    PCF8583_write_bcd( 0xE, month );
+    struct time_frame time_f;
+    time_f.hseconds=bin2bcd(hsec);
+    time_f.seconds=bin2bcd(sec);
+    time_f.minuts=bin2bcd(min);
+    time_f.hours=bin2bcd(hour);
+
+    if(type_of_alarm == 0)
+    {
+        PCF8583_alarm_off();
+    }
+    else if(type_of_alarm == 1)
+    {
+        PCF8583_alarm_every_day();
+    }
+    else if(type_of_alarm == 2)
+    {
+        PCF8583_alarm_weekly();
+        time_f.months = month & 0b01111111;
+    }
+    else if(type_of_alarm == 3)
+    {
+        PCF8583_alarm_monthly();
+        time_f.days = bin2bcd(day);
+        time_f.months = bin2bcd(month);
+    }
+
+    PCF8583_write_buf(0x09, 6, (uint8_t*)&time_f);
 }
+
 
 /**
  Załącza alarm codzienny
@@ -351,34 +380,6 @@ uint8_t PCF8583_is_alarm_set(void)
 void PCF8583_alarm_off(void)
 {
     PCF8583_write(8, PCF8583_read(8) & ~0b00110000);//wyłączenie alarmu
-}
-
-
-/**
- Ustawia czas alarmu w układzie
- \param hour godzina
- \param min minuta
- \param sec sekunda
- \param hsec setne części sekundy
-*/
-void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
-{
-    PCF8583_write_bcd(0x9, hsec);
-    PCF8583_write_bcd(0xA, sec);
-    PCF8583_write_bcd(0xB, min);
-    PCF8583_write_bcd(0xC, hour);
-}
-
-void PCF8583_set_weekly_alarm(uint8_t days_of_week, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
-{
-    PCF8583_set_alarm_time( hour,  min,  sec,  hsec );
-    PCF8583_write( 0xE, days_of_week & 0b01111111 );
-}
-
-void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
-{
-    PCF8583_set_alarm_time( hour,  min,  sec,  hsec );
-    PCF8583_set_alarm_date( day, month );
 }
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu

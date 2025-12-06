@@ -588,23 +588,23 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             {
                 if(c == 0)
                 {
-                    PCF8583_alarm_off();
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                     PCF8583_alarm_flag_off();
                 }
                 else if(c == 1)
                 {
-                    PCF8583_alarm_every_day();
-                    PCF8583_set_alarm_time(godz,min,sek,hsek);
+                    //PCF8583_alarm_every_day();
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                 }
                 else if(c == 2)
                 {
-                    PCF8583_alarm_weekly();
-                    PCF8583_set_weekly_alarm(miesiac,godz,min,sek,hsek);
+                    //PCF8583_alarm_weekly();
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                 }
                 else if(c == 3)
                 {
-                    PCF8583_alarm_monthly();
-                    PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
+                    //PCF8583_alarm_monthly();
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                 }
             }
         }
