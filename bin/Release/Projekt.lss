@@ -3760,34 +3760,34 @@ Disassembly of section .text:
 00001fc0 <OneWireStrong>:
     1fc0:	88 23       	and	r24, r24
     1fc2:	19 f0       	breq	.+6      	; 0x1fca <OneWireStrong+0xa>
-    1fc4:	93 9a       	sbi	0x12, 3	; 18
-    1fc6:	8b 9a       	sbi	0x11, 3	; 17
+    1fc4:	d8 9a       	sbi	0x1b, 0	; 27
+    1fc6:	d0 9a       	sbi	0x1a, 0	; 26
     1fc8:	08 95       	ret
-    1fca:	8b 98       	cbi	0x11, 3	; 17
+    1fca:	d0 98       	cbi	0x1a, 0	; 26
     1fcc:	08 95       	ret
 
 00001fce <OneWireReset>:
-    1fce:	93 98       	cbi	0x12, 3	; 18
-    1fd0:	90 b3       	in	r25, 0x10	; 16
+    1fce:	d8 98       	cbi	0x1b, 0	; 27
+    1fd0:	99 b3       	in	r25, 0x19	; 25
     1fd2:	89 2f       	mov	r24, r25
-    1fd4:	88 70       	andi	r24, 0x08	; 8
-    1fd6:	93 ff       	sbrs	r25, 3
+    1fd4:	81 70       	andi	r24, 0x01	; 1
+    1fd6:	90 ff       	sbrs	r25, 0
     1fd8:	1f c0       	rjmp	.+62     	; 0x2018 <OneWireReset+0x4a>
-    1fda:	8b 9a       	sbi	0x11, 3	; 17
+    1fda:	d0 9a       	sbi	0x1a, 0	; 26
     1fdc:	8f ec       	ldi	r24, 0xCF	; 207
     1fde:	97 e0       	ldi	r25, 0x07	; 7
     1fe0:	01 97       	sbiw	r24, 0x01	; 1
     1fe2:	f1 f7       	brne	.-4      	; 0x1fe0 <OneWireReset+0x12>
     1fe4:	00 c0       	rjmp	.+0      	; 0x1fe6 <OneWireReset+0x18>
     1fe6:	00 00       	nop
-    1fe8:	8b 98       	cbi	0x11, 3	; 17
+    1fe8:	d0 98       	cbi	0x1a, 0	; 26
     1fea:	87 e1       	ldi	r24, 0x17	; 23
     1fec:	91 e0       	ldi	r25, 0x01	; 1
     1fee:	01 97       	sbiw	r24, 0x01	; 1
     1ff0:	f1 f7       	brne	.-4      	; 0x1fee <OneWireReset+0x20>
     1ff2:	00 c0       	rjmp	.+0      	; 0x1ff4 <OneWireReset+0x26>
     1ff4:	00 00       	nop
-    1ff6:	83 99       	sbic	0x10, 3	; 16
+    1ff6:	c8 99       	sbic	0x19, 0	; 25
     1ff8:	08 c0       	rjmp	.+16     	; 0x200a <OneWireReset+0x3c>
     1ffa:	8f ec       	ldi	r24, 0xCF	; 207
     1ffc:	97 e0       	ldi	r25, 0x07	; 7
@@ -3807,16 +3807,16 @@ Disassembly of section .text:
     2018:	08 95       	ret
 
 0000201a <OneWireWriteByte>:
-    201a:	93 98       	cbi	0x12, 3	; 18
+    201a:	d8 98       	cbi	0x1b, 0	; 27
     201c:	98 e0       	ldi	r25, 0x08	; 8
-    201e:	8b 9a       	sbi	0x11, 3	; 17
+    201e:	d0 9a       	sbi	0x1a, 0	; 26
     2020:	80 ff       	sbrs	r24, 0
     2022:	0b c0       	rjmp	.+22     	; 0x203a <OneWireWriteByte+0x20>
     2024:	25 e2       	ldi	r18, 0x25	; 37
     2026:	2a 95       	dec	r18
     2028:	f1 f7       	brne	.-4      	; 0x2026 <OneWireWriteByte+0xc>
     202a:	00 00       	nop
-    202c:	8b 98       	cbi	0x11, 3	; 17
+    202c:	d0 98       	cbi	0x1a, 0	; 26
     202e:	e7 e1       	ldi	r30, 0x17	; 23
     2030:	f1 e0       	ldi	r31, 0x01	; 1
     2032:	31 97       	sbiw	r30, 0x01	; 1
@@ -3829,7 +3829,7 @@ Disassembly of section .text:
     2040:	f1 f7       	brne	.-4      	; 0x203e <OneWireWriteByte+0x24>
     2042:	00 c0       	rjmp	.+0      	; 0x2044 <OneWireWriteByte+0x2a>
     2044:	00 00       	nop
-    2046:	8b 98       	cbi	0x11, 3	; 17
+    2046:	d0 98       	cbi	0x1a, 0	; 26
     2048:	f5 e2       	ldi	r31, 0x25	; 37
     204a:	fa 95       	dec	r31
     204c:	f1 f7       	brne	.-4      	; 0x204a <OneWireWriteByte+0x30>
@@ -3851,21 +3851,21 @@ Disassembly of section .text:
     206e:	08 95       	ret
 
 00002070 <OneWireReadByte>:
-    2070:	8b 98       	cbi	0x11, 3	; 17
+    2070:	d0 98       	cbi	0x1a, 0	; 26
     2072:	98 e0       	ldi	r25, 0x08	; 8
     2074:	80 e0       	ldi	r24, 0x00	; 0
-    2076:	8b 9a       	sbi	0x11, 3	; 17
+    2076:	d0 9a       	sbi	0x1a, 0	; 26
     2078:	25 e2       	ldi	r18, 0x25	; 37
     207a:	2a 95       	dec	r18
     207c:	f1 f7       	brne	.-4      	; 0x207a <OneWireReadByte+0xa>
     207e:	00 00       	nop
-    2080:	8b 98       	cbi	0x11, 3	; 17
+    2080:	d0 98       	cbi	0x1a, 0	; 26
     2082:	e5 e2       	ldi	r30, 0x25	; 37
     2084:	ea 95       	dec	r30
     2086:	f1 f7       	brne	.-4      	; 0x2084 <OneWireReadByte+0x14>
     2088:	00 00       	nop
     208a:	86 95       	lsr	r24
-    208c:	83 99       	sbic	0x10, 3	; 16
+    208c:	c8 99       	sbic	0x19, 0	; 25
     208e:	80 68       	ori	r24, 0x80	; 128
     2090:	e7 e1       	ldi	r30, 0x17	; 23
     2092:	f1 e0       	ldi	r31, 0x01	; 1
