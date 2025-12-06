@@ -39,26 +39,22 @@ uint8_t number_of_digits(uint32_t number)
 
 void show_double(double number, uint8_t approximation)
 {
-    uint8_t temp = put_double_format(number, 1);
+    put_double_format(number, approximation);
     LCD_Int (double_format_global.integer_number);
     LCD_WriteText(".");
-    for(t = 0; t < temp; ++t)
-    {
-        LCD_Int(0);
-    }
     LCD_Int (double_format_global.decimal_number);
 }
 
-int8_t put_double_format( double value, uint8_t approximation)
+void put_double_format( double value, uint8_t approximation)
 {
-    if((int16_t) abs(value) > 300) return 0;
+    if((int16_t) abs(value) > 300) return;
     if(approximation > 2) approximation = 2;
     double_format_global.integer_number = (int16_t)value;
 
     uint16_t value_temp = abs(value);
-    uint16_t ten = 10;
-    uint16_t a = 1;
-    for(; a < approximation; ++a)
+    uint16_t ten = 1;
+    uint8_t d  = 0;
+    for(; d < approximation; ++d)
     {
         ten *= 10;
     }
@@ -72,7 +68,7 @@ int8_t put_double_format( double value, uint8_t approximation)
     //{
 
 
-    uint16_t d = number_of_digits((uint16_t)value);
+    d = number_of_digits((uint16_t)value);
 
     uint8_t f = number_of_digits(ten);
 
@@ -81,9 +77,15 @@ int8_t put_double_format( double value, uint8_t approximation)
         LCD_Int(0);
     }*/
 
-    double_format_global.decimal_number = (uint8_t) value;
 
-    return (int8_t)f - d - 1;
+    ten = 1;
+
+    for(t = 0; t < f - d - 1 ; ++t)
+    {
+        ten *= 10;
+    }
+
+    double_format_global.decimal_number = ((uint8_t) value) * (ten);
 
     //LCD_Int((uint16_t)value);
     //}
@@ -2053,16 +2055,16 @@ int main( void )
 
     start_program = 1;
 
-    /*double test_of_double = -400.0;
+    double test_of_double = -310.0;
 
-    while(test_of_double < 400.0)
+    while(test_of_double < 310.0)
     {
         LCD_Clear();
 
         show_double(test_of_double, 2);
         test_of_double += 0.11;
         delay_ms_var(2);
-    }*/
+    }
 
 
     LCD_WriteText("AVR INSPECTOR");

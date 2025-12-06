@@ -2,19 +2,18 @@
 
 void lockers_safety_bit_on(void)
 {
-    PCF8583_write(PCF8583_SAFETY_CELL,1);
+    PCF8583_write(PCF8583_SAFETY_CELL,PCF8583_read(PCF8583_SAFETY_CELL) | (1 << 0));
 }
 
 void lockers_safety_bit_off(void)
 {
-    PCF8583_write(PCF8583_SAFETY_CELL,0);
+PCF8583_write(PCF8583_SAFETY_CELL,PCF8583_read(PCF8583_SAFETY_CELL) & ~(1 << 0));
 }
 
 uint8_t lockers_is_safety_bit(void)
 {
+    return (PCF8583_read(PCF8583_SAFETY_CELL) & (1 << 0)) >> 0;
     //return 0;//usunąć, gdy będzie PCF8563
-    if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
-    else return 1;
 }
 
 /* Inicjuje port szeregowy AVRa */
