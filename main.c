@@ -502,22 +502,19 @@ void show_alarm_format(uint8_t case_of_format)
     LCD_GoTo(moveStep, 1);
     if(case_of_format == 2)
     {
-        if(miesiac == 0)
+        for(t = 0; t < 7; ++t)
         {
-            LCD_WriteText("-------");
-        }
-        else
-        {
-            for(t = 0; t < 7; ++t)
-            {
-                if(miesiac & (1 << t))
-                {
-                    LCD_WriteText("|");
-                    LCD_Int(t+1);
-                }
-            }
             LCD_WriteText("|");
+            if(miesiac & (1 << t))
+            {
+                LCD_Int(t+1);
+            }
+            else
+            {
+                LCD_WriteText(".");
+            }
         }
+        LCD_WriteText("|");
     }
     else if ( case_of_format == 3)
     {
@@ -1243,7 +1240,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         w = 0;
         if (u < 0) u = 0;
-        if(u != end_of_settings()) setting_information();
+        if(u != end_of_settings())setting_information();
     }
 
     check_step_value();
@@ -1255,8 +1252,6 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         s = 0;
     }
 
-    LCD_EraseAll();
-
     if(u == end_of_settings())
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
@@ -1265,12 +1260,15 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         start = 1;
     }
 
+    LCD_EraseAll();
+
     correction_of_time();
 
     correction_of_date();
 
     moveStep = 0;
     show_time_format();
+
 }
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -1502,6 +1500,11 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         start = 1;
     }
 
+    correction_of_temperature();
+
+    moveStep = 0;
+
+    show_double(maximum_temperature,2);
 }
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -2256,6 +2259,8 @@ void sczytaj_komende( void )
                     //else if(temp_char == 'u') set_time_by_uart();
                     //if(temp_char != 0) refresh_screen = 1;
 
+                    printf(" ");
+
                     if(PCF8583_is_timer_flag_set() == 1)
                     {
                         backlight(2);
@@ -2335,7 +2340,14 @@ void sczytaj_komende( void )
     {
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         LCD_ScreenOn();
-        if(menu >= 4 && menu <= 7) setting_information();
+        if(menu >= 4 && menu <= 7)
+        {
+            if(u == end_of_settings())
+            {
+                setting_information();
+            }
+            //u = -2;
+        }
         u = menu;
         menu = 0;
         switch_menu = menu;
