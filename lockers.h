@@ -6,6 +6,7 @@
 #include "PCF8583.h"
 #include "EEPROM.h"
 #include "stdlib.h"
+#include "main.h"
 
 #define AMOUNT_OF_LOCKERS 2//liczba szafek - nie załatwia wszystkich problemów w kodzie
 
@@ -62,6 +63,5 @@ void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapi
 
 uint8_t lockers_convert_address_to_index_of_frame(uint8_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
 
-void buzzer();
 
 #endif // LOCKERS_H_

@@ -1,0 +1,95 @@
+#ifndef _MAIN_H_
+#define _MAIN_H_
+
+
+//Pomiar napiêcia przetwornikiem A/C i prezentacja wyniku na LCD 2x16 HD44780
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
+
+#include "delay_lib.h"
+#include "HD44780.h"
+#include "ir_decode.h"
+#include "d_led.h"
+#include "random_generator.h"
+#include "lockers.h"
+#include "PCF8583.h"
+#include "EEPROM.h"
+#include "i2c.h"
+#include "termometer.h"
+
+//Program glowny:
+
+//UWAGA!!! PONIŻSZE CHARAKTERYZACJE ZMIENNYCH SĄ BARDZO ISTOTNE W CELU POPRAWNEGO ICH UŻYWANIA W PROGRAMIE
+
+//zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
+//zmienne zarezerwowane globalnie dla całego programu
+    const int liczbaPodprogramow;
+    uint8_t menu;// zmienna odpowiedzialna za przebywanie w danym podprogramie
+    int start; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
+    int toggle;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
+    uint16_t zwiekszanie; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
+    uint8_t moveStep;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
+    uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
+    uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
+//zmienne zarezerwowane dla podprogramu nr 2:
+    int pozycja;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
+    int	cyfry; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+//zmienne spełniające określone funkcje
+    int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
+    int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
+    //inne zmienne pomocnicze do wykorzystywania w innch podprogramach (wymaga to wcześniejszego zapoznania się z kodem)
+
+    int8_t u; //inna (dodatkowa) zmienna pomocnicza
+    int8_t w; //inna (dodatkowa) zmienna pomocnicza
+    int8_t s;//inna (dodatowa zmienna)
+
+
+int main( void );
+
+    void wysw( int men ) ;// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+
+
+
+
+    void buzzer();//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
+
+
+    void buzzer_time( double time );//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
+
+
+    void wysw_skok( uint16_t number ); // funkcja wyświetlająca numer kroku o danej wartości
+
+    void step_increase(void);
+    void step_decrease(void);
+
+
+    void wybor( int number ); // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
+
+    void show_day_of_week( uint8_t day);
+
+
+    void show_time_only_format(void);
+
+    void show_time_format(void);
+
+    void correction_of_time(void);
+
+
+    void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
+
+    void show_list_of_frames (uint8_t row, int8_t number);
+
+
+    void czynnosc( const uint8_t * const men, int com, int tog ); //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
+
+
+// funkcja obsługująca menu dwupoziomowe
+
+    void pilot( uint8_t * const men , int com, int tog );//
+
+// funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
+
+    void zczytaj_komende( void );
+#endif

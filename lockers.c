@@ -53,12 +53,7 @@ void lockers_check_events()
     if(action) lockers_save_events();
 }
 
-void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
-{
-    PORTD |= ( 1 << PD7 );
-    delay_ms_var( 1 );
-    PORTD &= ~( 1 << PD7 );
-}
+
 
 void lockers_find_latest_data(void)
 {
