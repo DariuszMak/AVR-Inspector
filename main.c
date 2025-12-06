@@ -106,7 +106,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         else if(number == 3) LCD_WriteText("DANE - EEPROM");
         else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
         else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
-        //else if(number == 6) LCD_WriteText("");
+        else if(number == 6) LCD_WriteText("USTAWIENIA FLAG");
 
         for ( t = 0; t < 5; ++t )
         {
@@ -213,57 +213,64 @@ void setting_information()
     refresh_screen = 0;
     LCD_EraseAll();
     LCD_GoTo(0, 0);
-    if( e == 0 || menu == 4)
+    if(menu == 6)
     {
-        if(u == end_of_settings())
-        {
-            if(c == 0)
-            {
-                if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
-                else if( menu == 5 ) LCD_WriteText("WYLACZONO ALARM");
-            }
-            else LCD_WriteText("ZAPISANO ALARM");
-        }
-        else
-        {
-            if(u == 0) LCD_WriteText("GODZINY");
-            else if(u == 1) LCD_WriteText("MINUTY");
-            else if(u == 2) LCD_WriteText("SEKUNDY");
-            else if(u == 3) LCD_WriteText("SETNE SEKUND");
 
-            if(c == 0 || c == 3)
+    }
+    else
+    {
+        if( e == 0 || menu == 4)
+        {
+            if(u == end_of_settings())
             {
-                if(u == 4) LCD_WriteText("DZIEN");
-                else if(u == 5) LCD_WriteText("MIESIAC");
                 if(c == 0)
                 {
-                    if(u == 6) LCD_WriteText("ROK");
-                    else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
-                    else if(u == 8) LCD_WriteText("TIMER");
+                    if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
+                    else if( menu == 5 ) LCD_WriteText("WYLACZONO ALARM");
+                }
+                else LCD_WriteText("ZAPISANO ALARM");
+            }
+            else
+            {
+                if(u == 0) LCD_WriteText("GODZINY");
+                else if(u == 1) LCD_WriteText("MINUTY");
+                else if(u == 2) LCD_WriteText("SEKUNDY");
+                else if(u == 3) LCD_WriteText("SETNE SEKUND");
+
+                if(c == 0 || c == 3)
+                {
+                    if(u == 4) LCD_WriteText("DZIEN");
+                    else if(u == 5) LCD_WriteText("MIESIAC");
+                    if(c == 0)
+                    {
+                        if(u == 6) LCD_WriteText("ROK");
+                        else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+                        else if(u == 8) LCD_WriteText("TIMER");
+                    }
+                }
+                else if( c == 2)
+                {
+                    if(u == 4) LCD_WriteText("PONIEDZIALEK");
+                    else if(u == 5) LCD_WriteText("WTOREK");
+                    else if(u == 6) LCD_WriteText("SRODA");
+                    else if(u == 7) LCD_WriteText("CZWARTEK");
+                    else if(u == 8) LCD_WriteText("PIATEK");
+                    else if(u == 9) LCD_WriteText("SOBOTA");
+                    else if(u == 10) LCD_WriteText("NIEDZIELA");
                 }
             }
-            else if( c == 2)
+        }
+        else if(e == 1)
+        {
+            if(u == end_of_settings())
             {
-                if(u == 4) LCD_WriteText("PONIEDZIALEK");
-                else if(u == 5) LCD_WriteText("WTOREK");
-                else if(u == 6) LCD_WriteText("SRODA");
-                else if(u == 7) LCD_WriteText("CZWARTEK");
-                else if(u == 8) LCD_WriteText("PIATEK");
-                else if(u == 9) LCD_WriteText("SOBOTA");
-                else if(u == 10) LCD_WriteText("NIEDZIELA");
+                if(c == 0) LCD_WriteText("ALARM TIM. WYL.");
+                else if(c == 1) LCD_WriteText("ALARM TIM. WL.");
             }
-        }
-    }
-    else if(e == 1)
-    {
-        if(u == end_of_settings())
-        {
-            if(c == 0) LCD_WriteText("ALARM TIM. WYL.");
-            else if(c == 1) LCD_WriteText("ALARM TIM. WL.");
-        }
-        else
-        {
-            if(u == 0) LCD_WriteText("TIMER");
+            else
+            {
+                if(u == 0) LCD_WriteText("TIMER");
+            }
         }
     }
     delay_ms_var(400);
@@ -414,6 +421,34 @@ void show_setting_alarm_case(uint8_t index)
     }
 }
 
+void show_setting_flags_case(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Flaga alarmu");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Flaga timera");
+    }
+    else if(index == 2)
+    {
+        LCD_WriteText("Odliczanie zegara");
+    }
+    else if(index == 3)
+    {
+        LCD_WriteText("Tryby Timera");
+    }
+    else if(index == 4)
+    {
+        LCD_WriteText("Przerwanie alarmu");
+    }
+    else if(index == 5)
+    {
+        LCD_WriteText("Przerwanie timera");
+    }
+}
+
 void show_timer_options(uint8_t index)
 {
     if(index == 0)
@@ -548,6 +583,13 @@ void show_list_case(index)
                     show_timer_options(index);
                 }
             }
+        }
+    }
+    else if(menu == 6)
+    {
+        if(u == -2)
+        {
+            show_setting_flags_case(index);
         }
     }
 }
@@ -712,10 +754,9 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             else if( e == 1) c = PCF8583_recognise_type_of_timer_alarm();
         }
         if( u == -1 && e < 0) u -= 1;
-        else if(u == 0)
+        else if(u == 0 && c < 0)
         {
-            if( e == 0 && (c < 0)) u -= 1;
-        else if( e == 1 && (c < 0)) u -= 1;
+            u -= 1;
         }
 
     }
@@ -808,8 +849,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if( w == 1  && u >= 0)
     {
-
-
         setting_information();
         w = 0;
     }
@@ -817,7 +856,118 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
+    if (u < -2) u = -2;
+    if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
+    {
+        if(u == -2)
+        {
+            PCF8583_get_wall_alarm();
+            if(e == 0) c = PCF8583_is_alarm_flag_set();//zmienna odpowiedzialna za typ alarmu
+            else if(e == 1) c = PCF8583_is_timer_flag_set();
+            else if(e == 2) c = PCF8583_is_clock_counting();
+            else if(e == 3) c = PCF8583_timer_mode();
+            else if(e == 4) c = PCF8583_is_alarm_interrupt();
+            else if(e == 5) c = PCF8583_is_timer_interrupt();
+        }
+        if( u == -1 && e < 0) u -= 1;
+        else if(u == 0 && c < 0)
+        {
+            u -= 1;
+        }
+
+    }
+    check_step_value();//zrobic
     LCD_EraseAll();
+    if( s != 0 )
+    {
+        set_appropriate_values_of_time();
+        s = 0;
+    }
+
+    if(u == -2)
+    {
+        if(e < -1) e = 5;
+        else if(e > 5) e = -1;
+        show_list(e, 5);
+    }
+    else
+    {
+        if(e == 0)
+        {
+            if(u == -1)
+            {
+                if(c < -1) c = 3;
+                else if(c > 3) c = -1;
+                show_list(c, 3);
+            }
+            else
+            {
+                if(u == end_of_settings() || c == 0)
+                {
+                    start = 1;
+                    w = 1;
+                    if(c != -1)
+                    {
+                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                        PCF8583_set_type_of_alarm(c);
+
+                        if(c == 0)
+                        {
+                            PCF8583_alarm_flag_off();
+                        }
+                    }
+                }
+                else
+                {
+                    correction_of_time();
+
+                    correction_of_date();
+
+                    moveStep = 0;
+                    show_alarm_format(c);
+                }
+            }
+        }
+        else if( e == 1)
+        {
+            if(u == -1)
+            {
+                if(c < -1) c = 1;
+                else if(c > 1) c = -1;
+                show_list(c, 1);
+            }
+            else
+            {
+                if(u == end_of_settings() || c == 0)
+                {
+                    start = 1;
+                    w = 1;
+                    if(c == 0)
+                    {
+                        PCF8583_timer_alarm_off();
+
+                    }
+                    else if(c == 1)
+                    {
+                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                        PCF8583_timer_alarm_on();
+                    }
+                }
+                else
+                {
+                    correction_of_date();
+                    moveStep = 0;
+                    show_timer_alarm_format();
+                }
+            }
+        }
+    }
+
+    if( w == 1  && u >= 0)
+    {
+        setting_information();
+        w = 0;
+    }
 }
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -918,6 +1068,12 @@ void czynnosc0( int com, int tog )
         }
         else if ( menu == 6 )
         {
+            u = -2;//przechodzenie przez poziomy w prawo w lewo
+            w = 1;//wymuszenie wyświetlenia komunikatu
+            s = 0;//
+            e = 0;//zmienna odpowiedzialna za wybór ustawiania albo alarmu alarmu albo alarmu timera
+            //d = 0;
+            c = 0;//zmienna odpowiedzialna za typ alarmu
             refresh_screen = 1;
         }
     }
@@ -1247,7 +1403,24 @@ void czynnosc5( int com, int tog )
 
 void czynnosc6( int com, int tog )
 {
-
+    if ( com == 16 )
+    {
+        ++u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 17 )
+    {
+        --u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 32 )
+    {
+        s = 1;
+    }
+    if ( com == 33 )
+    {
+        s = 2;
+    }
     refresh_screen = 1;
 }
 

@@ -84,6 +84,8 @@ void show_alarm_format(uint8_t case_of_format);
 
 void show_setting_alarm_case(uint8_t index);
 
+void show_setting_flags_case(uint8_t index);
+
 void show_alarm_options(uint8_t index);
 
 void correction_of_time(void);
@@ -116,11 +118,11 @@ void wysw4( void );// funkcja wyświetlająca - interfejs dla każdego z podprog
 
 void wysw5( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
-//void wysw6( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
+void wysw6( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
 void czynnosc( int com, int tog ); //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 
-void czynnosc0( int com, int tog );
+void czynnosc0( int com, int tog );//tutaj są inicjowane wartości przy wchodzeniu do podprogramów
 
 void czynnosc1( int com, int tog );
 
@@ -132,7 +134,7 @@ void czynnosc4( int com, int tog );
 
 void czynnosc5( int com, int tog );
 
-//void czynnosc6( int com, int tog );
+void czynnosc6( int com, int tog );
 
 // funkcja obsługująca menu dwupoziomowe
 

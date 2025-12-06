@@ -129,14 +129,16 @@ uint8_t PCF8583_is_clock_counting(void)
 
 uint8_t PCF8583_timer_mode(void)
 {
-    return PCF8583_read(0x08) & 0b00000111;
+    uint8_t temp = PCF8583_read(0x08) & 0b00000111;
+    if(temp == 0b00000111) temp = 0b00000110;
+    return temp;
 }
 
 void PCF8583_set_timer_mode(uint8_t mode)
 {
+    if(mode == 0b00000110) mode = 0b00000111;
     PCF8583_write(0x08, (PCF8583_read(0x08) & 0b1111100) | (mode & 0b00000111));
 }
-
 
 
 /**
