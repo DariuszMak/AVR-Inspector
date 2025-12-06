@@ -1,7 +1,6 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-
 //Pomiar napiêcia przetwornikiem A/C i prezentacja wyniku na LCD 2x16 HD44780
 
 #include <avr/io.h>
@@ -57,7 +56,9 @@ uint8_t refresh_screen;
 
 int main( void );
 
-void random_color(void);
+void change_color_RGB(void);
+
+void all_colors_RGB(void);
 
 void backlight(int8_t);
 

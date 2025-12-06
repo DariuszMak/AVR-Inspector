@@ -171,8 +171,8 @@ void lockers_check_events()
     }
     if(action)
     {
+        all_colors_RGB();
         lockers_queue_enque();
-        random_color();
         refresh_screen = 1;
     }
 }
@@ -251,6 +251,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 
 void lockers_print_date_of_report()
 {
+    all_colors_RGB();
     PCF8583_get_wall_time();
     printf("%d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }

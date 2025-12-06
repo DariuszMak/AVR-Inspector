@@ -23,14 +23,24 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
-void random_color(void)
+void change_color_RGB(void)
 {
-    do
-    {
-    RGB_Red = rand() % 256;
-    RGB_Green = rand() % 256;
-    RGB_Blue = rand() % 256;
-    }while(RGB_Red + RGB_Green + RGB_Green < 128 || RGB_Red + RGB_Green + RGB_Green > 640);
+    static uint8_t temp = 0;
+    temp -= 64;
+    RGB_Red = temp;
+    RGB_Green = temp + 64;
+    RGB_Blue = temp + 128;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
+}
+
+//definicje funkcji
+
+void all_colors_RGB(void)
+{
+    RGB_Red = 255;
+    RGB_Green = 255;
+    RGB_Blue = 255;
+    //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
 
 void backlight(int8_t state)
@@ -1730,8 +1740,6 @@ void sczytaj_komende( void )
     if( interr == 1 )
     {
 
-
-
         /*if(rano_wieczor == 0 )RGB_Red =  255;
         else RGB_Red = 0;
         if(PCF8583_is_12h_24h_format() == 0) RGB_Blue = 255;
@@ -1746,7 +1754,6 @@ void sczytaj_komende( void )
         {
             buzzer();
             backlight(2);
-            random_color();
         }
         else
         {
@@ -1783,8 +1790,17 @@ void sczytaj_komende( void )
             }
         }
 
-        if(menu != 4 && menu != 5) lockers_check_events();
-        else lockers_beginning_actions();
+        if(menu != 4 && menu != 5)
+        {
+            lockers_check_events();
+
+            change_color_RGB();
+        }
+        else
+        {
+            lockers_beginning_actions();
+            all_colors_RGB();
+        }
 
         if( menu == 2 )
         {
@@ -1793,6 +1809,10 @@ void sczytaj_komende( void )
 
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
+
+#if SAFETY_BIT == 1
+        if(lockers_is_safety_bit() == 1) all_colors_RGB();
+#endif
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
