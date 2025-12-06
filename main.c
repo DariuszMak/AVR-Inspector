@@ -388,6 +388,7 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
     pilot_reset();
     //LCD_set_appropiate_position(d);
     LCD_position = temp_position;
+    LCD_Clear();
     //refresh_screen = 1;
 }
 
@@ -1384,11 +1385,14 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     LCD_Clear();
-    if(zwiekszanie > 10) wysw_skok(10);
+    if(zwiekszanie > 100) wysw_skok(100);
 
-    if(c < -1) c = lockers_queue_number_of_records() - 1;
-    else if(c > lockers_queue_number_of_records() - 1) c = -1;
-    show_list(c, lockers_queue_number_of_records() -1);
+    int16_t temp_number_of_recors = lockers_queue_number_of_records() - 1;
+
+    if(c < -1) c = temp_number_of_recors;
+    else if(c > temp_number_of_recors) c = -1;
+    if(temp_number_of_recors == -1) c = 0;
+    show_list(c, temp_number_of_recors);
 }
 
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
