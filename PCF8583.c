@@ -177,8 +177,6 @@ void PCF8583_write_word(uint8_t address,uint16_t data)
     PCF8583_write(++address, (uint8_t)(data >> 8));
 }
 
-
-
 uint16_t PCF8583_read_word(uint8_t address)
 {
     uint16_t temp;
@@ -186,7 +184,6 @@ uint16_t PCF8583_read_word(uint8_t address)
     temp |= PCF8583_read(++address) << 8;
     return temp;
 }
-
 
 /**
  Ustawia datę w układzie
@@ -385,14 +382,14 @@ void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec
 
 void PCF8583_set_weekly_alarm(uint8_t days_of_week, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
 {
-    PCF8583_set_alarm_time( hour,  min,  sec,  hsec);
-    PCF8583_write(0xE, days_of_week & 0b01111111);
+    PCF8583_set_alarm_time( hour,  min,  sec,  hsec );
+    PCF8583_write( 0xE, days_of_week & 0b01111111 );
 }
 
 void PCF8583_set_monthly_alarm(uint8_t day, uint8_t month, uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec)
 {
-    PCF8583_set_alarm_time( hour,  min,  sec,  hsec);
-    PCF8583_set_alarm_date(day, month);
+    PCF8583_set_alarm_time( hour,  min,  sec,  hsec );
+    PCF8583_set_alarm_date( day, month );
 }
 
 void PCF8583_get_wall_alarm(void)//pobiera jedynie te zmienne, które należą do alarmu
@@ -406,7 +403,6 @@ void PCF8583_get_wall_time(void)
     PCF8583_get_time( &godz, &min, &sek, &hsek );
     PCF8583_get_date( &dzien,&dzien_tygodnia, &miesiac, &rok );
 }
-
 
 /*@}*/
 

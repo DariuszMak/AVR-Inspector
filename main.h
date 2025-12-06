@@ -85,7 +85,7 @@ void check_step_value(uint8_t case_of_time, int8_t u);
 
 uint8_t end_of_settings(uint8_t case_of_time);
 
-void show_frame( int8_t number);
+void show_frame( int16_t number);
 
 void show_list(int16_t current_index, int16_t max_index);
 

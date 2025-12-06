@@ -342,7 +342,7 @@ void correction_of_date(uint8_t case_of_time)//uwzględnianie dnia miesiąca wzg
     else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
 }
 
-void show_frame( int8_t number)
+void show_frame( int16_t number )
 {
     LCD_Int(number);
     LCD_WriteText(".");
@@ -1256,7 +1256,7 @@ void pilot( int com, int tog )//
                 lockers_beginning_actions();
                 //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
 //                checking_lockers_state = 1;
-refreshing_interrupt_on();
+                refreshing_interrupt_on();
                 u = PCF8583_recognise_type_of_alarm();
                 refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
@@ -1324,7 +1324,7 @@ void zczytaj_komende( void )
 //        checking_lockers_state = 0;
         delay_ms_var(10);//chwilowe odczekanie na wygaszenie się wyświetlacza
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
-refreshing_interrupt_off();
+        refreshing_interrupt_off();
         pilot(0,0);
         //refresh_screen = 1;// wyświetlenie ekranu
     }
@@ -1398,12 +1398,17 @@ int main( void )
 
     zczytaj_komende();
 
-    //pilot( 3, 0 );//przejście do podprogramu nr 3
+        eeprom_write_byte((uint8_t*)3,2);
+
+
+    pilot( eeprom_read_byte((uint8_t*)3), 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;
 
     sei();//włącza przerwania
+
+    PCF8583_write_word(254, 256);
 
     //główna pętla programu
 

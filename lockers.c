@@ -53,84 +53,180 @@ void lockers_check_events()
 }
 
 
-uint8_t lockers_number_of_frames(void)
+uint16_t lockers_number_of_frames(void)
+{
+    return ((EEPROM_MAX_ADDRESS + 1 + INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
+}
+
+uint8_t lockers_number_of_frames_exteral_EEPROM(void)
 {
     return ((EEPROM_MAX_ADDRESS + 1) / SIZE_OF_FRAME);
 }
 
+uint16_t lockers_number_of_frames_internal_EEPROM(void)
+{
+    return ((INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
+}
 
-uint8_t lockers_convert_address_to_index_of_frame(uint8_t add)
+uint16_t lockers_convert_address_to_index_of_frame(uint16_t add)
 {
     return (add / SIZE_OF_FRAME);
 }
 
-void lockers_read_frame(uint8_t index)
+void lockers_read_frame(uint16_t index)
 {
-    uint8_t temp_address = SIZE_OF_FRAME * index;
-    frame.seconds = EEPROM_read(&temp_address);
+    uint16_t temp_address = SIZE_OF_FRAME * index;
+    if(lockers_convert_address_to_index_of_frame(temp_address) < lockers_number_of_frames_exteral_EEPROM())
+    {
+        frame.seconds = EEPROM_read((uint8_t*)&temp_address);
 
-    frame.minutes = EEPROM_read(&temp_address);
+        frame.minutes = EEPROM_read((uint8_t*)&temp_address);
 
-    frame.hours = EEPROM_read(&temp_address);
+        frame.hours = EEPROM_read((uint8_t*)&temp_address);
 
-    frame.day = EEPROM_read(&temp_address);
+        frame.day = EEPROM_read((uint8_t*)&temp_address);
 
-    frame.month = EEPROM_read(&temp_address);
+        frame.month = EEPROM_read((uint8_t*)&temp_address);
 
-    frame.year = EEPROM_read_word(&temp_address);
+        frame.year = EEPROM_read_word((uint8_t*)&temp_address);
 
-    frame.information = EEPROM_read(&temp_address);
+        frame.information = EEPROM_read((uint8_t*)&temp_address);
+    }
+    else
+    {
+        temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
+
+        frame.seconds = eeprom_read_word(&temp_address);
+                        ++temp_address;
+
+
+        frame.minutes = eeprom_read_word(&temp_address);
+                        ++temp_address;
+
+
+        frame.hours = eeprom_read_word(&temp_address);
+                        ++temp_address;
+
+
+        frame.day = eeprom_read_word(&temp_address);
+                        ++temp_address;
+
+
+        frame.month = eeprom_read_word(&temp_address);
+                        ++temp_address;
+
+
+        frame.year = EEPROM_read_word((uint8_t*)&temp_address);
+                        ++temp_address;
+                                        ++temp_address;
+
+
+
+        frame.information = eeprom_read_word(&temp_address);
+                        ++temp_address;
+
+    }
 
 }
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
-    uint8_t temp_address = PCF8583_read_word(PCF8583_CELL);;//pobranie ostatniego adresu
+    uint16_t temp_address = PCF8583_read_word(PCF8583_CELL);//pobranie ostatniego adresu
     uint8_t overflow_flag = 0;
 
     // eeprom_read_word( (uint16_t*)21);
 
-    if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1))
+
+    if(lockers_convert_address_to_index_of_frame(temp_address) < lockers_number_of_frames_exteral_EEPROM())
     {
+        if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1))
+        {
+            temp_address = SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
-        temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
-
+            overflow_flag = 2;
+        }
+        else if((EEPROM_MAX_ADDRESS - temp_address) == (SIZE_OF_FRAME - 1))
+        {
+            overflow_flag = 1;
+        }
     }
-    else if((EEPROM_MAX_ADDRESS - temp_address) == (SIZE_OF_FRAME - 1))
+    else overflow_flag = 2;
+    if(overflow_flag == 2)
     {
-        overflow_flag = 1;
+        temp_address -= SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();
     }
-
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
-
         if(save_info_table[i])
         {
             buzzer();
             delay_ms_var(50);
             PCF8583_get_wall_time();
-            EEPROM_write(&temp_address,sek);
 
-            EEPROM_write(&temp_address,min);
+            if(overflow_flag < 2)
+            {
+                EEPROM_write((uint8_t*)&temp_address,sek);
 
-            EEPROM_write(&temp_address,godz);
+                EEPROM_write((uint8_t*)&temp_address,min);
 
-            EEPROM_write(&temp_address,dzien);
+                EEPROM_write((uint8_t*)&temp_address,godz);
 
-            EEPROM_write(&temp_address,miesiac);
+                EEPROM_write((uint8_t*)&temp_address,dzien);
 
-            EEPROM_write_word(&temp_address, rok);
+                EEPROM_write((uint8_t*)&temp_address,miesiac);
 
-            uint8_t information = (uint8_t)save_info_table[i] * 100;
-            information += i + 1;
-            EEPROM_write(&temp_address,information);
+                EEPROM_write_word((uint8_t*)&temp_address, rok);
+
+                uint8_t information = (uint8_t)save_info_table[i] * 100;
+                information += i + 1;
+                EEPROM_write((uint8_t*)&temp_address,information);
+            }
+            else
+            {
+                eeprom_write_byte((uint8_t*)&temp_address,sek);
+                ++temp_address;
+
+                eeprom_write_byte((uint8_t*)&temp_address,min);
+                                ++temp_address;
+
+
+                eeprom_write_byte((uint8_t*)&temp_address,godz);
+
+                                ++temp_address;
+
+
+                eeprom_write_byte((uint8_t*)&temp_address,dzien);
+                                ++temp_address;
+
+
+                eeprom_write_byte((uint8_t*)&temp_address,miesiac);
+                                ++temp_address;
+
+
+                eeprom_write_word(&temp_address, rok);
+                                ++temp_address;
+                                                ++temp_address;
+
+
+
+                uint8_t information = (uint8_t)save_info_table[i] * 100;
+                information += i + 1;
+                eeprom_write_byte((uint8_t*)&temp_address,information);
+                                ++temp_address;
+
+            }
         }
     }
+
     PCF8583_write(PCF8583_CELL, temp_address);
 
-    if(overflow_flag == 1) buzzer_time(1000);//przepełnienie pamięci
+    if(overflow_flag == 1)
+    {
+        overflow_flag = 2;//przepełnienie pamięci
+    }
+    else if(overflow_flag == 2) buzzer_time(3000);
 }
 
 
