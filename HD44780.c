@@ -1,5 +1,6 @@
 #include "HD44780.h"
 #include <stdlib.h>
+#include <avr/interrupt.h>
 //-------------------------------------------------------------------------------------------------
 // Wyœwietlacz alfanumeryczny ze sterownikiem HD44780
 // Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci
@@ -9,6 +10,27 @@
 // Kompilator : avr-gcc
 // Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
+
+#if BUFFERING == 1
+volatile uint8_t pwm1, pwm2;
+
+void pwm_led_init ( void )
+{
+	//DDRD |= ( 1 << PD2 ) | ( 1 << PD3 ); // dwie diody dterowane PWM
+	//PORTD |= ( 1 << PD2 ) | ( 1 << PD3 ); // dwie diody dterowane PWM
+	TCCR2 |= ( 1 << WGM21 );// tryb CTC
+	TCCR2 |= ( 1 << CS20 ) | ( 1 << CS22 ); // preskaler 1
+	OCR2 = 10;
+	TIMSK |= ( 1 << OCIE2 );
+}
+
+ISR( _VECTOR( 4 ) )
+{
+	LCDUpdateTask();
+}
+#endif
+
+
 void delay_ms_var( uint16_t count )
 {
 	while( count-- )
@@ -235,19 +257,22 @@ int y_position = 0;
 
 void LCD_WriteText( char * text )
 {
+
 #if BUFFERING == 0
 	while( *text )
 		LCD_WriteData( *text++ );
 #endif
 #if BUFFERING == 1
+    int x = x_position;
+    int y = y_position;
 	int cnt = 0;//zmienna pomocnicza
-	while( *text != 0 && cnt + x_position < LCD_CHARSPERLINE ) //w pętli o ilości iteracji równej długości łąńcucha, jeśli łańcuch jest zbyt długi, to się nie prześle
+	while( *text != 0 && cnt + x < LCD_CHARSPERLINE ) //w pętli o ilości iteracji równej długości łąńcucha, jeśli łańcuch jest zbyt długi, to się nie prześle
 	{
-		LCDBuffer[y_position][x_position + cnt] = *text;//do tablicy bufora o określonej linii i od określonego miejsca zapisywane zostają dane
+		LCDBuffer[y][x + cnt] = *text;//do tablicy bufora o określonej linii i od określonego miejsca zapisywane zostają dane
 		++text;
 		++cnt;
 	}
-	LCDNeedUpdate[y_position] = 1;
+	LCDNeedUpdate[y] = 1;
 #endif
 }
 
@@ -278,9 +303,9 @@ void LCD_Clear( void )
 	LCD_WriteCommand( HD44780_CLEAR );
 	_delay_ms( 2 );
 #if BUFFERING == 1
+	void LCDClearBuffer();
     x_position = 0;
     y_position = 0;
-	void LCDClearBuffer();
 #endif
 }
 

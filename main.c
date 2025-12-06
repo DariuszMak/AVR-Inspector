@@ -483,7 +483,7 @@ int main( void )
 
 	while( 1 )
 	{
-		LCDUpdateTask();
+
 		zczytaj_komende();
 	}
 

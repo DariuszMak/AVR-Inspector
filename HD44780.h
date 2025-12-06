@@ -13,6 +13,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+
 //-------------------------------------------------------------------------------------------------
 //
 // Konfiguracja sygnałów sterujących wyświetlaczem.
@@ -21,7 +22,7 @@
 //-------------------------------------------------------------------------------------------------
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
 
-#define BUFFERING 1 // włączanie trybu buforowania danych na wyświetlaczu 0 - normalny tryb (istnieje konieczność zakomentowania niektórych funkji w programie), 1 - tryb buforowania włączony
+#define BUFFERING 0 // włączanie trybu buforowania danych na wyświetlaczu 0 - normalny tryb (istnieje konieczność zakomentowania niektórych funkji w programie), 1 - tryb buforowania włączony
 
 #define 	  LCD_LINES				2// liczba wierszy bufora wyświetlacza
 #define 	  LCD_CHARSPERLINE		40// liczba znaków w pojedynczej linii bufora wyświetlacza
@@ -125,6 +126,12 @@ void delay_ms_var( uint16_t ); // czekaj określoną ilość milisekund
 void delay_us_var( uint16_t ); // czekaj określoną ilość mikrosekund
 void delay_ms_var_double( double ); // czekaj określoną ilość milisekund
 void delay_us_var_double( double ); // czekaj określoną ilość mikrosekund
+
+#if BUFFERING == 1
+extern volatile uint8_t pwm1, pwm2;
+
+void pwm_led_init ( void );
+#endif
 
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
