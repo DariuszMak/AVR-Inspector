@@ -84,6 +84,8 @@ void show_alarm_format(uint8_t case_of_format);
 
 void show_setting_alarm_case(uint8_t index);
 
+void show_alarm_flag_options(uint8_t index);
+
 void show_setting_flags_case(uint8_t index);
 
 void show_alarm_options(uint8_t index);

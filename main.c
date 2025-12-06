@@ -215,7 +215,14 @@ void setting_information()
     LCD_GoTo(0, 0);
     if(menu == 6)
     {
-
+        if(u == end_of_settings())
+        {
+            if(e == 0)
+            {
+                if(c == 0) LCD_WriteText("ALARM F. WYL");
+                else if(c == 1) LCD_WriteText("ALARM F. WL.");
+            }
+        }
     }
     else
     {
@@ -406,6 +413,7 @@ uint8_t end_of_settings(void)
             else if(c == 1) return 1;
         }
     }
+    else if(menu == 6) return 0;
     return 0;
 }
 
@@ -421,6 +429,18 @@ void show_setting_alarm_case(uint8_t index)
     }
 }
 
+void show_alarm_flag_options(uint8_t index)
+{
+    if(index == 0)
+    {
+        LCD_WriteText("Flaga a. WYL.");
+    }
+    else if(index == 1)
+    {
+        LCD_WriteText("Flaga a. WL.");
+    }
+}
+
 void show_setting_flags_case(uint8_t index)
 {
     if(index == 0)
@@ -433,7 +453,7 @@ void show_setting_flags_case(uint8_t index)
     }
     else if(index == 2)
     {
-        LCD_WriteText("Odliczanie zegara");
+        LCD_WriteText("Zegar");
     }
     else if(index == 3)
     {
@@ -441,11 +461,11 @@ void show_setting_flags_case(uint8_t index)
     }
     else if(index == 4)
     {
-        LCD_WriteText("Przerwanie alarmu");
+        LCD_WriteText("Przerw. alarmu");
     }
     else if(index == 5)
     {
-        LCD_WriteText("Przerwanie timera");
+        LCD_WriteText("Przerw. timera");
     }
 }
 
@@ -590,6 +610,17 @@ void show_list_case(index)
         if(u == -2)
         {
             show_setting_flags_case(index);
+        }
+        else
+        {
+            if(u == -1)
+            {
+                if(e == 0)
+                {
+                    show_alarm_flag_options(index);
+
+                }
+            }
         }
     }
 }
@@ -790,15 +821,13 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 {
                     start = 1;
                     w = 1;
-                    if(c != -1)
-                    {
-                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
-                        PCF8583_set_type_of_alarm(c);
 
-                        if(c == 0)
-                        {
-                            PCF8583_alarm_flag_off();
-                        }
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+                    PCF8583_set_type_of_alarm(c);
+
+                    if(c == 0)
+                    {
+                        PCF8583_alarm_flag_off();
                     }
                 }
                 else
@@ -874,7 +903,6 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             u -= 1;
         }
-
     }
     check_step_value();//zrobic
     LCD_EraseAll();
@@ -890,75 +918,32 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         else if(e > 5) e = -1;
         show_list(e, 5);
     }
+    else if(u == -1)
+    {
+        if(e == 0 || e == 1 || e == 2 || e == 4 || e == 5)
+        {
+            if(c < -1) c = 1;
+            else if(c > 1) c = -1;
+            show_list(c, 1);
+        }
+        else if(e == 3)
+        {
+            if(c < -1) c = 6;
+            else if(c > 6) c = -1;
+            show_list(c, 6);
+        }
+    }
     else
     {
-        if(e == 0)
+        if(u == end_of_settings())
         {
-            if(u == -1)
-            {
-                if(c < -1) c = 3;
-                else if(c > 3) c = -1;
-                show_list(c, 3);
-            }
-            else
-            {
-                if(u == end_of_settings() || c == 0)
-                {
-                    start = 1;
-                    w = 1;
-                    if(c != -1)
-                    {
-                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
-                        PCF8583_set_type_of_alarm(c);
+            start = 1;
+            w = 1;
 
-                        if(c == 0)
-                        {
-                            PCF8583_alarm_flag_off();
-                        }
-                    }
-                }
-                else
-                {
-                    correction_of_time();
-
-                    correction_of_date();
-
-                    moveStep = 0;
-                    show_alarm_format(c);
-                }
-            }
-        }
-        else if( e == 1)
-        {
-            if(u == -1)
+            if(e == 0)
             {
-                if(c < -1) c = 1;
-                else if(c > 1) c = -1;
-                show_list(c, 1);
-            }
-            else
-            {
-                if(u == end_of_settings() || c == 0)
-                {
-                    start = 1;
-                    w = 1;
-                    if(c == 0)
-                    {
-                        PCF8583_timer_alarm_off();
-
-                    }
-                    else if(c == 1)
-                    {
-                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
-                        PCF8583_timer_alarm_on();
-                    }
-                }
-                else
-                {
-                    correction_of_date();
-                    moveStep = 0;
-                    show_timer_alarm_format();
-                }
+                if(c == 0) PCF8583_alarm_flag_off();
+                else if(c == 1) PCF8583_alarm_flag_on();
             }
         }
     }
@@ -1420,6 +1405,10 @@ void czynnosc6( int com, int tog )
     if ( com == 33 )
     {
         s = 2;
+    }
+    if ( com == 59 )
+    {
+        u = end_of_settings();
     }
     refresh_screen = 1;
 }
