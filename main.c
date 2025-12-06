@@ -24,22 +24,26 @@ int main( void )
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
     int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
     int u; //inna (dodatkowa) zmienna pomocnicza
+    int w; //inna (dodatkowa) zmienna pomocnicza
     int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
     int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
     int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
     int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
     int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 
-    char n,d;
-    int i,w, l;
-
-
 //definicje funkcji
 
-    void buzzer( void )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
+    void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
     {
         PORTD |= ( 1 << PD7 );
         _delay_ms( 1 );
+        PORTD &= ~( 1 << PD7 );
+    }
+
+    void buzzer_time( double time )
+    {
+        PORTD |= ( 1 << PD7 );
+        _delay_ms( time );
         PORTD &= ~( 1 << PD7 );
     }
 
@@ -329,53 +333,33 @@ int main( void )
             switch( com )
             {
             case 100:
-                l = 0;
+                t = 0;
 
-                    while (stop_button() && l != 255)
-                    {
-                        buzzer();
-                        _delay_ms(0.4);
-                        buzzer();
-                        ++l;
-                        _delay_ms(500/l+15);
-                    }
-
-                while(1)
+                while (stop_button() && t != 250)
                 {
-                    for(i; i>=1; i-=1)
-                    {
-                        n=rand()%6 + 1;
-                    }
+                    buzzer_time(0.4);
+                    ++t;
+                    _delay_ms(500/t+15);
+                }
 
-                    for(i=1; i<=n; i++)
+                while (t != 0)
+                {
+                    u=rand()%6 + 1;
+
+                    for(w = 1; w <= u; ++w)
                     {
-                        _delay_ms((2+1500/l)/(7-i));
-                        cyfry = i;
+                        _delay_ms((2+1500/t)/(7-w));
+                        cyfry = w;
                         wysw ( *men );
                         buzzer();
-                        _delay_ms(1);
-                        buzzer();
                     }
-
-                    if(l == 1)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        --l;
-                    }
+                    --t;
                 }
-                _delay_ms((2+1500/l)/(7-i));
-                cyfry += 1000;
+                _delay_ms((2+1500/t)/(7-w));
                 wysw( *men );
-                buzzer();
-                _delay_ms(1);
+                cy1 = 8;
                 buzzer();
                 _delay_ms(750);
-
-
-
                 break;
             case 59:
                 cy1 = 9;
@@ -554,17 +538,17 @@ int main( void )
 
                 case 2:
                     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-                    czynnosc( men, 52, tog );
-                    for(i = 0; i <= 5; i++)
-                    {
-                        buzzer();
-                        _delay_ms(i);
-                        buzzer();
-                        _delay_ms(400-50*i);
-                        cyfry = i;
-                        wysw( *men );
-                    }
-                    //wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    /*czynnosc( men, 52, tog );
+                        for(t = 0; t < 7; ++t)
+                        {
+                            buzzer();
+                            _delay_ms(t);
+                            buzzer();
+                            _delay_ms(400-50*t);
+                            cyfry = t;
+                            wysw( *men );
+                        }*/
+                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 
                 case 3:
