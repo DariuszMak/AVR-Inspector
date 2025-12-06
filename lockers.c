@@ -195,7 +195,7 @@ void lockers_read_frame(uint8_t index)
 void lockers_print_entire_frame(void)
 {
     buzzer_time(0.5);
-    printf("%d:%02d:%02d %02d:%02d:%02d", frame.year, frame.month, frame.day, frame.hours, frame.minutes, frame.seconds);
+    printf("%04d:%02d:%02d %02d:%02d:%02d", frame.year, frame.month, frame.day, frame.hours, frame.minutes, frame.seconds);
 
     uint8_t number = frame.information % 100;
 
@@ -222,7 +222,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
         for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
         {
             lockers_queue_read(index_of_frame);
-            printf("%d. ", index_of_frame + 1);
+            printf("%03d. ", index_of_frame + 1);
             lockers_print_entire_frame();
         }
     }
@@ -232,7 +232,7 @@ void lockers_print_date_of_report()
 {
     all_colors_RGB();
     PCF8583_get_wall_time();
-    printf("%d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
+    printf("%04d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }
 
 void lockers_print_all_memory(void)

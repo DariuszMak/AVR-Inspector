@@ -843,7 +843,7 @@ END GROUP
  *(.fini0)
                 0x0000000000004d00                _etext = .
 
-.data           0x0000000000800060      0x4f4 load address 0x0000000000004d00
+.data           0x0000000000800060      0x4fc load address 0x0000000000004d00
                 0x0000000000800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800060        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
@@ -914,138 +914,139 @@ END GROUP
                 0x0000000000000000        0x0 obj/Release/HD44780.o
                                           0x2 (size before relaxing)
  .rodata.str1.1
-                0x00000000008000d6       0x89 obj/Release/lockers.o
+                0x00000000008000d6       0x8f obj/Release/lockers.o
  .rodata.str1.1
-                0x000000000080015f      0x3f5 obj/Release/main.o
-                                        0x425 (size before relaxing)
+                0x0000000000800165      0x3f6 obj/Release/main.o
+                                        0x426 (size before relaxing)
  *(.gnu.linkonce.d*)
-                0x0000000000800554                . = ALIGN (0x2)
-                0x0000000000800554                _edata = .
-                0x0000000000800554                PROVIDE (__data_end, .)
+                0x000000000080055c                . = ALIGN (0x2)
+ *fill*         0x000000000080055b        0x1 
+                0x000000000080055c                _edata = .
+                0x000000000080055c                PROVIDE (__data_end, .)
 
-.bss            0x0000000000800554       0x5f
-                0x0000000000800554                PROVIDE (__bss_start, .)
+.bss            0x000000000080055c       0x5f
+                0x000000000080055c                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0000000000800554        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
- .bss           0x0000000000800554        0x0 obj/Release/delay_lib.o
- .bss           0x0000000000800554        0x0 obj/Release/HD44780.o
- .bss           0x0000000000800554        0x0 obj/Release/i2c.o
- .bss           0x0000000000800554        0x6 obj/Release/ir_decode.o
- .bss           0x000000000080055a        0x0 obj/Release/lockers.o
- .bss           0x000000000080055a        0x9 obj/Release/main.o
-                0x000000000080055a                cyfra
-                0x000000000080055b                pozycja
-                0x000000000080055c                switch_menu
-                0x000000000080055d                refresh_screen
-                0x000000000080055e                backlight_of_lcd
-                0x000000000080055f                pilot_state
-                0x0000000000800560                moveStep
-                0x0000000000800561                menu
- .bss           0x0000000000800563        0x0 obj/Release/PCF8583.o
- .bss           0x0000000000800563        0x0 obj/Release/termometer.o
- .bss           0x0000000000800563        0x0 obj/Release/timer_2.o
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_udivmodqi4.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_udivmodhi4.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_exit.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_copy_data.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_clear_bss.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_usmulhisi3.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_umulhisi3.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(addsf3.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(addsf3x.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(cmpsf2.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3x.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixsfsi.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(floatsisf.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_cmp.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_inf.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_nan.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_pscA.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_pscB.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_round.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_split3.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_zero.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(gesf2.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3x.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(itoa_ncheck.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(utoa_ncheck.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(iob.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(printf.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(putchar.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(puts.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(vfprintf_std.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(eerd_block_atmega32.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(eeupd_block_atmega32.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(eeupd_byte_atmega32.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(strnlen_P.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(strnlen.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(strrev.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(fputc.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(ultoa_invert.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_prologue.o)
- .bss           0x0000000000800563        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_epilogue.o)
+ .bss           0x000000000080055c        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
+ .bss           0x000000000080055c        0x0 obj/Release/delay_lib.o
+ .bss           0x000000000080055c        0x0 obj/Release/HD44780.o
+ .bss           0x000000000080055c        0x0 obj/Release/i2c.o
+ .bss           0x000000000080055c        0x6 obj/Release/ir_decode.o
+ .bss           0x0000000000800562        0x0 obj/Release/lockers.o
+ .bss           0x0000000000800562        0x9 obj/Release/main.o
+                0x0000000000800562                cyfra
+                0x0000000000800563                pozycja
+                0x0000000000800564                switch_menu
+                0x0000000000800565                refresh_screen
+                0x0000000000800566                backlight_of_lcd
+                0x0000000000800567                pilot_state
+                0x0000000000800568                moveStep
+                0x0000000000800569                menu
+ .bss           0x000000000080056b        0x0 obj/Release/PCF8583.o
+ .bss           0x000000000080056b        0x0 obj/Release/termometer.o
+ .bss           0x000000000080056b        0x0 obj/Release/timer_2.o
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_udivmodqi4.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_udivmodhi4.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_exit.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_copy_data.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_clear_bss.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_usmulhisi3.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_umulhisi3.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(addsf3.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(addsf3x.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(cmpsf2.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3x.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixsfsi.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(floatsisf.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_cmp.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_inf.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_nan.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_pscA.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_pscB.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_round.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_split3.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_zero.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(gesf2.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3x.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(itoa_ncheck.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(utoa_ncheck.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(iob.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(printf.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(putchar.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(puts.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(vfprintf_std.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(eerd_block_atmega32.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(eeupd_block_atmega32.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(eeupd_byte_atmega32.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(strnlen_P.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(strnlen.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(strrev.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(fputc.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(ultoa_invert.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_prologue.o)
+ .bss           0x000000000080056b        0x0 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_epilogue.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x0000000000800563        0x5 obj/Release/ir_decode.o
-                0x0000000000800563                toggle_bit
-                0x0000000000800564                address
-                0x0000000000800565                command
-                0x0000000000800566                rc5cnt
-                0x0000000000800567                Ir_key_press_flag
- COMMON         0x0000000000800568       0x3f obj/Release/lockers.o
-                0x0000000000800568                t
-                0x000000000080056a                timer
-                0x000000000080056b                cnt
-                0x000000000080056c                w
-                0x000000000080056d                states_table
-                0x0000000000800577                RGB_Green
-                0x0000000000800578                save_info_table
-                0x0000000000800582                interr
-                0x0000000000800583                RGB_Red
-                0x0000000000800584                checking_lockers_state
-                0x0000000000800585                c
-                0x0000000000800587                overflow_timer_2
-                0x0000000000800589                hsek
-                0x000000000080058a                godz
-                0x000000000080058b                min
-                0x000000000080058c                miesiac
-                0x000000000080058d                rozmiar
-                0x000000000080058f                frame
-                0x0000000000800597                s
-                0x0000000000800598                zwiekszanie
-                0x000000000080059a                sek
-                0x000000000080059b                rok
-                0x000000000080059d                dzien_tygodnia
-                0x000000000080059e                ds18b20_pad
-                0x00000000008005a0                state_temp
-                0x00000000008005a1                e
-                0x00000000008005a2                start_program
-                0x00000000008005a3                u
-                0x00000000008005a4                RGB_Blue
-                0x00000000008005a5                rano_wieczor
-                0x00000000008005a6                dzien
- COMMON         0x00000000008005a7        0x2 obj/Release/timer_2.o
-                0x00000000008005a7                pwm1
-                0x00000000008005a8                pwm2
- COMMON         0x00000000008005a9        0x4 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
-                0x00000000008005a9                __brkval
-                0x00000000008005ab                __flp
- COMMON         0x00000000008005ad        0x6 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(iob.o)
-                0x00000000008005ad                __iob
-                0x00000000008005b3                PROVIDE (__bss_end, .)
+ COMMON         0x000000000080056b        0x5 obj/Release/ir_decode.o
+                0x000000000080056b                toggle_bit
+                0x000000000080056c                address
+                0x000000000080056d                command
+                0x000000000080056e                rc5cnt
+                0x000000000080056f                Ir_key_press_flag
+ COMMON         0x0000000000800570       0x3f obj/Release/lockers.o
+                0x0000000000800570                t
+                0x0000000000800572                timer
+                0x0000000000800573                cnt
+                0x0000000000800574                w
+                0x0000000000800575                states_table
+                0x000000000080057f                RGB_Green
+                0x0000000000800580                save_info_table
+                0x000000000080058a                interr
+                0x000000000080058b                RGB_Red
+                0x000000000080058c                checking_lockers_state
+                0x000000000080058d                c
+                0x000000000080058f                overflow_timer_2
+                0x0000000000800591                hsek
+                0x0000000000800592                godz
+                0x0000000000800593                min
+                0x0000000000800594                miesiac
+                0x0000000000800595                rozmiar
+                0x0000000000800597                frame
+                0x000000000080059f                s
+                0x00000000008005a0                zwiekszanie
+                0x00000000008005a2                sek
+                0x00000000008005a3                rok
+                0x00000000008005a5                dzien_tygodnia
+                0x00000000008005a6                ds18b20_pad
+                0x00000000008005a8                state_temp
+                0x00000000008005a9                e
+                0x00000000008005aa                start_program
+                0x00000000008005ab                u
+                0x00000000008005ac                RGB_Blue
+                0x00000000008005ad                rano_wieczor
+                0x00000000008005ae                dzien
+ COMMON         0x00000000008005af        0x2 obj/Release/timer_2.o
+                0x00000000008005af                pwm1
+                0x00000000008005b0                pwm2
+ COMMON         0x00000000008005b1        0x4 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
+                0x00000000008005b1                __brkval
+                0x00000000008005b3                __flp
+ COMMON         0x00000000008005b5        0x6 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(iob.o)
+                0x00000000008005b5                __iob
+                0x00000000008005bb                PROVIDE (__bss_end, .)
                 0x0000000000004d00                __data_load_start = LOADADDR (.data)
-                0x00000000000051f4                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000000000051fc                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00000000008005b3        0x0
-                0x00000000008005b3                PROVIDE (__noinit_start, .)
+.noinit         0x00000000008005bb        0x0
+                0x00000000008005bb                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00000000008005b3                PROVIDE (__noinit_end, .)
-                0x00000000008005b3                _end = .
-                0x00000000008005b3                PROVIDE (__heap_start, .)
+                0x00000000008005bb                PROVIDE (__noinit_end, .)
+                0x00000000008005bb                _end = .
+                0x00000000008005bb                PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)

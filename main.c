@@ -1764,13 +1764,13 @@ void sczytaj_komende( void )
         {
             buzzer();
             backlight(2);
-            printf("\n");
+            printf("#");
         }
         else
         {
             if(start_program == 0)
             {
-                printf("Przechwytywanie rozpoczete... ");
+                printf("\nPrzechwytywanie rozpoczete... ");
                 lockers_print_date_of_report();
 
                 if(lockers_is_queue_full() == 1 )
