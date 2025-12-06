@@ -101,7 +101,7 @@ int main( void )
 
 	void pilot( int *men , int com )//
 	{
-		if( !start ) start = 2;//jeśli start jest równe zero, ma przyjąć wartość 2
+		if( !start ) start = 2;//jeśli start jest równe zero, ma przyjąć wartość 2 (jeśli wywołujemy tę funkcję z główneg menu (menu = 0) to ma się nie wykonać nic innego, jak określona czynność)
 		buzzer();
 		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
@@ -330,12 +330,12 @@ int main( void )
 		{
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
-			if ( start == 1 )
+			if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
 			{
-				TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
+				TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
 				wybor( *men );
 				start = 0;
-				pilot( &menu, 59 );
+				wysw ( *men, com );// wyświetlenie ekranu
 			}
 
 			if( com > 0 && com <= liczbaPodprogramow )
@@ -352,13 +352,13 @@ int main( void )
 
 				case 2:
 					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-					pilot( &menu, 52 );
+					pilot( men, 52 );
 					//wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 
 				case 3:
-					pilot( &menu, 1 );
-					pilot( &menu, 52 );
+					pilot( men, 1 );
+					pilot( men, 52 );
 					//wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 				}

@@ -1951,7 +1951,7 @@ Disassembly of section .text:
     106e:	84 81       	ldd	r24, Z+4	; 0x04
     1070:	95 81       	ldd	r25, Z+5	; 0x05
     1072:	01 97       	sbiw	r24, 0x01	; 1
-    1074:	89 f4       	brne	.+34     	; 0x1098 <pilot.1448+0x602>
+    1074:	91 f4       	brne	.+36     	; 0x109a <pilot.1448+0x604>
     1076:	83 b7       	in	r24, 0x33	; 51
     1078:	8a 7f       	andi	r24, 0xFA	; 250
     107a:	83 bf       	out	0x33, r24	; 51
@@ -1963,53 +1963,53 @@ Disassembly of section .text:
     1088:	15 82       	std	Z+5, r1	; 0x05
     108a:	14 82       	std	Z+4, r1	; 0x04
     108c:	17 01       	movw	r2, r14
-    108e:	c7 01       	movw	r24, r14
-    1090:	6b e3       	ldi	r22, 0x3B	; 59
-    1092:	70 e0       	ldi	r23, 0x00	; 0
-    1094:	0e 94 4b 05 	call	0xa96	; 0xa96 <pilot.1448>
-    1098:	c6 01       	movw	r24, r12
-    109a:	01 97       	sbiw	r24, 0x01	; 1
-    109c:	03 97       	sbiw	r24, 0x03	; 3
-    109e:	70 f5       	brcc	.+92     	; 0x10fc <pilot.1448+0x666>
-    10a0:	f5 01       	movw	r30, r10
-    10a2:	d1 82       	std	Z+1, r13	; 0x01
-    10a4:	c0 82       	st	Z, r12
-    10a6:	f7 01       	movw	r30, r14
-    10a8:	15 82       	std	Z+5, r1	; 0x05
-    10aa:	14 82       	std	Z+4, r1	; 0x04
-    10ac:	f5 01       	movw	r30, r10
-    10ae:	80 81       	ld	r24, Z
-    10b0:	91 81       	ldd	r25, Z+1	; 0x01
-    10b2:	0e 94 ae 04 	call	0x95c	; 0x95c <wybor.1429>
-    10b6:	f5 01       	movw	r30, r10
-    10b8:	80 81       	ld	r24, Z
-    10ba:	91 81       	ldd	r25, Z+1	; 0x01
-    10bc:	82 30       	cpi	r24, 0x02	; 2
-    10be:	91 05       	cpc	r25, r1
-    10c0:	61 f0       	breq	.+24     	; 0x10da <pilot.1448+0x644>
-    10c2:	83 30       	cpi	r24, 0x03	; 3
-    10c4:	91 05       	cpc	r25, r1
-    10c6:	79 f0       	breq	.+30     	; 0x10e6 <pilot.1448+0x650>
-    10c8:	01 97       	sbiw	r24, 0x01	; 1
-    10ca:	c1 f4       	brne	.+48     	; 0x10fc <pilot.1448+0x666>
-    10cc:	17 01       	movw	r2, r14
-    10ce:	81 e0       	ldi	r24, 0x01	; 1
-    10d0:	90 e0       	ldi	r25, 0x00	; 0
-    10d2:	b6 01       	movw	r22, r12
-    10d4:	0e 94 c5 04 	call	0x98a	; 0x98a <wysw.1433>
-    10d8:	11 c0       	rjmp	.+34     	; 0x10fc <pilot.1448+0x666>
-    10da:	83 b7       	in	r24, 0x33	; 51
-    10dc:	85 60       	ori	r24, 0x05	; 5
-    10de:	83 bf       	out	0x33, r24	; 51
-    10e0:	17 01       	movw	r2, r14
-    10e2:	c7 01       	movw	r24, r14
-    10e4:	07 c0       	rjmp	.+14     	; 0x10f4 <pilot.1448+0x65e>
+    108e:	f5 01       	movw	r30, r10
+    1090:	80 81       	ld	r24, Z
+    1092:	91 81       	ldd	r25, Z+1	; 0x01
+    1094:	b6 01       	movw	r22, r12
+    1096:	0e 94 c5 04 	call	0x98a	; 0x98a <wysw.1433>
+    109a:	c6 01       	movw	r24, r12
+    109c:	01 97       	sbiw	r24, 0x01	; 1
+    109e:	03 97       	sbiw	r24, 0x03	; 3
+    10a0:	68 f5       	brcc	.+90     	; 0x10fc <pilot.1448+0x666>
+    10a2:	f5 01       	movw	r30, r10
+    10a4:	d1 82       	std	Z+1, r13	; 0x01
+    10a6:	c0 82       	st	Z, r12
+    10a8:	f7 01       	movw	r30, r14
+    10aa:	15 82       	std	Z+5, r1	; 0x05
+    10ac:	14 82       	std	Z+4, r1	; 0x04
+    10ae:	f5 01       	movw	r30, r10
+    10b0:	80 81       	ld	r24, Z
+    10b2:	91 81       	ldd	r25, Z+1	; 0x01
+    10b4:	0e 94 ae 04 	call	0x95c	; 0x95c <wybor.1429>
+    10b8:	f5 01       	movw	r30, r10
+    10ba:	80 81       	ld	r24, Z
+    10bc:	91 81       	ldd	r25, Z+1	; 0x01
+    10be:	82 30       	cpi	r24, 0x02	; 2
+    10c0:	91 05       	cpc	r25, r1
+    10c2:	61 f0       	breq	.+24     	; 0x10dc <pilot.1448+0x646>
+    10c4:	83 30       	cpi	r24, 0x03	; 3
+    10c6:	91 05       	cpc	r25, r1
+    10c8:	71 f0       	breq	.+28     	; 0x10e6 <pilot.1448+0x650>
+    10ca:	01 97       	sbiw	r24, 0x01	; 1
+    10cc:	b9 f4       	brne	.+46     	; 0x10fc <pilot.1448+0x666>
+    10ce:	17 01       	movw	r2, r14
+    10d0:	81 e0       	ldi	r24, 0x01	; 1
+    10d2:	90 e0       	ldi	r25, 0x00	; 0
+    10d4:	b6 01       	movw	r22, r12
+    10d6:	0e 94 c5 04 	call	0x98a	; 0x98a <wysw.1433>
+    10da:	10 c0       	rjmp	.+32     	; 0x10fc <pilot.1448+0x666>
+    10dc:	83 b7       	in	r24, 0x33	; 51
+    10de:	85 60       	ori	r24, 0x05	; 5
+    10e0:	83 bf       	out	0x33, r24	; 51
+    10e2:	17 01       	movw	r2, r14
+    10e4:	06 c0       	rjmp	.+12     	; 0x10f2 <pilot.1448+0x65c>
     10e6:	17 01       	movw	r2, r14
-    10e8:	c7 01       	movw	r24, r14
+    10e8:	c5 01       	movw	r24, r10
     10ea:	61 e0       	ldi	r22, 0x01	; 1
     10ec:	70 e0       	ldi	r23, 0x00	; 0
     10ee:	0e 94 4b 05 	call	0xa96	; 0xa96 <pilot.1448>
-    10f2:	c7 01       	movw	r24, r14
+    10f2:	c5 01       	movw	r24, r10
     10f4:	64 e3       	ldi	r22, 0x34	; 52
     10f6:	70 e0       	ldi	r23, 0x00	; 0
     10f8:	0e 94 4b 05 	call	0xa96	; 0xa96 <pilot.1448>
