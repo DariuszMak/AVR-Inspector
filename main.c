@@ -16,7 +16,6 @@
 //Program glowny:
 
 
-
 int main( void )
 {
 
@@ -126,15 +125,18 @@ int main( void )
             {
             case 41:
                 LCD_Clear();
+                char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
 
-                /*char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
+                char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
 
                 for ( t = 0; t < 2; ++t )
                 {
                     original_text[t] = ( char* ) malloc ( LCD_CHARSPERLINE * sizeof ( *original_text ) );
-                }*/
-
-                char original_text[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
+                    for (u = 0; u < rozmiar; ++u)
+                    {
+                        original_text[t][u] = original_text_static[t][u];
+                    }
+                }
 
                 /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";
                 original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
@@ -212,11 +214,11 @@ int main( void )
                     free( buffer_table );
                 }
 
-                /*for ( t = 0; t < 2; ++t )
+                for ( t = 0; t < 2; ++t )
                 {
                     free( original_text[t] );
                 }
-                free( original_text );*/
+                free( original_text );
 
                 buzzer();
                 _delay_ms(10);
@@ -322,7 +324,6 @@ int main( void )
             LCD_Displaying( com );
             wysw( *men, com );
             break;
-
         case 2:
             switch( com )
             {
