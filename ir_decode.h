@@ -6,6 +6,12 @@
 #define IR_PIN PIND
 #define IR_IN (1 << PD6)
 
+#define STOP_BUTTON_DIR DDRB
+#define STOP_BUTTON_PORT PORTB
+#define STOP_BUTTON_PIN PINB
+#define STOP_BUTTON_IN (1 << PB4)
+
+
 //#define IR_PORT D // te dyrektywy s¹ autorstwa Miros³wa Kardasia
 //#define IR_PIN 6
 //#define IR_IN (1<<IR_PIN)

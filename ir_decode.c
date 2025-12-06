@@ -40,8 +40,8 @@ void ir_init()
     TIMSK |= ( 1 << TICIE1 ); //przerwanie
     Ir_key_press_flag = 0;
 
-    DDRB  &= 1 << 4;//inicjowanie przycisku stopu jako wejście
-    PORTB |= 1 << 4;//inicjowanie przycisku stopu jako wejście
+    STOP_BUTTON_DIR  &= STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
+    STOP_BUTTON_PORT |= STOP_BUTTON_IN;//inicjowanie przycisku stopu jako wejście
 }
 
 ISR( TIMER1_CAPT_vect )
@@ -117,7 +117,7 @@ ISR( TIMER1_CAPT_vect )
 int stop_button()//przycisk fizycznie umieszczony na płytce
 {
     int temp = 0;
-    if(!(PINB & ( 1 << 4 )))
+    if(!( STOP_BUTTON_PIN & STOP_BUTTON_IN ))
     {
         temp = 1;
     }

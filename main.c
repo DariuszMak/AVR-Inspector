@@ -18,22 +18,26 @@
 
 int main( void )
 {
+//UWAGA!!! PONIŻSZE CHARAKTERYZACJE ZMIENNYCH SĄ BARDZO ISTOTNE W CELU POPRAWNEGO ICH UŻYWANIA W PROGRAMIE
 
+//zmienne zarezerwowane - nie można ich używać do innych celów niż wskazane
+//zmienne zarezerwowane globalnie dla całego programu
     const int liczbaPodprogramow = 3;
-    //UWAGA!!! PONIŻSZE CHARAKTERYZACJE ZMIENNYCH SĄ BARDZO ISTOTNE W CELU POPRAWNEGO ICH UŻYWANIA W PROGRAMIE
+    int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
+    int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
+    int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
+//zmienne zarezerwowane dla podprogramu nr 2:
+int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
+int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+//zmienne spełniające określone funkcje
     int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
     int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
-    int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
-    int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
-
+    //inne zmienne pomocnicze do wykorzystywania w innch podprogramach (wymaga to wcześniejszego zapoznania się z kodem)
 
     int u; //inna (dodatkowa) zmienna pomocnicza
     int w; //inna (dodatkowa) zmienna pomocnicza
     int s;//inna (dodatowa zmienna)
     int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
-    int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
-    int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
-    int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 
 //definicje funkcji
 
@@ -101,8 +105,6 @@ int main( void )
 
             char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));
 
-
-
             if( u > 0 || u == -1 )
             {
                 for(s = 0; s < rozmiar; ++s)
@@ -112,7 +114,7 @@ int main( void )
                 }
 
                 LCD_GoTo(4,0);
-                LCD_Int((int) (t * 100 / 249));
+                LCD_Int((int) (t * 100 / 250));
                 LCD_WriteText("%");
                 for(s = 0; s < rozmiar; ++s)
                 {
@@ -401,8 +403,8 @@ int main( void )
                 do
                 {
                     buzzer_time(0.2);
-                    wysw ( *men );
                     ++t;
+                    wysw ( *men );
                     _delay_ms(750/t+10);
                 }
                 while (stop_button() && t != 250);
