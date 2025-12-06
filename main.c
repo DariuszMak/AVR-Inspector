@@ -29,9 +29,21 @@ void change_color_RGB(void)
     static uint8_t left_right = 0;
     static uint8_t inversion = 0;
     temp -= 64;
-    RGB_Red = temp;
+    //RGB_Red = temp;
     RGB_Green = temp + 128;
-    RGB_Blue = temp;
+    //RGB_Blue = temp;
+
+    if(inversion == 0)
+    {
+        RGB_Red = temp + 64;
+        RGB_Blue = temp;
+    }
+    else
+    {
+        RGB_Red = temp;
+        RGB_Blue = temp + 64;
+    }
+
     if(temp == 128)
     {
         if(left_right == 0)left_right = 1;
@@ -42,7 +54,6 @@ void change_color_RGB(void)
             if(inversion == 0)RGB_Red = 0;
             else RGB_Blue = 0;
         }
-
         else if(left_right == 2)
         {
             if(inversion == 0)RGB_Blue = 0;
@@ -78,7 +89,6 @@ void no_colors_RGB(void)
     RGB_Blue = 0;
     //printf("%d,%d,%d\n",RGB_Red,RGB_Green,RGB_Blue);
 }
-
 
 void backlight(int8_t state)
 {
@@ -1293,11 +1303,10 @@ void czynnosc1( int com, int tog )
 {
     if ( com == 41 )
     {
-        pilot_off();
         refresh_screen = 0;
         LCD_Clear();
         rozmiar = LCD_CHARSPERLINE;
-        char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
+        //char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
 
         char** original_text = ( char** ) malloc( 2 * sizeof (*original_text) );//tablica dwuwymiarowa z testowym napisem
 
@@ -1306,7 +1315,7 @@ void czynnosc1( int com, int tog )
             original_text[t] = ( char* ) malloc ( LCD_CHARSPERLINE * sizeof ( *original_text ) );
             for (u = 0; u < rozmiar; ++u)
             {
-                original_text[t][u] = original_text_static[t][u];
+                original_text[t][u] = rand() % 256;
             }
         }
 
@@ -1325,11 +1334,11 @@ void czynnosc1( int com, int tog )
             LCD_WriteData( original_text[1][t] );
         }
 
-        rozmiar = 40;
         u = 1;
 
         while( u )
         {
+            //pilot_off();
             char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
 
             for ( t = 0; t < 2; ++t )
@@ -1358,7 +1367,9 @@ void czynnosc1( int com, int tog )
                 if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 0;
             }
 
-            if ( stop_button() )//jeśli przycisk zatrzymania został wciśnięty
+            //pilot_on();
+
+            if ( stop_button() || Ir_key_press_flag)//jeśli przycisk zatrzymania został wciśnięty
             {
                 u = 0;
             }
@@ -1396,7 +1407,6 @@ void czynnosc1( int com, int tog )
         buzzer();
         delay_ms_var_double(10);
         buzzer();
-        pilot_on();
 
     }
     if ( com == 12 )
@@ -1492,7 +1502,7 @@ void czynnosc1( int com, int tog )
         LCD_ScreenOn();
         pilot_on();
     }
-    LCD_Displaying( com );
+    if( com >= 0 && com <=  5 ) LCD_Displaying( com );
     wysw();
 }
 
@@ -1854,6 +1864,7 @@ void sczytaj_komende( void )
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
     {
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
+        LCD_ScreenOn();
         u = menu;
         menu = 0;
         switch_menu = 0;
@@ -1881,6 +1892,7 @@ void sczytaj_komende( void )
         {
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
             toggle_action();
+            Ir_key_press_flag = 0;
             pilot( command, t );//wywołanie funkcji pilot
             pilot_reset();
         }
