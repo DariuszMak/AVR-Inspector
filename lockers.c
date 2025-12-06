@@ -107,7 +107,7 @@ void lockers_init()
     z funkcją 'USART_Transmit' */
     static FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
 
-    static FILE mystdin = FDEV_SETUP_STREAM(NULL, USART_Recieve, _FDEV_SETUP_READ);
+    static FILE mystdin = FDEV_SETUP_STREAM(USART_Transmit, USART_Recieve, _FDEV_SETUP_READ | _FDEV_SETUP_WRITE);
 
     /* Inicjalizuje  port szeregowy AVRa */
     USART_init(MYUBRR);

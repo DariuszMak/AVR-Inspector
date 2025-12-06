@@ -2285,6 +2285,12 @@ int main( void )
 
     i2c_write_buf(PCF8583_address(), 0x10, 2, temp_table);*/
 
+    /*int number_test = 0;
+
+    scanf("Podaj cos %d\n", &number_test);
+
+    printf("%d\n", number_test);*/
+
     //PCF8583_alarm_monthly();
 
     //eeprom_write_word((uint16_t*)257,5);
