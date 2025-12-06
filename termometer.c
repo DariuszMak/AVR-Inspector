@@ -61,17 +61,17 @@ unsigned char OneWireReset()
     if (!(ONEWIRE_PIN   &   ONEWIRE)) return 0;
 
     ONEWIRE_DIR   |=  ONEWIRE;
-    _delay_us(500);
+    delay_us_var(500);
     ONEWIRE_DIR   &= ~ONEWIRE;
-    _delay_us(70);
+    delay_us_var(70);
 
     if(!(ONEWIRE_PIN   &   ONEWIRE))
     {
-        _delay_us(500);
+        delay_us_var(500);
         return(1);
     }
 
-    _delay_us(500);
+    delay_us_var(500);
 
     return(0);
 }
@@ -90,15 +90,15 @@ void OneWireWriteByte(unsigned char byte)
 
         if (byte & 0x01)
         {
-            _delay_us(7);
+            delay_us_var(7);
             ONEWIRE_DIR   &= ~ONEWIRE;
-            _delay_us(70);
+            delay_us_var(70);
         }
         else
         {
-            _delay_us(70);
+            delay_us_var(70);
             ONEWIRE_DIR   &= ~ONEWIRE;
-            _delay_us(7);
+            delay_us_var(7);
         }
 
         byte >>= 1;
@@ -116,14 +116,14 @@ unsigned char OneWireReadByte(void)
     for (i=0; i<8; i++)
     {
         ONEWIRE_DIR   |=  ONEWIRE;
-        _delay_us(7);
+        delay_us_var(7);
         ONEWIRE_DIR   &= ~ONEWIRE;
-        _delay_us(7);
+        delay_us_var(7);
         byte >>= 1;
 
         if(ONEWIRE_PIN   &   ONEWIRE) byte |= 0x80;
 
-        _delay_us(70);
+        delay_us_var(70);
     }
 
     return byte;
@@ -137,7 +137,7 @@ double ds18b20_temperature(void)
     {
 
         /* 750ms - czas konwersji */
-        //_delay_ms(750);
+        //delay_ms_var(750);
 
         /* Odczyt z układu ds18b20, dane zapisywane są w tablicy ds18b20_pad.
            Dwie pierwsze pozycje w tablicy to kolejno mniej znaczący bajt i bardziej

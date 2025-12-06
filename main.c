@@ -395,7 +395,7 @@ int main( void )
                 else if(u == 6) LCD_WriteText("ROK");
                 else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
                 w = 0;
-                delay_ms_var(300);
+                delay_ms_var(400);
                 LCD_EraseAll();
             }
 
@@ -876,9 +876,9 @@ int main( void )
                 case 1:
                     EEPROM_clear_all_memory();
                     PCF8583_write(PCF8583_CELL, 0);
+                    u = 0;
                     break;
                 }
-
                 break;
             case 32:
                 u -= 1;
@@ -1008,6 +1008,7 @@ int main( void )
             TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
             wybor( *men );
             wysw ( *men );// wyświetlenie ekranu
+
         }
         if(pilot_state == 1) pilot_on();
     }
@@ -1074,7 +1075,8 @@ int main( void )
     sei();//włącza przerwania
 
 
-    pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu
+    pilot( &menu, 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
+    pilot( &menu, 3, 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;

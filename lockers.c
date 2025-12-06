@@ -56,7 +56,7 @@ void lockers_check_events()
 void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 {
     PORTD |= ( 1 << PD7 );
-    _delay_ms( 1 );
+    delay_ms_var( 1 );
     PORTD &= ~( 1 << PD7 );
 }
 
@@ -98,7 +98,7 @@ void lockers_read_frame(uint8_t index)
 
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
-    delay_ms_var(1000);
+    delay_ms_var(400);
     uint8_t temp_address = PCF8583_read(PCF8583_CELL);;//pobranie ostatniego adresu
 
     if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1)) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć

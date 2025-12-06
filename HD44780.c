@@ -80,7 +80,7 @@ void _LCD_Write( unsigned char dataToWrite )
 #if USE_RW == 1
     while( LCD_ReadStatus() & HD44780_DDRAM_SET );
 #else
-    _delay_us( 50 );
+    delay_us_var( 50 );
 #endif // USE_RW
 }
 //-------------------------------------------------------------------------------------------------

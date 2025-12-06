@@ -36,7 +36,7 @@ void EEPROM_write(uint8_t address,uint8_t data)
     i2cWrite(address);
     i2cWrite(data);
     i2cStop();
-    _delay_ms(5);
+    delay_ms_var(5);
 }
 
 
