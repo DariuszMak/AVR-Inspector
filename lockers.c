@@ -47,7 +47,7 @@ void lockers_init()
     int16_t temp = INTERNAL_EEPROM_MAX_INDEX + 1;
     if(PCF8583_read_word(PCF8583_HEAD) > temp || PCF8583_read_word(PCF8583_TAIL) > temp || PCF8583_read_word(PCF8583_HEAD) < INTERNAL_EEPROM_MIN_INDEX || PCF8583_read_word(PCF8583_TAIL) < INTERNAL_EEPROM_MIN_INDEX )
     {
-        PCF8583_write_word(PCF8583_TAIL, INTERNAL_EEPROM_MIN_INDEX);
+        PCF8583_write_word(PCF8583_TAIL, lockers_convert_index_of_frame_to_address(0));
         lockers_queue_empty();
         buzzer_time(1000);
     }
@@ -230,7 +230,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 
 void lockers_print_date_of_report()
 {
-    no_colors_RGB();
+    all_colors_RGB();
     PCF8583_get_wall_time();
     printf("%d:%02d:%02d %02d:%02d:%02d\n", rok, miesiac, dzien, godz, min, sek);
 }
@@ -310,7 +310,7 @@ void lockers_save_frame(uint8_t index, uint8_t i)
     if((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
     {
         buzzer_time(500);
-        temp_address = INTERNAL_EEPROM_MIN_INDEX;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+        temp_address = lockers_convert_index_of_frame_to_address(0);//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
     }
 
     PCF8583_write_word(PCF8583_TAIL, temp_address);
@@ -355,17 +355,27 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
                 if(start_program == 3)
                 {
                     buzzer_time(3000);
+                    lockers_queue_dequeue();
                 }
                 else
                 {
                     lockers_print_latest_data();
-                    lockers_save_frame(lockers_tail(), i);
+                    //lockers_save_frame(lockers_tail(), i);
                 }
             }
-            else lockers_save_frame(lockers_tail(), i);
+            lockers_save_frame(lockers_tail(), i);
         }
     }
     backlight(2);
+}
+
+void lockers_queue_dequeue(void)
+{
+    if(lockers_is_queue_empty() == 0)
+    {
+        if(lockers_head() == lockers_number_of_frames() - 1) PCF8583_write_word(PCF8583_HEAD, lockers_convert_index_of_frame_to_address(0));
+        else PCF8583_write_word(PCF8583_HEAD, lockers_convert_index_of_frame_to_address(lockers_head() + 1));
+    }
 }
 
 uint8_t locker_1_button(void)//przycisk fizycznie umieszczony na płytce
@@ -470,9 +480,9 @@ uint8_t locker_10_button(void)//przycisk fizycznie umieszczony na płytce
 
 void lockers_clear_all_memory(void)
 {
-    int16_t i = INTERNAL_EEPROM_MIN_INDEX;
+    int16_t i = lockers_convert_index_of_frame_to_address(0);
 
-    for(; i <= INTERNAL_EEPROM_MAX_INDEX; ++i)
+    for(; i < lockers_convert_index_of_frame_to_address(lockers_number_of_frames()); ++i)
     {
         eeprom_busy_wait();
         eeprom_update_byte((uint8_t*)i, 0);

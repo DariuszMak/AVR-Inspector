@@ -153,6 +153,8 @@ uint8_t lockers_is_queue_full(void);
 
 void lockers_queue_enque(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
 
+void lockers_queue_dequeue(void);
+
 void lockers_queue_read(uint8_t index);
 
 void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapis do struktury

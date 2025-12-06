@@ -63,13 +63,11 @@ void i2c_write_buf(uint8_t dev, uint8_t adr, uint8_t len, uint8_t *buf )
 
 void i2c_read_buf(uint8_t dev, uint8_t adr, uint8_t len, uint8_t *buf)
 {
-    uint8_t a;
-    a = dev;
     i2cStart();
-    i2cWrite(a);
+    i2cWrite(dev);
     i2cWrite(adr);
     i2cStart();
-    i2cWrite(a + 1);
+    i2cWrite(dev + 1);
     while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
     i2cStop();
 }

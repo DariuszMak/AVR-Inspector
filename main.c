@@ -1504,6 +1504,10 @@ void czynnosc3( int com, int tog )
     {
         lockers_print_all_memory();
     }
+    /*if( com == 55)
+    {
+        lockers_queue_dequeue();
+    }*/
     if ( com == 32 )
     {
         c -= zwiekszanie;
@@ -1779,8 +1783,8 @@ void sczytaj_komende( void )
 
             uint8_t temp_char = USART_Recieve_without_waiting();
 
-            if(temp_char == 'I') lockers_print_all_memory();
-            else if(temp_char == 'i') lockers_print_latest_data();
+            if(temp_char == 'R') lockers_print_all_memory();
+            else if(temp_char == 'r') lockers_print_latest_data();
             if(temp_char != 0) refresh_screen = 1;
 
             if(PCF8583_is_alarm_flag_set() == 1 || PCF8583_is_timer_flag_set() == 1)
