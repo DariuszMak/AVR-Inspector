@@ -29,8 +29,6 @@
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
-#define SAFETY_BIT 1
-
 #define LOCKER_1_BUTTON_DIR DDRD
 #define LOCKER_1_BUTTON_PORT PORTD
 #define LOCKER_1_BUTTON_PIN PIND
@@ -87,15 +85,6 @@ uint8_t state_temp;
 
 //uint16_t lockers_queue_head;
 
-#if SAFETY_BIT == 1
-
-void lockers_safety_bit_on(void);
-
-void lockers_safety_bit_off(void);
-
-uint8_t lockers_is_safety_bit(void);
-
-#endif
 
 /* Inicjuje port szeregowy AVRa */
 void USART_init(uint16_t myubrr);
@@ -159,6 +148,8 @@ uint8_t locker_10_button(void);//przycisk fizycznie umieszczony na płytce
 uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan poszczególnych wejść do szafek (zwraca 0 albo 1)
 
 void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian i nakazuje zapis
+
+uint8_t lockers_is_queue_full(void);
 
 void lockers_queue_enque(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
 

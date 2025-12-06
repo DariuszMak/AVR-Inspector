@@ -1754,24 +1754,21 @@ void sczytaj_komende( void )
         {
             buzzer();
             backlight(2);
+            printf("\n");
         }
         else
         {
-#if SAFETY_BIT == 1
-
             if(start_program == 0)
             {
-                printf("Koniec oczekiwania... ");
+                printf("Przechwytywanie rozpoczete... ");
                 lockers_print_date_of_report();
 
-                if(lockers_is_safety_bit() == 1 )
+                if(lockers_is_queue_full() == 1 )
                 {
-                    printf("Dane niekompletne!!!\n");
+                    printf("UWAGA!!! Dane niekompletne!!!\n");
                     lockers_print_latest_data();
-                    lockers_safety_bit_off();
                 }
             }
-#endif
             start_program = 2;
 
             uint8_t temp_char = USART_Recieve_without_waiting();
@@ -1810,9 +1807,8 @@ void sczytaj_komende( void )
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
 
-#if SAFETY_BIT == 1
-        if(lockers_is_safety_bit() == 1) all_colors_RGB();
-#endif
+        if(lockers_is_queue_full() == 1) all_colors_RGB();
+
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego

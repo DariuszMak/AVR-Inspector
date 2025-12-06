@@ -1,26 +1,5 @@
 #include "lockers.h"
 
-#if SAFETY_BIT == 1
-
-void lockers_safety_bit_on(void)
-{
-    PCF8583_write(PCF8583_SAFETY_CELL,1);
-}
-
-void lockers_safety_bit_off(void)
-{
-    PCF8583_write(PCF8583_SAFETY_CELL,0);
-}
-
-uint8_t lockers_is_safety_bit(void)
-{
-    //return 0;//usunąć, gdy będzie PCF8563
-    if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
-    else return 1;
-}
-
-#endif
-
 /* Inicjuje port szeregowy AVRa */
 void USART_init(uint16_t myubrr)
 {
@@ -337,6 +316,25 @@ void lockers_save_frame(uint8_t index, uint8_t i)
     PCF8583_write_word(PCF8583_TAIL, temp_address);
 }
 
+uint8_t lockers_is_queue_full(void)
+{
+    if(lockers_tail() == lockers_number_of_frames() - 1)
+    {
+        if(lockers_head() == 0)
+        {
+            return 1;
+        }
+    }
+    else
+    {
+        if(lockers_head() == lockers_tail() + 1)
+        {
+            return  1;
+        }
+    }
+    return 0;
+}
+
 void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
@@ -348,32 +346,15 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
         if(save_info_table[i])
         {
             //printf("%d %d %d \n",lockers_tail(), lockers_head(), lockers_number_of_frames());
-            uint8_t end_of_mem = 0;
             buzzer();
             delay_ms_var(5);
-            if(lockers_tail() == lockers_number_of_frames() - 1)
-            {
-                if(lockers_head() == 0)
-                {
-                    end_of_mem = 1;
-                }
-            }
-            else
-            {
-                if(lockers_head() == lockers_tail() + 1)
-                {
-                    end_of_mem = 1;
-                }
-            }
 
-            if( end_of_mem == 1)
+
+            if( lockers_is_queue_full() == 1)
             {
                 if(start_program == 3)
                 {
                     buzzer_time(3000);
-#if SAFETY_BIT == 1
-                    lockers_safety_bit_on();
-#endif
                 }
                 else
                 {
