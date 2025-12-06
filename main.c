@@ -415,9 +415,8 @@ void show_list(int16_t current_index, int16_t max_index)
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
-    switch ( menu )
+    if( menu == 0 )
     {
-    case 0:
         LCD_EraseAll();
         LCD_GoTo( 0, 0 );
         LCD_WriteText( "Wybierz:" );
@@ -428,9 +427,9 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         //LCDWriteToBuffer( 0, 0, "napis" );
         //LCD_WriteText ( "Pierwszy Napis abcdefghijklmnopqrstuvwxyz" );
         //LCD_WriteText ( "Drugi" );
-
-        break;
-    case 1:
+    }
+    else if( menu == 1 )
+    {
         LCD_EraseAll();
         LCD_GoTo( 0, 0 );
         LCD_Int( command );
@@ -438,8 +437,10 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         LCD_Int( address );
         LCD_GoTo( 0, 1 );
         LCD_Int( toggle_bit );
-        break;
-    case 2:
+    }
+    else if( menu == 2 )
+    {
+
         /*if ( cyfry >= 10000 ) cyfry = 10000;
         else if( cyfry <= -10000 ) cyfry = -10000;*/
         //OCR0 = cyfry;//zmienna przepełnienia Timera 0
@@ -500,9 +501,9 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
 
         free(tablicaTemp);
-
-        break;
-    case 3:
+    }
+    else if( menu == 3 )
+    {
         moveStep=0;
         PCF8583_get_wall_time();
         LCD_EraseAll();
@@ -536,8 +537,11 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         //LCD_Int( pwm1 );
         //LCD_Int( pwm2 );
         //OCR0 = pwm1;//zmienna przepełnienia Timera 0
-        break;
-    case 4:
+    }
+    else if( menu == 4 )
+    {
+
+
         LCD_EraseAll();
 
         if (u < 0) u = 0;
@@ -577,8 +581,11 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         moveStep = 0;
         show_time_format();
-        break;
-    case 5:
+    }
+    else if( menu == 5 )
+    {
+
+
         LCD_EraseAll();
         if (u < -1) u = -1;
         if(u == -1)
@@ -643,27 +650,27 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             show_alarm_format(c);
 
         }
-        break;
-    case 6:
+    }
+    else if( menu == 6 )
+    {
         LCD_EraseAll();
         if(zwiekszanie > 10) wysw_skok(10);
 
         if(u < -1) u = lockers_number_of_frames() - 1;
         else if(u > lockers_number_of_frames() - 1) u = -1;
         show_list(u, lockers_number_of_frames() -1);
-        break;
     }
 }
+
 
 
 void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 {
     buzzer();
 
-    switch( menu )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
+    if( menu == 0)
     {
 
-    case 0:
         switch ( com )
         {
         case 41:
@@ -865,12 +872,14 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             break;
         }
         wysw();
-        break;
-    case 1:
+    }
+    else if( menu == 1 )
+    {
         LCD_Displaying( com );
         if ( com != 100 ) wysw();
-        break;
-    case 2:
+    }
+    else if( menu == 2 )
+    {
         switch( com )
         {
         case 100://reakcja na naciśnięcie przycisku "stop"
@@ -961,16 +970,15 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             break;
         }
         wysw();
-        break;
-    case 3:
-        switch ( com )
+    }
+    else if( menu == 3 )
+    {
+        if ( com == 59 )
         {
-
-
-        case 59:
             PCF8583_alarm_flag_off();
-            break;
-        case 100:
+        }
+        if ( com == 100 )
+        {
             if(pilot_state == 1)
             {
                 pilot_state = 0;
@@ -979,38 +987,39 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             {
                 pilot_state = 1;
             }
-            break;
-
         }
         wysw();
-        break;
+    }
 
-
-    case 4:
-        switch ( com )
+    else if( menu == 4 )
+    {
+        if ( com == 16 )
         {
-        case 16:
             ++u;
             w = 1;//wymuszenie wyświetlenia komunikatu
-            break;
-        case 17:
+        }
+        if ( com == 17 )
+        {
             --u;
             w = 1;//wymuszenie wyświetlenia komunikatu
-            break;
-        case 32://zwiększenie
+        }
+        if ( com == 32 )
+        {
             s = 1;
-            break;
-        case 33://zmniejszenie
+        }
+        if ( com == 33 )
+        {
             s = 2;
-            break;
-        case 59:
+        }
+        if ( com == 59 )
+        {
             u = end_of_settings(0);
-            break;
         }
         wysw();
-        break;
+    }
 
-    case 5:
+    else if( menu == 5 )
+    {
         switch ( com )
         {
         case 16:
@@ -1034,9 +1043,9 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             break;
         }
         wysw();
-        break;
-
-    case 6:
+    }
+    else if( menu == 6 )
+    {
         switch ( com )
         {
         case 12:
@@ -1064,7 +1073,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         }
 
         wysw();
-        break;
     }
 
 
@@ -1255,7 +1263,7 @@ int main( void )
 {
 
 //Inicjalizacja
-LCD_Initalize();//inicjalizacja wyświetlacza
+    LCD_Initalize();//inicjalizacja wyświetlacza
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
