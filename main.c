@@ -16,10 +16,6 @@
 
 
 
-
-
-
-
 int main( void )
 {
 
@@ -43,16 +39,17 @@ int main( void )
 
 	void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 	{
-		buzzer();
 		LCD_Clear();
 		LCD_WriteText( "Program: " );
 		LCD_Int( number );
+		for ( t = 0; t < 5; ++t )
+		{
+			_delay_ms( 10 );
+			buzzer();
+		}
 		_delay_ms( 500 );
 		LCD_Clear();
 	}
-
-
-
 
 	void wysw( int men, int add ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 	{
@@ -137,7 +134,7 @@ int main( void )
 
 					LCD_Home();
 
-					for( t = 0; t < rozmiar; t++ )
+					for( t = 0; t < rozmiar; ++t )
 					{
 						j[t] = LCD_ReadData();
 						_delay_ms( 1 );
@@ -145,7 +142,7 @@ int main( void )
 
 					LCD_GoTo( 0, 1 );
 
-					for( t = rozmiar; t < 2 * rozmiar; t++ )
+					for( t = rozmiar; t < 2 * rozmiar; ++t )
 					{
 						j[t] = LCD_ReadData();
 						_delay_ms( 1 );
@@ -153,7 +150,7 @@ int main( void )
 
 					LCD_Clear();
 
-					for( t = 0; t < rozmiar; t++ )
+					for( t = 0; t < rozmiar; ++t )
 					{
 						LCD_WriteData( j[t] );
 
@@ -161,7 +158,7 @@ int main( void )
 
 					LCD_GoTo( 0, 1 );
 
-					for( t = rozmiar; t < 2 * rozmiar; t++ )
+					for( t = rozmiar; t < 2 * rozmiar; ++t )
 					{
 						LCD_WriteData( j[t] );
 					}
@@ -208,14 +205,14 @@ int main( void )
 
 				void pisz( void )
 				{
-					for( t = 0; t < rozmiar; t++ )
+					for( t = 0; t < rozmiar; ++t )
 					{
 						LCD_WriteData( i[t] );
 						_delay_ms( 50 );
 					}
 				}
 
-				for( t = 0; t < rozmiar; t++ )
+				for( t = 0; t < rozmiar; ++t )
 				{
 					i[t] = LCD_ReadData();
 					_delay_ms( 100 );

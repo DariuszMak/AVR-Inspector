@@ -275,7 +275,7 @@ void LCD_Initalize( void )
 #if USE_RW == 1
 	LCD_RW_PORT &= ~LCD_RW;
 #endif
-	for( i = 0; i < 3; i++ ) // trzykrotne powtórzenie bloku instrukcji
+	for( i = 0; i < 3; ++i ) // trzykrotne powtórzenie bloku instrukcji
 	{
 		LCD_E_PORT |= LCD_E; //  E = 1
 		_LCD_OutNibble( 0x03 ); // tryb 8-bitowy
@@ -338,7 +338,7 @@ const int czterdziesci = 40;
 void LCD_MoveRight ( unsigned int freq, unsigned int step, unsigned int way )
 {
 	int temp;
-	for ( temp = 0; temp < step; temp++ )
+	for ( temp = 0; temp < step; ++temp )
 	{
 		if ( way )LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT );
 		else LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_RIGHT );
@@ -355,7 +355,7 @@ void LCD_MoveRight ( unsigned int freq, unsigned int step, unsigned int way )
 void LCD_MoveLeft ( unsigned int freq, unsigned int step, unsigned int way )
 {
 	int temp;
-	for ( temp = 0; temp < step; temp++ )
+	for ( temp = 0; temp < step; ++temp )
 	{
 		if ( way )LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT );
 		else LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_LEFT );
@@ -375,7 +375,7 @@ void LCD_Erase ( unsigned int row )
 	if ( row == 0 || row == 1 )
 	{
 		LCD_GoTo( 0, 0 );
-		for ( temp = 0; temp < czterdziesci; temp++ )
+		for ( temp = 0; temp < czterdziesci; ++temp )
 		{
 			LCD_WriteText( " " );
 		}
@@ -384,7 +384,7 @@ void LCD_Erase ( unsigned int row )
 	if ( row == 0 || row == 2 )
 	{
 		LCD_GoTo( 0, 1 );
-		for ( temp = 0; temp < czterdziesci; temp++ )
+		for ( temp = 0; temp < czterdziesci; ++temp )
 		{
 			LCD_WriteText( " " );
 		}
@@ -422,14 +422,13 @@ void LCD_Displaying ( unsigned int option )
 
 #if BUFFERING == 1
 
-#define 	  LCD_LINES				2
-#define 	  LCD_CHARSPERLINE		40
-
 unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];
 unsigned char LCDNeedUpdate[LCD_LINES];
 signed 	 char LCDCharIndex[LCD_LINES];
 unsigned char LCDLineIndex;
 unsigned char LCDLineAddress[4] = {0x00, 0x40, 0x14, 0x54};
+
+
 //-------------------------------------------------------------------------------------------------
 // Bezwzględny zapis rozkazu
 //-------------------------------------------------------------------------------------------------
@@ -461,20 +460,21 @@ unsigned char LCD_NotBusy( void )
 	}
 }
 
-
+//-------------------------------------------------------------------------------------------------
 // Wywoływane funkcje zewnętrzne :
 //		LCD_NotBusy - zwraca 0 jeśli wyświetlacz jest zajęty, w przeciwnym razie zwraca 1
 //		LCD_JustWriteCommand - zapisuje rozkaz do sterownika wyświetlacza (bezzwłocznie)
 //		LCD_JustWriteData	 - zapisuje dane do sterownika wyświetlacza (bezzwłocznie)
 //=================================================================================================
+
 int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
 {
 	int cnt = 0;
 	while( *str != 0 )
 	{
 		LCDBuffer[y][x + cnt] = *str;
-		str++;
-		cnt++;
+		++str;
+		++cnt;
 	}
 	LCDNeedUpdate[y] = 1;
 	return cnt;
@@ -485,10 +485,10 @@ int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
 void LCDClearBuffer( void )
 {
 	int i, j;
-	for( j = 0; j < LCD_LINES; j++ )
+	for( j = 0; j < LCD_LINES; ++j )
 	{
 		LCDCharIndex[j] = -1;
-		for( i = 0; i < LCD_CHARSPERLINE; i++ )
+		for( i = 0; i < LCD_CHARSPERLINE; ++i )
 		{
 			LCDBuffer[j][i] = 32;
 		}
@@ -519,15 +519,10 @@ void LCDUpdateTask( void )
 		}
 		return;
 	}
-	LCDLineIndex++;
+	++LCDLineIndex;
 	if( LCDLineIndex == LCD_LINES )
 		LCDLineIndex = 0;
 }
-
-
-//=================================================================================================
-//
-//=================================================================================================
 
 #endif
 //-------------------------------------------------------------------------------------------------

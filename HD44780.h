@@ -21,7 +21,10 @@
 //-------------------------------------------------------------------------------------------------
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
 
-#define BUFFERING 1 // włączanie trybu buforowania danych na wyświetlaczu
+#define BUFFERING 1 // włączanie trybu buforowania danych na wyświetlaczu 0 - normalny tryb (istnieje konieczność zakomentowania niektórych funkji w programie), 1 - tryb buforowania włączony
+
+#define 	  LCD_LINES				2// liczba wierszy bufora wyświetlacza
+#define 	  LCD_CHARSPERLINE		40// liczba znaków w pojedynczej linii bufora wyświetlacza
 
 #define USE_LCD_Int 1
 #define USE_LCD_Hex 1
@@ -133,7 +136,7 @@ void _LCD_JustWrite( unsigned char );
 void LCD_JustWriteCommand( unsigned char );
 void LCD_JustWriteData( unsigned char );
 unsigned char LCD_NotBusy( void );
-int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str );
+int LCDWriteToBuffer( unsigned char, unsigned char, char * );
 void LCDClearBuffer( void );
 void LCDUpdateTask( void );
 #endif
