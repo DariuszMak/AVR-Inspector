@@ -44,6 +44,7 @@ int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może 
 int8_t u; //inna (dodatkowa) zmienna pomocnicza
 int8_t w; //inna (dodatkowa) zmienna pomocnicza
 int8_t s;//inna (dodatowa zmienna)
+int8_t c;
 
 
 int main( void );

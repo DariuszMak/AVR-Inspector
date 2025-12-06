@@ -163,25 +163,114 @@ void show_alarm_format(uint8_t case_of_format)
     }
 }
 
+void setting_information(uint8_t case_of_time, uint8_t u)
+{
+    if(u == 0) LCD_WriteText("GODZINY");
+    else if(u == 1) LCD_WriteText("MINUTY");
+    else if(u == 2) LCD_WriteText("SEKUNDY");
+    else if(u == 3) LCD_WriteText("SETNE SEKUND");
+
+    if(case_of_time == 0 || case_of_time == 3)
+    {
+        if(u == 4) LCD_WriteText("DZIEN");
+        else if(u == 5) LCD_WriteText("MIESIAC");
+        if(case_of_time == 0)
+        {
+            if(u == 6) LCD_WriteText("ROK");
+            else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+        }
+    }
+    if( case_of_time == 2)
+    {
+        if(u == 4) LCD_WriteText("PONIEDZIALEK");
+        else if(u == 5) LCD_WriteText("WTOREK");
+        else if(u == 6) LCD_WriteText("SRODA");
+        else if(u == 7) LCD_WriteText("CZWARTEK");
+        else if(u == 8) LCD_WriteText("PIATEK");
+        else if(u == 9) LCD_WriteText("SOBOTA");
+        else if(u == 10) LCD_WriteText("NIEDZIELA");
+    }
+
+}
+
+void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
+{
+    int16_t temp = 0;
+    if(s == 2) temp -= zwiekszanie;
+    else if (s == 1) temp = zwiekszanie;
+
+
+    if(u == 0) godz += temp;
+    else if(u == 1) min += temp;
+    else if(u == 2) sek += temp;
+    else if(u == 3) hsek += temp;
+
+    if(case_of_time == 0 || case_of_time == 3)
+    {
+        if(u == 4) dzien += temp;
+        else if(u == 5) miesiac += temp;
+        if(case_of_time == 0)
+        {
+            if(u == 6)rok += temp;
+            else if(u == 7) dzien_tygodnia += temp;
+        }
+    }
+    if( case_of_time == 2)
+    {
+        if(u == 4)
+        {
+            if(s == 1) miesiac |= (1 << 0);
+            else if(s == 2) miesiac &= ~(1 << 0);
+        }
+        if(u == 5)
+        {
+            if(s == 1) miesiac |= ~(1 << 1);
+            else if(s == 2) miesiac &= ~(1 << 1);
+        }
+        if(u == 6)
+        {
+            if(s == 1) miesiac |= ~(1 << 2);
+            else if(s == 2) miesiac &= ~(1 << 2);
+        }
+        if(u == 7)
+        {
+            if(s == 1) miesiac |= ~(1 << 3);
+            else if(s == 2) miesiac &= ~(1 << 3);
+        }
+        if(u == 8)
+        {
+            if(s == 1) miesiac |= ~(1 << 4);
+            else if(s == 2) miesiac &= ~(1 << 4);
+        }
+        if(u == 9)
+        {
+            if(s == 1) miesiac |= ~(1 << 5);
+            else if(s == 2) miesiac &= ~(1 << 5);
+        }
+        if(u == 10)
+        {
+            if(s == 1) miesiac |= ~(1 << 6);
+            else if(s == 2) miesiac &= ~(1 << 6);
+        }
+    }
+}
+
 void show_alarm_options(uint8_t index)
 {
+
     if(index == 0)
-    {
-        LCD_WriteText("Typ alarmu bez zmian");
-    }
-    else if(index == 1)
     {
         LCD_WriteText("Alarm wylaczony");
     }
-    else if(index == 2)
+    else if(index == 1)
     {
         LCD_WriteText("Alarm codzienny");
     }
-    else if(index == 3)
+    else if(index == 2)
     {
         LCD_WriteText("Alarm tygodniowy");
     }
-    else if(index == 4)
+    else if(index == 3)
     {
         LCD_WriteText("Alarm miesieczny");
     }
@@ -264,7 +353,7 @@ void show_list(uint16_t current_index, uint16_t max_index)
     if ( current_index != 0)
     {
         LCD_GoTo(0, 0);
-        if(menu == 3)
+        if(menu == 6)
         {
             lockers_read_frame(current_index - 1);
             show_frame(current_index);
@@ -278,7 +367,7 @@ void show_list(uint16_t current_index, uint16_t max_index)
     if(current_index != max_index)
     {
         LCD_GoTo(0, 1);
-        if(menu == 3)
+        if(menu == 6)
         {
             lockers_read_frame(current_index);
             show_frame(current_index + 1);
@@ -437,14 +526,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             LCD_EraseAll();
             LCD_GoTo(moveStep, 0);
-            if(u == 0) LCD_WriteText("GODZINY");
-            else if(u == 1) LCD_WriteText("MINUTY");
-            else if(u == 2) LCD_WriteText("SEKUNDY");
-            else if(u == 3) LCD_WriteText("SETNE SEKUND");
-            else if(u == 4) LCD_WriteText("DZIEN");
-            else if(u == 5) LCD_WriteText("MIESIAC");
-            else if(u == 6) LCD_WriteText("ROK");
-            else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+            setting_information(0, u);
             w = 0;
             delay_ms_var(400);
             LCD_EraseAll();
@@ -455,28 +537,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         if( s != 0 )
         {
-            if ( s == 1 )
-            {
-                if(u == 0) godz += zwiekszanie;
-                else if(u == 1) min += zwiekszanie;
-                else if(u == 2) sek += zwiekszanie;
-                else if(u == 3) hsek += zwiekszanie;
-                else if(u == 4) dzien += zwiekszanie;
-                else if(u == 5) miesiac += zwiekszanie;
-                else if(u == 6) rok += zwiekszanie;
-                else if(u == 7) dzien_tygodnia += zwiekszanie;
-            }
-            else if( s == 2 )
-            {
-                if(u == 0) godz -= zwiekszanie;
-                else if(u == 1) min -= zwiekszanie;
-                else if(u == 2) sek -= zwiekszanie;
-                else if(u == 3) hsek -= zwiekszanie;
-                else if(u == 4) dzien -= zwiekszanie;
-                else if(u == 5) miesiac -= zwiekszanie;
-                else if(u == 6) rok -= zwiekszanie;
-                else if(u == 7) dzien_tygodnia -= zwiekszanie;
-            }
+            set_appropriate_values_of_time(0, u, s);
 
             s = 0;
         }
@@ -490,11 +551,15 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         break;
     case 5:
         LCD_EraseAll();
+        if(c < 0) c = 4;
+        else if(c > 4) c = 0;
+        show_list(c, 4);
 
 
         break;
     case 6:
         LCD_EraseAll();
+        if(zwiekszanie > 10) wysw_skok(10);
         if(u < 0) u = lockers_number_of_frames();
         else if(u > lockers_number_of_frames()) u = 0;
         show_list(u, lockers_number_of_frames());
@@ -761,23 +826,8 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             u = -1;//tryb wyświetlania
             wysw();
             //cy1 = 8;
-
             break;
         case 59:
-            /*d_led_Int ( 9000 );
-            delay_ms_var_double( 1000 );
-            d_led_Int ( 8765 );
-            delay_ms_var_double( 1000 );
-            d_led_Int ( 4321 );
-            delay_ms_var_double( 1000 );
-            d_led_Int ( 0 );
-            delay_ms_var_double( 1000 );
-            d_led_Int ( -123 );
-            delay_ms_var_double( 1000 );
-            d_led_Int ( -3 );
-            delay_ms_var_double( 1000 );
-            d_led_Int ( -1000 );
-            delay_ms_var_double( 1000 );*/
             cyfra = 0;
             pozycja = 0;
             u = -1;
@@ -855,7 +905,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             ++u;
             w = 1;//wymuszenie wyświetlenia komunikatu
             break;
-
         case 17:
             --u;
             w = 1;//wymuszenie wyświetlenia komunikatu
@@ -876,7 +925,24 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     case 5:
         switch ( com )
         {
+        case 16:
+            ++u;
+            w = 1;//wymuszenie wyświetlenia komunikatu
+            break;
+        case 17:
+            --u;
+            w = 1;//wymuszenie wyświetlenia komunikatu
+            break;
+        case 32://zwiększenie
+            if(u != 0) s = 1;
+            u -= zwiekszanie;
+            break;
+        case 33://zmniejszenie
+            if(u != 0) s = 2;
+            u += zwiekszanie;
+            break;
         case 59:
+            u = 8;
             break;
         }
         wysw();
@@ -1008,6 +1074,7 @@ void pilot( int com, int tog )//
                 break;
             case 5:
                 //czynnosc( men, 50, tog );
+                c = PCF8583_recognise_type_of_alarm();
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 6:
