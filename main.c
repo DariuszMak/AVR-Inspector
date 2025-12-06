@@ -1928,6 +1928,14 @@ void czynnosc4( int com, int tog )
     {
         u = end_of_settings();
     }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+            u = 0;//oznaka wyjścia z podprogramów
+            w = 1;
+        }
+    }
 
     refresh_screen = 1;
 }
@@ -1955,6 +1963,17 @@ void czynnosc5( int com, int tog )
     if ( com == 59 )
     {
         u = end_of_settings();
+    }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+            if(u >= 0)
+            {
+                u = 0;//oznaka wyjścia z podprogramów
+                w = 1;
+            }
+        }
     }
 
     refresh_screen = 1;
@@ -1984,6 +2003,14 @@ void czynnosc6( int com, int tog )
     {
         u = end_of_settings();
     }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+            u = -2;//oznaka wyjścia z podprogramów
+            w = 1;
+        }
+    }
 
     refresh_screen = 1;
 }
@@ -2011,6 +2038,14 @@ void czynnosc7( int com, int tog )
     if ( com == 59 )
     {
         u = end_of_settings();
+    }
+    if ( com == 14 )
+    {
+        if( tog == 0)
+        {
+            u = 0;//oznaka wyjścia z podprogramów
+            w = 1;
+        }
     }
 
     refresh_screen = 1;
@@ -2109,9 +2144,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     }
     if ( com == 14 )
     {
-        if( tog == 0)
-        {
-        }
         if( tog == 1)
         {
             start = 1;//oznaka wyjścia z podprogramów
@@ -2388,8 +2420,10 @@ void sczytaj_komende( void )
         }
         else
         {
+
             if(lockers_is_flag_bit(2) == 1)
             {
+
                 if(temp_char == 'e') pilot(59, 0);
                 else if(temp_char == 'w') pilot(32, 0);
                 else if(temp_char == 's') pilot(33, 0);
@@ -2419,22 +2453,24 @@ void sczytaj_komende( void )
                 else if(temp_char == '7') pilot(7, 0);
                 else if(temp_char == '8') pilot(8, 0);
                 else if(temp_char == '9') pilot(9, 0);
-                else if(temp_char == 't')
+            }
+
+            if(temp_char == 't')
+            {
+                if(lockers_is_flag_bit(2) == 1)
                 {
                     lockers_flag_bit_off(2);
                     printf("\nTRYB RC5\n");
                 }
-                //else if(temp_char == 'R') lockers_print_all_memory();
-                //else if(temp_char == 'r') lockers_print_latest_data();
-            }
-            else
-            {
-                if(temp_char == 'T')
+                else
                 {
                     lockers_flag_bit_on(2);
                     printf("\nTRYB RC5 & TERMINAL\n");
+                    refresh_screen = 1;
                 }
             }
+            //else if(temp_char == 'R') lockers_print_all_memory();
+            //else if(temp_char == 'r') lockers_print_latest_data();
         }
     }
 }
