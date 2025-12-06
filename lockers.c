@@ -68,6 +68,10 @@ void lockers_init()
         buzzer_time(1000);
     }
 
+    //lockers_queue_head = 0;
+
+    //lockers_queue_tail = 0;
+
     LOCKER_1_BUTTON_DIR  &= ~LOCKER_1_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_1_BUTTON_PORT |= LOCKER_1_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
@@ -114,11 +118,6 @@ void lockers_init()
 
     stdin = &mystdin;
 
-
-
-    //lockers_queue_head = 0;
-
-    //lockers_queue_tail = 0;
 
     //lockers_find_latest_data();
 }
@@ -278,7 +277,6 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
             lockers_print_entire_frame();
         }
     }
-        lockers_safety_bit_off();
 }
 
 void lockers_print_date_of_report()

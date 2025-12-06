@@ -26,11 +26,16 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 void backlight(int8_t state)
 {
     if(state == 0) backlight_of_lcd = 0;
-    else if(state == 1) backlight_of_lcd = -1;
-    else if(state == 2)
+    else
     {
-        buzzer_time(3);
-        backlight_of_lcd = 50;
+        LCD_BacklightOn();
+
+        if(state == 1)
+        {
+            buzzer_time(3);
+            backlight_of_lcd = -1;
+        }
+        else if(state == 2) backlight_of_lcd = 50;
     }
 }
 
@@ -1125,14 +1130,12 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         {
             if( tog == 0)
             {
-                if( backlight_of_lcd != 0 ) backlight(0);
-                else backlight(2);
+                backlight(2);
             }
             if( tog == 1)
             {
                 backlight(1);
             }
-
         }
         if ( com == 46 )
         {
@@ -1174,13 +1177,13 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             {
                 pilot_state = 0;
                 pilot_off();
-                if ( backlight_of_lcd != 0 ) backlight(2);
+                backlight(0);
             }
             else if(pilot_state == 0)
             {
                 pilot_state = 1;
                 pilot_on();
-                backlight(1);
+                backlight(2);
             }
         }
     }
@@ -1193,6 +1196,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 void pilot( int com, int tog )//
 {
 //    if(pilot_state == 1) pilot_off();
+    if(backlight_of_lcd >= 0) backlight(2);
 
     czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
@@ -1218,6 +1222,7 @@ void zczytaj_komende( void )
             if(lockers_is_safety_bit() == 1 && start_program == 0)
             {
                 lockers_print_all_memory();
+                lockers_safety_bit_off();
             }
             start_program = 2;
 
@@ -1242,7 +1247,6 @@ void zczytaj_komende( void )
         }
         if(backlight_of_lcd > 0) --backlight_of_lcd;
         if(backlight_of_lcd == 0) LCD_BacklightOff();
-        else LCD_BacklightOn();
     }
 
     if(refresh_screen == 1 )
