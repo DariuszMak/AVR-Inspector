@@ -75,6 +75,7 @@ void step_decrease(void)
 
 void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 {
+    refresh_screen = 0;
     LCD_Clear();
     LCD_WriteText( "Program: " );
     LCD_Int( number );
@@ -92,7 +93,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
         buzzer();
     }
     delay_ms_var_double( 500 );
-    LCD_Clear();
+    refresh_screen = 1;
 }
 
 void show_day_of_week( uint8_t day)
@@ -449,58 +450,22 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         LCD_GoTo( 0, 0 );
         LCD_Int( cyfra );
 
-        char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
+        //char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
 
-        if( u > 0 || u == -1 )//jeśli losowanie trwa, lub właśnie się kończy
+
+
+        if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
         {
-            for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
-            {
-                if(s == pozycja) tablicaTemp[s] = '1';
-                else tablicaTemp[s] = '0';
-            }
-            if(u > 0)//gdzy losowanie trwa, wyświetlają się procenty
-            {
-                LCD_GoTo(4,0);
-                LCD_Int((int) (t * 100 / 250));
-                LCD_WriteText("%");
-            }
-
-            for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
-            {
-                if(tablicaTemp[s] == '1')
-                {
-                    if (s == 0) cy1 = cyfra;
-                    if (s == 1) cy2 = cyfra;
-                    if (s == 2) cy3 = cyfra;
-                    if (s == 3) cy4 = cyfra;
-                }
-                else
-                {
-                    if (s == 0 || cyfra == 0) cy1 = 10;
-                    if (s == 1 || cyfra == 0) cy2 = 10;
-                    if (s == 2 || cyfra == 0) cy3 = 10;
-                    if (s == 3 || cyfra == 0) cy4 = 10;
-                }
-            }
-            if ( u == -1 )//koniec animacji - wyświetlenie kresek poziomych
-            {
-                for(s = 0; s < rozmiar; ++s)
-                {
-                    if(tablicaTemp[s] == '0' || cyfra == 0 )
-                    {
-                        if ( s == 0 ) cy1 = 11;
-                        if ( s == 1 ) cy2 = 11;
-                        if ( s == 2 ) cy3 = 11;
-                        if ( s == 3 ) cy4 = 11;
-                        buzzer();
-                        delay_ms_var_double(100);
-                    }
-                }
-                u = 0;
-            }
+            LCD_GoTo(4,0);
+            LCD_Int((int) (t * 100 / 250));
+            LCD_WriteText("%");
         }
 
-        free(tablicaTemp);
+
+
+
+
+
     }
     else if( menu == 3 )
     {
@@ -550,6 +515,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             PCF8583_set_time(godz,min,sek,hsek);
             PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
+            refresh_screen = 0;
             LCD_Clear();
             LCD_WriteText("ZAPISANO GODZINE");
             delay_ms_var(500);
@@ -618,6 +584,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
                         PCF8583_alarm_monthly();
                         PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
                     }
+                    refresh_screen = 0;
                     LCD_Clear();
                     LCD_WriteText("ZAPISANO ALARM");
                     delay_ms_var(500);
@@ -673,6 +640,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         if ( com == 41 )
         {
             pilot_off();
+            refresh_screen = 0;
             LCD_Clear();
             rozmiar = LCD_CHARSPERLINE;
             char original_text_static[2][40] = { {"ATmega32 programabcdefghijklmnopqrstuvwx"}, {"Dariusz M. proj.yz1234567890987654321!@$"}};
@@ -780,6 +748,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         if ( com == 12 )
         {
             pilot_off();
+            refresh_screen = 0;
             LCD_Clear();
             LCD_Blink();
             LCD_GoTo( 9, 1 );
@@ -885,7 +854,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
             t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
             u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
-
+            char* tablicaTemp = (char*) malloc(rozmiar * sizeof (char*));//tablica pomoznicza do umiejscowienia cyfry
             do
             {
                 buzzer_time(0.4);
@@ -911,6 +880,31 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
                     delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
                     pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                     cyfra = w;
+                    for(s = 0; s < rozmiar; ++s)//wypełnienie odpowiednio tablicy dynamicznej, np. "0010" - cyfra stoi na 3 miemscu
+                    {
+                        if(s == pozycja) tablicaTemp[s] = '1';
+                        else tablicaTemp[s] = '0';
+                    }
+
+
+                    for(s = 0; s < rozmiar; ++s)//odpowiednie wyświetlanie na ekranie
+                    {
+                        if(tablicaTemp[s] == '1')
+                        {
+                            if (s == 0) cy1 = cyfra;
+                            if (s == 1) cy2 = cyfra;
+                            if (s == 2) cy3 = cyfra;
+                            if (s == 3) cy4 = cyfra;
+                        }
+                        else
+                        {
+                            if (s == 0 || cyfra == 0) cy1 = 10;
+                            if (s == 1 || cyfra == 0) cy2 = 10;
+                            if (s == 2 || cyfra == 0) cy3 = 10;
+                            if (s == 3 || cyfra == 0) cy4 = 10;
+                        }
+                    }
+
                     refresh_screen = 1;
                     buzzer_time(0.8);
                 }
@@ -919,7 +913,38 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             t++;//przywrócenie efektu z ostatniej tury
             if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
             u = -1;//tryb wyświetlania
-refresh_screen = 1;
+
+
+            for(s = 0; s < rozmiar; ++s)
+            {
+                if(tablicaTemp[s] == '0' || cyfra == 0 )
+                {
+                    if ( s == 0 ) cy1 = 11;
+                    if ( s == 1 ) cy2 = 11;
+                    if ( s == 2 ) cy3 = 11;
+                    if ( s == 3 ) cy4 = 11;
+                    buzzer();
+                    delay_ms_var_double(100);
+                }
+            }
+            u = 0;
+            refresh_screen = 1;
+            free(tablicaTemp);
+
+
+
+
+
+
+
+
+
+            free(tablicaTemp);
+
+
+
+
+
             //cy1 = 8;
         }
         if ( com == 59 )
@@ -927,7 +952,7 @@ refresh_screen = 1;
             cyfra = 0;
             pozycja = 0;
             u = -1;
-        refresh_screen = 1;
+            refresh_screen = 1;
         }
         if ( com == 55 )
         {
@@ -977,7 +1002,7 @@ refresh_screen = 1;
 
             }
         }
-       refresh_screen = 1;
+        refresh_screen = 1;
     }
     else if( menu == 3 )
     {
@@ -996,7 +1021,7 @@ refresh_screen = 1;
                 pilot_state = 1;
             }
         }
-       refresh_screen = 1;
+        refresh_screen = 1;
     }
 
     else if( menu == 4 )
@@ -1023,7 +1048,7 @@ refresh_screen = 1;
         {
             u = end_of_settings(0);
         }
-       refresh_screen = 1;
+        refresh_screen = 1;
     }
 
     else if( menu == 5 )
@@ -1083,7 +1108,7 @@ refresh_screen = 1;
             u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
         }
 
-      refresh_screen = 1;
+        refresh_screen = 1;
     }
 
 
@@ -1093,7 +1118,7 @@ refresh_screen = 1;
 
     if ( com == 38 )
     {
-
+        refresh_screen = 0;
         LCD_Clear();
         LCD_WriteText( "Na poczatek" );
         LCD_GoTo( 0, 1 );
@@ -1101,7 +1126,6 @@ refresh_screen = 1;
         delay_ms_var_double( 250 );
         LCD_PageUpScreen();
         LCD_PageDownScreen();
-        LCD_Clear();
         refresh_screen = 1;
     }
     if ( com == 46 )
@@ -1159,7 +1183,7 @@ void pilot( int com, int tog )//
 
             if ( menu == 1 )
             {
-            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
             else if ( menu == 2 )
             {
