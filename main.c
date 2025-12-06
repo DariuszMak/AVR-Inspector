@@ -309,73 +309,81 @@ void set_appropriate_values_of_time()
     if(u == -2) e -= temp;
     else
     {
-        if(e == 0 || menu == 4)
+        if(menu == 6)
         {
             if(u == -1) c -= temp;
-            else
+        }
+        else
+        {
+            if(e == 0 || menu == 4)
             {
-                if(u == 0) godz += temp;
-                else if(u == 1) min += temp;
-                else if(u == 2) sek += temp;
-                else if(u == 3) hsek += temp;
+                if(u == -1) c -= temp;
+                else
+                {
+                    if(u == 0) godz += temp;
+                    else if(u == 1) min += temp;
+                    else if(u == 2) sek += temp;
+                    else if(u == 3) hsek += temp;
 
-                if(c == 0 || c == 3)
-                {
-                    if(u == 4) dzien += temp;
-                    else if(u == 5) miesiac += temp;
-                    if(c == 0)
+                    if(c == 0 || c == 3)
                     {
-                        if(u == 6)rok += temp;
-                        else if(u == 7) dzien_tygodnia += temp;
-                        else if(u == 8) timer += temp;
+                        if(u == 4) dzien += temp;
+                        else if(u == 5) miesiac += temp;
+                        if(c == 0)
+                        {
+                            if(u == 6)rok += temp;
+                            else if(u == 7) dzien_tygodnia += temp;
+                            else if(u == 8) timer += temp;
+                        }
                     }
-                }
-                else if( c == 2)
-                {
-                    if(u == 4)
+                    else if( c == 2)
                     {
-                        if(s == 1) miesiac |= (1 << 0);
-                        else if(s == 2) miesiac &= ~(1 << 0);
-                    }
-                    else if(u == 5)
-                    {
-                        if(s == 1) miesiac |= (1 << 1);
-                        else if(s == 2) miesiac &= ~(1 << 1);
-                    }
-                    else if(u == 6)
-                    {
-                        if(s == 1) miesiac |= (1 << 2);
-                        else if(s == 2) miesiac &= ~(1 << 2);
-                    }
-                    else if(u == 7)
-                    {
-                        if(s == 1) miesiac |= (1 << 3);
-                        else if(s == 2) miesiac &= ~(1 << 3);
-                    }
-                    else if(u == 8)
-                    {
-                        if(s == 1) miesiac |= (1 << 4);
-                        else if(s == 2) miesiac &= ~(1 << 4);
-                    }
-                    else if(u == 9)
-                    {
-                        if(s == 1) miesiac |= (1 << 5);
-                        else if(s == 2) miesiac &= ~(1 << 5);
-                    }
-                    else if(u == 10)
-                    {
-                        if(s == 1) miesiac |= (1 << 6);
-                        else if(s == 2) miesiac &= ~(1 << 6);
+                        if(u == 4)
+                        {
+                            if(s == 1) miesiac |= (1 << 0);
+                            else if(s == 2) miesiac &= ~(1 << 0);
+                        }
+                        else if(u == 5)
+                        {
+                            if(s == 1) miesiac |= (1 << 1);
+                            else if(s == 2) miesiac &= ~(1 << 1);
+                        }
+                        else if(u == 6)
+                        {
+                            if(s == 1) miesiac |= (1 << 2);
+                            else if(s == 2) miesiac &= ~(1 << 2);
+                        }
+                        else if(u == 7)
+                        {
+                            if(s == 1) miesiac |= (1 << 3);
+                            else if(s == 2) miesiac &= ~(1 << 3);
+                        }
+                        else if(u == 8)
+                        {
+                            if(s == 1) miesiac |= (1 << 4);
+                            else if(s == 2) miesiac &= ~(1 << 4);
+                        }
+                        else if(u == 9)
+                        {
+                            if(s == 1) miesiac |= (1 << 5);
+                            else if(s == 2) miesiac &= ~(1 << 5);
+                        }
+                        else if(u == 10)
+                        {
+                            if(s == 1) miesiac |= (1 << 6);
+                            else if(s == 2) miesiac &= ~(1 << 6);
+                        }
                     }
                 }
             }
-        }
-        else if(e == 1)
-        {
-            if(u == -1) c -= temp;
-            else
+
+            else if(e == 1)
             {
-                if(u == 0) timer += temp;
+                if(u == -1) c -= temp;
+                else
+                {
+                    if(u == 0) timer += temp;
+                }
             }
         }
     }
@@ -506,11 +514,10 @@ void show_timer_mode_options(uint8_t index)
     {
         LCD_WriteText("Timer dni");
     }
-    else if(index == 1)
+    else if(index == 6)
     {
         LCD_WriteText("Timer test");
     }
-
 }
 
 void show_alarm_interrupt_options(uint8_t index)
@@ -725,7 +732,7 @@ void show_list_case(index)
                 }
                 else if(e == 3)
                 {
-                    show_timer_options(index);
+                    show_timer_mode_options(index);
                 }
                 else if(e == 4)
                 {
@@ -750,7 +757,6 @@ void show_list(int16_t current_index, int16_t max_index)
     }
     else
     {
-
         if ( current_index != -1)
         {
             LCD_GoTo(0, 0);
@@ -764,7 +770,6 @@ void show_list(int16_t current_index, int16_t max_index)
         }
     }
 }
-
 
 void wysw0( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
@@ -853,14 +858,15 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 {
     if (u < 0) u = 0;
     check_step_value();
-    LCD_EraseAll();
-
     if( s != 0 )
     {
         set_appropriate_values_of_time();
 
         s = 0;
     }
+    LCD_EraseAll();
+
+
 
     if(u == end_of_settings())
     {
@@ -891,14 +897,17 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if (u < -2) u = -2;
+    check_step_value();//zrobic
+
+    if( s != 0 )
+    {
+        set_appropriate_values_of_time();
+        s = 0;
+    }
+
     if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
     {
-        if(u == -2)
-        {
-            PCF8583_get_wall_alarm();
-            if(e == 0) c = PCF8583_recognise_type_of_alarm();//zmienna odpowiedzialna za typ alarmu
-            else if( e == 1) c = PCF8583_recognise_type_of_timer_alarm();
-        }
+
         if( u == -1 && e < 0) u -= 1;
         else if(u == 0 && c < 0)
         {
@@ -906,18 +915,19 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
 
     }
-    check_step_value();//zrobic
+
     LCD_EraseAll();
-    if( s != 0 )
-    {
-        set_appropriate_values_of_time();
-        s = 0;
-    }
+
 
     if(u == -2)
     {
         if(e < -1) e = 1;
         else if(e > 1) e = -1;
+
+        PCF8583_get_wall_alarm();
+        if(e == 0) c = PCF8583_recognise_type_of_alarm();//zmienna odpowiedzialna za typ alarmu
+        else if( e == 1) c = PCF8583_recognise_type_of_timer_alarm();
+
         show_list(e, 1);
     }
     else
@@ -1001,36 +1011,43 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if (u < -2) u = -2;
-    if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
-    {
-        if(u == -2)
-        {
-            PCF8583_get_wall_alarm();
-            if(e == 0) c = PCF8583_is_alarm_flag_set();//zmienna odpowiedzialna za typ alarmu
-            else if(e == 1) c = PCF8583_is_timer_flag_set();
-            else if(e == 2) c = PCF8583_is_clock_counting();
-            else if(e == 3) c = PCF8583_timer_mode();
-            else if(e == 4) c = PCF8583_is_alarm_interrupt();
-            else if(e == 5) c = PCF8583_is_timer_interrupt();
-        }
-        if( u == -1 && e < 0) u -= 1;
-        else if(u == 0 && c < 0)
-        {
-            u -= 1;
-        }
-    }
     check_step_value();//zrobic
-    LCD_EraseAll();
     if( s != 0 )
     {
         set_appropriate_values_of_time();
         s = 0;
     }
 
+    if( w == 1)//zabezpieczenie przed wyborem niewłaściwej wartości z menu
+    {
+
+
+
+        if( u == -1 && e < 0) u -= 1;
+        else if(u == 0 && c < 0)
+        {
+            u -= 1;
+        }
+    }
+
+    LCD_EraseAll();
+
     if(u == -2)
     {
         if(e < -1) e = 5;
         else if(e > 5) e = -1;
+        if(e == 0) c = PCF8583_is_alarm_flag_set();//zmienna odpowiedzialna za typ alarmu
+        else if(e == 1) c = PCF8583_is_timer_flag_set();
+        else if(e == 2) c = PCF8583_is_clock_counting();
+        else if(e == 3) c = PCF8583_timer_mode();
+        else if(e == 4) c = PCF8583_is_alarm_interrupt();
+        else if(e == 5) c = PCF8583_is_timer_interrupt();
+        /*LCD_GoTo(0,0);
+        LCD_WriteText("CZYTANIE: ");
+        LCD_Int(e);
+        LCD_WriteText(" ");
+        LCD_Int(c);
+        delay_ms_var(1000);*/
         show_list(e, 5);
     }
     else if(u == -1)
