@@ -1,17 +1,17 @@
 //-------------------------------------------------------------------------------------------------
-// Wyœwietlacz alfanumeryczny ze sterownikiem HD44780
-// Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci
-// z dowolnym przypisaniem sygna³ów steruj¹cych
+// WyÅ“wietlacz alfanumeryczny ze sterownikiem HD44780
+// Sterowanie w trybie 4-bitowym z odczytem flagi zajÃªtoÅ“ci
+// z dowolnym przypisaniem sygnaÂ³Ã³w sterujÂ¹cych
 // Plik : HD44780.c
 // Mikrokontroler : Atmel AVR
 // Kompilator : avr-gcc
-// Autorzy : Rados³aw Kwiecieñ & Dariusz Makarewicz
+// Autorzy : RadosÂ³aw KwiecieÃ± & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
 
 #include "HD44780.h"
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja wystawiaj¹ca pó³bajt na magistralê danych
+// Funkcja wystawiajÂ¹ca pÃ³Â³bajt na magistralÃª danych
 //
 //-------------------------------------------------------------------------------------------------
 void _LCD_OutNibble(unsigned char nibbleToWrite)
@@ -39,7 +39,7 @@ void _LCD_OutNibble(unsigned char nibbleToWrite)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja wystawiaj¹ca pó³bajt na magistralê danych
+// Funkcja wystawiajÂ¹ca pÃ³Â³bajt na magistralÃª danych
 //
 //-------------------------------------------------------------------------------------------------
 unsigned char _LCD_InNibble(void)
@@ -58,7 +58,7 @@ unsigned char _LCD_InNibble(void)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja zapisu bajtu do wyœwietacza (bez rozró¿nienia instrukcja/dane).
+// Funkcja zapisu bajtu do wyÅ“wietacza (bez rozrÃ³Â¿nienia instrukcja/dane).
 //
 //-------------------------------------------------------------------------------------------------
 void _LCD_Write(unsigned char dataToWrite)
@@ -79,7 +79,7 @@ void _LCD_Write(unsigned char dataToWrite)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja odczytu bajtu z wyœwietacza (bez rozró¿nienia instrukcja/dane).
+// Funkcja odczytu bajtu z wyÅ“wietacza (bez rozrÃ³Â¿nienia instrukcja/dane).
 //
 //-------------------------------------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ unsigned char _LCD_Read(void)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja zapisu rozkazu do wyœwietlacza
+// Funkcja zapisu rozkazu do wyÅ“wietlacza
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_WriteCommand(unsigned char commandToWrite)
@@ -123,7 +123,7 @@ unsigned char LCD_ReadStatus(void)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja zapisu danych do pamiêci wyœwietlacza
+// Funkcja zapisu danych do pamiÃªci wyÅ“wietlacza
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_WriteData(unsigned char dataToWrite)
@@ -133,7 +133,7 @@ void LCD_WriteData(unsigned char dataToWrite)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja odczytu danych z pamiêci wyœwietlacza
+// Funkcja odczytu danych z pamiÃªci wyÅ“wietlacza
 //
 //-------------------------------------------------------------------------------------------------
 unsigned char LCD_ReadData(void)
@@ -143,7 +143,7 @@ unsigned char LCD_ReadData(void)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja wyœwietlenia napisu na wyswietlaczu.
+// Funkcja wyÅ“wietlenia napisu na wyswietlaczu.
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_WriteText(char * text)
@@ -153,7 +153,7 @@ void LCD_WriteText(char * text)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja ustawienia wspó³rzêdnych ekranowych
+// Funkcja ustawienia wspÃ³Â³rzÃªdnych ekranowych
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_GoTo(unsigned char x, unsigned char y)
@@ -162,7 +162,7 @@ void LCD_GoTo(unsigned char x, unsigned char y)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja czyszczenia ekranu wyœwietlacza.
+// Funkcja czyszczenia ekranu wyÅ“wietlacza.
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_Clear(void)
@@ -172,7 +172,7 @@ void LCD_Clear(void)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Funkcja przywrócenia pocz¹tkowych wspó³rzêdnych wyœwietlacza.
+// Funkcja przywrÃ³cenia poczÂ¹tkowych wspÃ³Â³rzÃªdnych wyÅ“wietlacza.
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_Home(void)
@@ -188,18 +188,18 @@ void LCD_Home(void)
 void LCD_Initalize(void)
 {
     unsigned char i;
-    LCD_DB4_DIR |= LCD_DB4; // Konfiguracja kierunku pracy wyprowadzeñ
+    LCD_DB4_DIR |= LCD_DB4; // Konfiguracja kierunku pracy wyprowadzeÃ±
     LCD_DB5_DIR |= LCD_DB5; //
     LCD_DB6_DIR |= LCD_DB6; //
     LCD_DB7_DIR |= LCD_DB7; //
     LCD_E_DIR 	|= LCD_E;   //
     LCD_RS_DIR 	|= LCD_RS;  //
     LCD_RW_DIR 	|= LCD_RW;  //
-    _delay_ms(15); // oczekiwanie na ustalibizowanie siê napiecia zasilajacego
+    _delay_ms(15); // oczekiwanie na ustalibizowanie siÄ™ napiecia zasilajacego
     LCD_RS_PORT &= ~LCD_RS; // wyzerowanie linii RS
     LCD_E_PORT &= ~LCD_E;  // wyzerowanie linii E
     LCD_RW_PORT &= ~LCD_RW;
-    for(i = 0; i < 3; i++) // trzykrotne powtórzenie bloku instrukcji
+    for(i = 0; i < 3; i++) // trzykrotne powtÃ³rzenie bloku instrukcji
     {
         LCD_E_PORT |= LCD_E; //  E = 1
         _LCD_OutNibble(0x03); // tryb 8-bitowy
@@ -213,10 +213,10 @@ void LCD_Initalize(void)
 
     _delay_ms(1); // czekaj 1ms
     LCD_WriteCommand(HD44780_FUNCTION_SET | HD44780_FONT5x7 | HD44780_TWO_LINE | HD44780_4_BIT); // interfejs 4-bity, 2-linie, znak 5x7
-    LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_OFF); // wy³¹czenie wyswietlacza
-    LCD_WriteCommand(HD44780_CLEAR); // czyszczenie zawartosæi pamieci DDRAM
+    LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_OFF); // wyÂ³Â¹czenie wyswietlacza
+    LCD_WriteCommand(HD44780_CLEAR); // czyszczenie zawartosÃ¦i pamieci DDRAM
     LCD_WriteCommand(HD44780_ENTRY_MODE | HD44780_EM_SHIFT_CURSOR | HD44780_EM_INCREMENT);// inkrementaja adresu i przesuwanie kursora
-    LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK); // w³¹cz LCD, bez kursora i mrugania
+    LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK); // wÂ³Â¹cz LCD, bez kursora i mrugania
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -228,13 +228,13 @@ const int czterdziesci = 40;
 
 //-------------------------------------------------------------------------------------------------
 //
-// Efekt przesuniêcia zawartoœci o okreœlonej czêstotliwoœci kroku oraz liczbie kroków
+// Efekt przesuniÃªcia zawartoÅ“ci o okreÅ“lonej czÃªstotliwoÅ“ci kroku oraz liczbie krokÃ³w
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_MoveRight (unsigned int freq, unsigned int step, unsigned int way)
 {
     int temp;
-    for (temp=0; temp<step; temp++)
+    for (temp=0; temp < step; temp++)
     {
         if (way)LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT);
         else LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_RIGHT);
@@ -243,13 +243,13 @@ void LCD_MoveRight (unsigned int freq, unsigned int step, unsigned int way)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Efekt przesuniêcia zawartoœci o ca³y ekran w prawo
+// Efekt przesuniÃªcia zawartoÅ“ci o caÂ³y ekran w prawo
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_MoveLeft (unsigned int freq, unsigned int step, unsigned int way)
 {
     int temp;
-    for (temp=0; temp<step; temp++)
+    for (temp=0; temp < step; temp++)
     {
         if (way)LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT);
         else LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_LEFT);
@@ -258,7 +258,7 @@ void LCD_MoveLeft (unsigned int freq, unsigned int step, unsigned int way)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Czyszczenie zawartoœci okna
+// Czyszczenie zawartoÅ“ci okna
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_Erase (unsigned int row)
@@ -267,7 +267,7 @@ void LCD_Erase (unsigned int row)
     if (row == 0 || row == 1)
     {
         LCD_GoTo(0,0);
-        for (temp=0; temp<czterdziesci; temp++)
+        for (temp=0; temp < czterdziesci; temp++)
         {
             LCD_WriteText(" ");
         }
@@ -276,7 +276,7 @@ void LCD_Erase (unsigned int row)
     if (row == 0 || row == 2)
     {
         LCD_GoTo(0,1);
-        for (temp=0; temp<czterdziesci; temp++)
+        for (temp=0; temp < czterdziesci; temp++)
         {
             LCD_WriteText(" ");
         }
@@ -284,7 +284,7 @@ void LCD_Erase (unsigned int row)
 }
 //-------------------------------------------------------------------------------------------------
 //
-// Ró¿ne opcje wyœwielania
+// RÃ³Â¿ne opcje wyÅ“wielania
 //
 //-------------------------------------------------------------------------------------------------
 void LCD_Displaying (unsigned int option)

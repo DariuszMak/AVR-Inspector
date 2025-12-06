@@ -1,13 +1,11 @@
 //-------------------------------------------------------------------------------------------------
-// Wyúwietlacz alfanumeryczny ze sterownikiem HD44780
-// Sterowanie w trybie 4-bitowym z odczytem flagi zajÍtoúci
-// z dowolnym przypisaniem sygna≥Ûw sterujπcych
+// Wy≈õwietlacz alfanumeryczny ze sterownikiem HD44780
+// Sterowanie w trybie 4-bitowym z odczytem flagi zajƒôto≈õci
+// z dowolnym przypisaniem sygna≈Ç√≥w sterujƒÖcych
 // Plik : HD44780.h
 // Mikrokontroler : Atmel AVR
 // Kompilator : avr-gcc
-// Autor : Rados≥aw KwiecieÒ
-// èrÛd≥o : http://radzio.dxp.pl/hd44780/
-// Data : 24.03.2007
+// Autorzy : Rados¬≥aw Kwiecie√± & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
 
 #include <avr/io.h>
@@ -15,10 +13,12 @@
 
 //-------------------------------------------------------------------------------------------------
 //
-// Konfiguracja sygna≥Ûw sterujπcych wyúwietlaczem.
-// Moøna zmieniÊ stosownie do potrzeb.
+// Konfiguracja sygna≈Ç√≥w sterujƒÖcych wy≈õwietlaczem.
+// Mo≈ºna zmieniƒá stosownie do potrzeb.
 //
 //-------------------------------------------------------------------------------------------------
+#define USE_RW 1
+
 #define LCD_RS_DIR		DDRD
 #define LCD_RS_PORT 	PORTD
 #define LCD_RS_PIN		PIND
@@ -65,10 +65,10 @@
 #define HD44780_HOME					0x02
 
 #define HD44780_ENTRY_MODE				0x04
-#define HD44780_EM_SHIFT_CURSOR		0
-#define HD44780_EM_SHIFT_DISPLAY	1
-#define HD44780_EM_DECREMENT		0
-#define HD44780_EM_INCREMENT		2
+#define HD44780_EM_SHIFT_CURSOR		0 // tryb z automatycznym przesuwaniem kursora
+#define HD44780_EM_SHIFT_DISPLAY	1 // tryb z automatycznym przesuwaniem ekranu (tak jakby shiftowaƒá za ka≈ºda wy≈õwietlnanƒÖ literƒÖ, bardzo dezorientujƒÖce umieszczanie kursora)
+#define HD44780_EM_DECREMENT		0 // tryb ze zmiejszaniem adresu
+#define HD44780_EM_INCREMENT		2 // tryb za zwiƒôkszaniem adresu
 
 #define HD44780_DISPLAY_ONOFF			0x08
 #define HD44780_DISPLAY_OFF			0
@@ -101,39 +101,39 @@
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
+void LCD_Initalize(void); // Inicjalizacja wy≈õwietlacza
 
 void LCD_WriteCommand(unsigned char);
 unsigned char LCD_ReadStatus(void);
 
-void LCD_WriteData(unsigned char); // odczytywanie danych po kolei w zaleønoúci od pozycji kursora
-unsigned char LCD_ReadData(void); // zapisywanie danych po kolei w zaleønoúci od pozycji kursora
+void LCD_WriteData(unsigned char); // odczytywanie danych po kolei w zale≈ºno≈õci od pozycji kursora
+unsigned char LCD_ReadData(void); // zapisywanie danych po kolei w zale≈ºno≈õci od pozycji kursora
 
 void LCD_WriteText(char *);
-void LCD_GoTo(unsigned char, unsigned char);
-void LCD_Clear(void);
-void LCD_Home(void);
-void LCD_Initalize(void);
+void LCD_GoTo(unsigned char, unsigned char); // pozycja X, pozycja Y
+void LCD_Clear(void); // czy≈õci wszystko sprzƒôtowo
+void LCD_Home(void); // sprƒôtowa funkcje powrotu ns poczƒÖtek (ekran i kursor)
 
-void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // czÍstotliwoúÊ kroku, iloúÊ krokÛw, 0 - kursor, 1 - ekran
-void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // czÍstotliwoúÊ kroku, iloúÊ krokÛw, 0 - kursor, 1 - ekran
+void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // czƒôstotliwo≈õƒá kroku, ilo≈õƒá krok√≥w, 0 - kursor / 1 - ekran
+void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // czƒôstotliwo≈õƒá kroku, ilo≈õƒá krok√≥w, 0 - kursor / 1 - ekran
 #define LCD_ShiftRightCursor() LCD_MoveRight(0,1,0) // jeden krok kursora w prawo
 #define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
 #define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
 #define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
-#define LCD_PageUpScreen() LCD_MoveRight(20,15,1) // przesuniÍcie o ca≥y ekran w prawo
-#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesuniÍcie o ca≥y ekran w lewo
+#define LCD_PageUpScreen() LCD_MoveRight(20,15,1) // przesuniƒôcie o ca≈Çy ekran w prawo
+#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesuniƒôcie o ca≈Çy ekran w lewo
 
-void LCD_Erase(unsigned int); // uzuoe≥nianie spacjami wyúwietlacza 0 - dwa wiersze, 1 - gÛrny wiersz, 2 - dolny wiersz
-#define LCD_EraseAll() LCD_Erase(0) // uzuoe≥nianie spacjami wyúwietlacza - dwa wiersze
-#define LCD_EraseUp() LCD_Erase(1) // uzuoe≥nianie spacjami wyúwietlacza 1 - gÛrny wiersz,
-#define LCD_EraseDown() LCD_Erase(2) // uzuoe≥nianie spacjami wyúwietlacza 2 - dolny wiersz
+void LCD_Erase(unsigned int); // uzuoe≈Çnianie spacjami wy≈õwietlacza 0 - dwa wiersze, 1 - g√≥rny wiersz, 2 - dolny wiersz
+#define LCD_EraseAll() LCD_Erase(0) // uzuoe≈Çnianie spacjami wy≈õwietlacza - dwa wiersze
+#define LCD_EraseUp() LCD_Erase(1) // uzuoe≈Çnianie spacjami wy≈õwietlacza 1 - g√≥rny wiersz,
+#define LCD_EraseDown() LCD_Erase(2) // uzuoe≈Çnianie spacjami wy≈õwietlacza 2 - dolny wiersz
 
 void LCD_Displaying(unsigned int);
-#define LCD_ScreenOn() LCD_Displaying(1) // zwyk≥y tryb pracy wyúwietlacza bez kursora
-#define LCD_ScreenOff() LCD_Displaying(2) // wy≥πczenie wyúwietlacza (nic nie wyúwietla, ale wciπø pracuje)
+#define LCD_ScreenOn() LCD_Displaying(1) // zwyk≈Çy tryb pracy wy≈õwietlacza bez kursora
+#define LCD_ScreenOff() LCD_Displaying(2) // wy≈ÇƒÖczenie wy≈õwietlacza (nic nie wy≈õwietla, ale wciƒÖ≈º pracuje)
 #define LCD_Cursor() LCD_Displaying(3) // tryb pracy z kursorem
-#define LCD_Blink() LCD_Displaying(4) // tryb pracy z migajπcym prostokπtem
-#define LCD_CursorBlink() LCD_Displaying(5) // tryb pracy z kursorem i z migajπcym prostokπtem
+#define LCD_Blink() LCD_Displaying(4) // tryb pracy z migajƒÖcym prostokƒÖtem
+#define LCD_CursorBlink() LCD_Displaying(5) // tryb pracy z kursorem i z migajƒÖcym prostokƒÖtem
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.h
