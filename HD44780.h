@@ -22,6 +22,8 @@
 //-------------------------------------------------------------------------------------------------
 #define LCD_CHARSPERLINE 40
 
+#define LCD_REAL_CHARSPERLINE 16
+
 #define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
 
 #define USE_LCD_Int 1

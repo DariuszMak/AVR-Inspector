@@ -26,15 +26,23 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 void send_all_screen(void)
 {
     rozmiar = LCD_CHARSPERLINE;
-    LCD_Home();
+    uint8_t temp_position = LCD_position;
 
-    printf("|");
+    for( t = 0; t < rozmiar; ++t )
+    {
+        if((LCD_CHARSPERLINE - temp_position + t) % rozmiar < LCD_REAL_CHARSPERLINE) printf("#");
+        else printf(".");
+    }
+
+    printf("\n");
+    LCD_Home();
+    //printf("|");
     for( t = 0; t < rozmiar; ++t )
     {
         uart_putc(LCD_ReadData());
     }
 
-    printf("|\n|");
+    printf("\n");
 
     LCD_GoTo( 0, 1 );
 
@@ -42,7 +50,20 @@ void send_all_screen(void)
     {
         uart_putc(LCD_ReadData());
     }
-    printf("|\n");
+
+    LCD_Home();
+    if(temp_position < rozmiar / 2) LCD_MoveLeft ( 0, temp_position, 1 );
+    else LCD_MoveRight(0,  rozmiar - temp_position, 1);
+
+    printf("\n");
+
+    for( t = 0; t < rozmiar; ++t )
+    {
+        if((LCD_CHARSPERLINE - temp_position + t) % rozmiar < LCD_REAL_CHARSPERLINE) printf("#");
+        else printf(".");
+    }
+
+    printf("\n\n");
 }
 
 void set_time_by_uart(void)
@@ -1624,95 +1645,95 @@ void czynnosc1( int com, int tog )
             }
         }*/
 
-        /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";//błąd, bo nie działa przy powtórnym użyciu
-        original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
+    /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";//błąd, bo nie działa przy powtórnym użyciu
+    original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
 
-        /*for( t = 0; t < LCD_CHARSPERLINE; ++t )
+    /*for( t = 0; t < LCD_CHARSPERLINE; ++t )
+    {
+        LCD_WriteData( original_text[0][t] );
+    }
+
+    LCD_GoTo( 0, 1 );
+
+    for( t = 0; t < LCD_CHARSPERLINE; ++t )
+    {
+        LCD_WriteData( original_text[1][t] );
+    }
+
+    u = 1;
+
+    while( u )
+    {
+        //pilot_off();
+        char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
+
+        for ( t = 0; t < 2; ++t )
         {
-            LCD_WriteData( original_text[0][t] );
+            buffer_table[t] = ( char* ) malloc ( rozmiar * sizeof ( *buffer_table ) );
+        }
+
+        LCD_Home();
+
+        for( t = 0; t < rozmiar; ++t )
+        {
+            buffer_table[0][t] = LCD_ReadData();
         }
 
         LCD_GoTo( 0, 1 );
 
-        for( t = 0; t < LCD_CHARSPERLINE; ++t )
+        for( t = 0; t < rozmiar; ++t )
         {
-            LCD_WriteData( original_text[1][t] );
+            buffer_table[1][t] = LCD_ReadData();
         }
 
-        u = 1;
+        LCD_Clear();
 
-        while( u )
+        for( t = 0; t < rozmiar; ++t )
         {
-            //pilot_off();
-            char** buffer_table = ( char** ) malloc( 2 * sizeof (*buffer_table) );//tablia dwuwymiarowa jako bufor do odczytu z wyświetlacza
+            if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 0;
+        }
 
-            for ( t = 0; t < 2; ++t )
-            {
-                buffer_table[t] = ( char* ) malloc ( rozmiar * sizeof ( *buffer_table ) );
-            }
+        //pilot_on();
 
-            LCD_Home();
+        if ( stop_button() || Ir_key_press_flag)//jeśli przycisk zatrzymania został wciśnięty
+        {
+            u = 0;
+        }
 
+        if( u )
+        {
             for( t = 0; t < rozmiar; ++t )
             {
-                buffer_table[0][t] = LCD_ReadData();
+                LCD_WriteData( buffer_table[0][t] );
             }
 
             LCD_GoTo( 0, 1 );
 
             for( t = 0; t < rozmiar; ++t )
             {
-                buffer_table[1][t] = LCD_ReadData();
+                LCD_WriteData( buffer_table[1][t] );
             }
-
-            LCD_Clear();
-
-            for( t = 0; t < rozmiar; ++t )
-            {
-                if( buffer_table[0][t] != original_text[0][t] || buffer_table[1][t] != original_text[1][t]) u = 0;
-            }
-
-            //pilot_on();
-
-            if ( stop_button() || Ir_key_press_flag)//jeśli przycisk zatrzymania został wciśnięty
-            {
-                u = 0;
-            }
-
-            if( u )
-            {
-                for( t = 0; t < rozmiar; ++t )
-                {
-                    LCD_WriteData( buffer_table[0][t] );
-                }
-
-                LCD_GoTo( 0, 1 );
-
-                for( t = 0; t < rozmiar; ++t )
-                {
-                    LCD_WriteData( buffer_table[1][t] );
-                }
-            }
-
-            for ( t = 0; t < 2; ++t )
-            {
-                free( buffer_table[t] );
-            }
-            free( buffer_table );
-            delay_ms_var(100);
         }
 
         for ( t = 0; t < 2; ++t )
         {
-            free( original_text[t] );
+            free( buffer_table[t] );
         }
-        free( original_text );
+        free( buffer_table );
+        delay_ms_var(100);
+    }
 
-        buzzer();
-        delay_ms_var_double(10);
-        buzzer();
-        delay_ms_var_double(10);
-        buzzer();
+    for ( t = 0; t < 2; ++t )
+    {
+        free( original_text[t] );
+    }
+    free( original_text );
+
+    buzzer();
+    delay_ms_var_double(10);
+    buzzer();
+    delay_ms_var_double(10);
+    buzzer();
 
     }
     */
@@ -2117,12 +2138,9 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
-        uint8_t temp_position = LCD_position;
         //printf("%d\n",LCD_position);
         send_all_screen();
-        LCD_Home();
-        if(temp_position < LCD_CHARSPERLINE / 2) LCD_MoveLeft ( 0, temp_position, 1 );
-        else LCD_MoveRight(0,  LCD_CHARSPERLINE - temp_position, 1);
+
         //printf("%d\n",LCD_position);
     }
 
