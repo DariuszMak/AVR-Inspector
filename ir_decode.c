@@ -23,11 +23,15 @@ void ir_init()
 #endif // TIMER1_PRESCALER
 
 #if TIMER1_PRESCALER == 64
-	TCCR1B |= ( 1 << CS11 | 1 << CS10 );
+	TCCR1B |= ( 1 << CS11) | (1 << CS10 );
 #endif // TIMER1_PRESCALER
 
 #if TIMER1_PRESCALER == 256
 	TCCR1B |= ( 1 << CS12 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 1024
+	TCCR1B |= ( 1 << CS12) | (1 << CS10 );
 #endif // TIMER1_PRESCALER
 
 	TCCR1B &= ~( 1 << ICES1 );

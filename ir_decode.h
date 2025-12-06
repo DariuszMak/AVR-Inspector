@@ -10,7 +10,7 @@
 //#define IR_PIN 6
 //#define IR_IN (1<<IR_PIN)
 
-#define TIMER1_PRESCALER 256
+#define TIMER1_PRESCALER 1024
 
 #define ir_micro_s(num) ((num)*(F_CPU/1000000)/TIMER1_PRESCALER)
 
