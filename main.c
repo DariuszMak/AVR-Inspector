@@ -1256,6 +1256,7 @@ void pilot( int com, int tog )//
                 lockers_beginning_actions();
                 //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
 //                checking_lockers_state = 1;
+refreshing_interrupt_on();
                 u = PCF8583_recognise_type_of_alarm();
                 refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
             }
@@ -1323,7 +1324,7 @@ void zczytaj_komende( void )
 //        checking_lockers_state = 0;
         delay_ms_var(10);//chwilowe odczekanie na wygaszenie się wyświetlacza
         TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
-        //TCCR2 &= ~( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // wyłączenie timera preskaler 1024, timer do odświeżania
+refreshing_interrupt_off();
         pilot(0,0);
         //refresh_screen = 1;// wyświetlenie ekranu
     }
@@ -1391,7 +1392,7 @@ int main( void )
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
-    TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
+
 
     //PCF8583_alarm_monthly();
 

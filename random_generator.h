@@ -8,6 +8,10 @@
 
 void random_generator_init ( void );
 
-	volatile uint8_t cnt;
-	volatile uint8_t interr;
+void refreshing_interrupt_on();
+
+void refreshing_interrupt_off();
+
+volatile uint8_t cnt;
+volatile uint8_t interr;
 #endif // _RANDOM_GENERATOR_H_
