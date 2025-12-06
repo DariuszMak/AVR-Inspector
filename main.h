@@ -41,6 +41,7 @@ int8_t backlight_of_lcd;//zmienna odpowiedzialna za podświetlenie ekranu LCD: 0
 uint8_t start_program;//zmienna odpowiedzialna za poszczególne etapy podczas włączania się projektu: 1 - program jest w stadium bez wyświetlania informacji o wchodzeniu do poszczególnych podprogramów, 3 - okres oczekiwania na jakikolwiek przycisk, 0 - stan, kiedy mogą zostać wysłane awaryjne raporty, 2 - normalny stan programu
 uint8_t temp_char;//zmienna pamiętająca pojedynczy znak z klawiatury
 uint8_t reset_variable;//zmienna pomocna przy sprawdzeniu zresetaownia urządzenia (po wpisaniu znaku na klawiaturze)
+uint8_t temp_position;//zmienna pomocna przy utrzymaniu tymczasowej pozycji na ekranie
 //zmienne zarezerwowane dla podprogramu nr 2:
 
 //zmienne spełniające określone funkcje

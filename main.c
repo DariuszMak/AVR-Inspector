@@ -370,7 +370,7 @@ void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (
 
 void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
 {
-    uint8_t d = LCD_position;
+    temp_position = LCD_position;
 
     zwiekszanie = number;
 
@@ -382,7 +382,8 @@ void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej
     send_all_screen();
     delay_ms_var_double( 500 );
     pilot_reset();
-    LCD_set_appropiate_position(d);
+    //LCD_set_appropiate_position(d);
+    LCD_position = temp_position;
     //refresh_screen = 1;
 }
 
@@ -437,7 +438,7 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
 
 void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte w bitach stanu
 {
-    uint8_t d = LCD_position;
+    temp_position = LCD_position;
 
     LCD_Home();
     LCD_Clear();
@@ -487,8 +488,9 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     send_all_screen();
     delay_ms_var_double( 500 );
     pilot_reset();
-    LCD_set_appropiate_position(d);
+    //LCD_set_appropiate_position(d);
     refresh_screen = 1;
+    LCD_position = temp_position;
 }
 
 void show_day_of_week( uint8_t day)
@@ -584,7 +586,7 @@ void show_alarm_format(uint8_t case_of_format)
 void setting_information()
 {
 //    refresh_screen = 0;
-    uint8_t temp_positon = LCD_position;
+    temp_position = LCD_position;
 
     LCD_Home();
     LCD_Clear();
@@ -693,7 +695,8 @@ void setting_information()
     send_all_screen();
     delay_ms_var(400);
     pilot_reset();
-    LCD_set_appropiate_position(temp_positon);
+    LCD_position = temp_position;
+    //LCD_set_appropiate_position(temp_positon);
     //refresh_screen = 1;
 }
 
