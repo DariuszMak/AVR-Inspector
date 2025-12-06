@@ -17,6 +17,15 @@ int t, rozmiar = 6;
 
 int main( void )
 {
+	DDRD |= ( 1 << PD7 );
+
+	void buzzer( void )
+	{
+		PORTD |= ( 1 << PD7 );
+		_delay_ms( 3 );
+		PORTD &= ~( 1 << PD7 );
+	}
+
 	LCD_Initalize();
 	ir_init();
 	d_led_init();
@@ -36,6 +45,8 @@ int main( void )
 				LCD_Int( address );
 				LCD_GoTo( 0, 1 );
 				LCD_Int( toggle_bit );
+
+				buzzer();
 
 				switch ( command )
 				{
@@ -157,7 +168,6 @@ int main( void )
 					cy2 = 2;
 					cy3 = 3;
 					cy4 = 4;
-					_delay_ms( 1000 );
 					break;
 				case 55:
 					OCR0 = 78;
@@ -172,12 +182,14 @@ int main( void )
 					OCR0 = 0;
 					break;
 				case 36:
-					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // preskaler 1024
+					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
 					break;
 				case 35:
-					TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // preskaler 1024
+					TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
 					break;
 				}
+
+
 			}
 			Ir_key_press_flag = 0;
 			command = 0xff;

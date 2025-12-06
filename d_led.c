@@ -39,12 +39,12 @@ void d_led_init( void )
 ISR( TIMER0_COMP_vect )
 {
 	static uint8_t licznik = 1;
-	ANODY_PORT = (ANODY_PORT & 0xF0) | (~licznik & 0x0F);
-	if( licznik == 1 ) LED_DATA = pgm_read_byte(&cyfry[cy1]);
-	else if( licznik == 2 ) LED_DATA = pgm_read_byte(&cyfry[cy2]);
-	else if( licznik == 4 ) LED_DATA = pgm_read_byte(&cyfry[cy3]);
-	else if( licznik == 8 ) LED_DATA = pgm_read_byte(&cyfry[cy4]);
-
+	ANODY_PORT = ( ANODY_PORT & 0xF0 ) | ( 0x0F );
+	if( licznik == 1 ) LED_DATA = pgm_read_byte( &cyfry[cy1] );
+	else if( licznik == 2 ) LED_DATA = pgm_read_byte( &cyfry[cy2] );
+	else if( licznik == 4 ) LED_DATA = pgm_read_byte( &cyfry[cy3] );
+	else if( licznik == 8 ) LED_DATA = pgm_read_byte( &cyfry[cy4] );
+	ANODY_PORT = ( ANODY_PORT & 0xF0 ) | ( ~licznik & 0x0F );
 	licznik <<= 1;
 	if( licznik > 8 ) licznik = 1;
 }
