@@ -75,6 +75,13 @@ void correction_of_time(void);
 
 void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
 
+void setting_information(uint8_t case_of_time, uint8_t u);
+
+void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s);
+
+uint8_t end_of_settings(uint8_t case_of_time);
+
+
 void show_frame( int8_t number);
 
 void show_list(uint16_t current_index, uint16_t max_index);

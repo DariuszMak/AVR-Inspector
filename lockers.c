@@ -12,7 +12,7 @@ void lockers_init()
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
 
-    lockers_find_latest_data();
+    //lockers_find_latest_data();
 }
 
 void lockers_beginning_actions(void)
@@ -53,12 +53,6 @@ void lockers_check_events()
     if(action) lockers_save_events();
 }
 
-
-
-void lockers_find_latest_data(void)
-{
-    //lockers_address_of_frame = 0;
-}
 
 uint8_t lockers_number_of_frames(void)
 {

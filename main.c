@@ -170,17 +170,17 @@ void setting_information(uint8_t case_of_time, uint8_t u)
     else if(u == 2) LCD_WriteText("SEKUNDY");
     else if(u == 3) LCD_WriteText("SETNE SEKUND");
 
-    if(case_of_time == 0 || case_of_time == 3)
+    if(case_of_time == 1 || case_of_time == 3)
     {
         if(u == 4) LCD_WriteText("DZIEN");
         else if(u == 5) LCD_WriteText("MIESIAC");
-        if(case_of_time == 0)
+        if(case_of_time == 1)
         {
             if(u == 6) LCD_WriteText("ROK");
             else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
         }
     }
-    if( case_of_time == 2)
+    else if( case_of_time == 2)
     {
         if(u == 4) LCD_WriteText("PONIEDZIALEK");
         else if(u == 5) LCD_WriteText("WTOREK");
@@ -190,7 +190,6 @@ void setting_information(uint8_t case_of_time, uint8_t u)
         else if(u == 9) LCD_WriteText("SOBOTA");
         else if(u == 10) LCD_WriteText("NIEDZIELA");
     }
-
 }
 
 void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
@@ -205,17 +204,17 @@ void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
     else if(u == 2) sek += temp;
     else if(u == 3) hsek += temp;
 
-    if(case_of_time == 0 || case_of_time == 3)
+    if(case_of_time == 1 || case_of_time == 3)
     {
         if(u == 4) dzien += temp;
         else if(u == 5) miesiac += temp;
-        if(case_of_time == 0)
+        if(case_of_time == 1)
         {
             if(u == 6)rok += temp;
             else if(u == 7) dzien_tygodnia += temp;
         }
     }
-    if( case_of_time == 2)
+    else if( case_of_time == 2)
     {
         if(u == 4)
         {
@@ -254,6 +253,15 @@ void set_appropriate_values_of_time(uint8_t case_of_time, uint8_t u, uint8_t s)
         }
     }
 }
+
+uint8_t end_of_settings(uint8_t case_of_time)
+{
+    if(case_of_time == 1) return 8;
+    else if(case_of_time == 2) return 11;
+    else if(case_of_time == 3) return 6;
+    else return 0;
+}
+
 
 void show_alarm_options(uint8_t index)
 {
@@ -511,7 +519,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         if (u < 0) u = 0;
 
-        if(u == 8)
+        if(u == end_of_settings(1))
         {
             PCF8583_set_time(godz,min,sek,hsek);
             PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
@@ -526,7 +534,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             LCD_EraseAll();
             LCD_GoTo(moveStep, 0);
-            setting_information(0, u);
+            setting_information(1, u);
             w = 0;
             delay_ms_var(400);
             LCD_EraseAll();
@@ -537,7 +545,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
 
         if( s != 0 )
         {
-            set_appropriate_values_of_time(0, u, s);
+            set_appropriate_values_of_time(1, u, s);
 
             s = 0;
         }
@@ -916,7 +924,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             s = 2;
             break;
         case 59:
-            u = 8;
+            u = end_of_settings(1);
             break;
         }
         wysw();
@@ -942,7 +950,7 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             u += zwiekszanie;
             break;
         case 59:
-            u = 8;
+            u = end_of_settings(c);
             break;
         }
         wysw();
@@ -969,6 +977,9 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             break;
         case 33:
             u += zwiekszanie;
+            break;
+        case 59:
+            u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
             break;
         }
 
@@ -1079,7 +1090,7 @@ void pilot( int com, int tog )//
                 break;
             case 6:
                 //czynnosc( men, 50, tog );
-                lockers_find_latest_data();
+                //lockers_find_latest_data();
                 u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
