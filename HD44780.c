@@ -239,7 +239,33 @@ void LCD_Initalize( void )
 #endif // USE_RW
     LCD_WriteCommand( HD44780_ENTRY_MODE | HD44780_EM_SHIFT_CURSOR | HD44780_EM_INCREMENT ); // inkrementaja adresu i przesuwanie kursora
     LCD_WriteCommand( HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK ); // w³¹cz LCD, bez kursora i mrugania
+
+#if USE_LCD_Backlight == 1
+    LCD_BACKLIGHT_DIR	|= LCD_BACKLIGHT;
+    LCD_BacklightOn();
+#endif
 }
+
+#if USE_LCD_Backlight == 1
+//-------------------------------------------------------------------------------------------------
+//
+// Funkcja włączenia podświetlenia wyświetlacza
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_BacklightOn(void)
+{
+    LCD_BACKLIGHT_PORT |= LCD_BACKLIGHT;
+}
+//-------------------------------------------------------------------------------------------------
+//
+// Funkcja wyłączenia podświetlenia wyświetlacza
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_BacklightOff(void)
+{
+    LCD_BACKLIGHT_PORT &= ~LCD_BACKLIGHT;
+}
+#endif // USE_LCD_Backlight
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)

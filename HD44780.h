@@ -31,7 +31,14 @@
 #define USE_LCD_MoveLeft 1
 #define USE_LCD_Erase 1
 #define USE_LCD_Displaying 1
+#define USE_LCD_Backlight 1
 
+#if USE_LCD_Backlight == 1
+#define LCD_BACKLIGHT_DIR	DDRB
+#define LCD_BACKLIGHT_PORT 	PORTB
+#define LCD_BACKLIGHT_PIN	PINB
+#define LCD_BACKLIGHT	    (1 << PB0)
+#endif
 
 #if USE_RW == 1
 #define LCD_RS_DIR		DDRA
@@ -138,6 +145,11 @@ unsigned char LCD_ReadStatus( void );
 
 
 void LCD_Initalize( void ); // inicjalizacja wyświetlacza
+
+#if USE_LCD_Backlight == 1
+void LCD_BacklightOn(void);
+void LCD_BacklightOff(void);
+#endif // USE_LCD_Backlight
 
 void LCD_WriteData( unsigned char ); // zapisywanie danych po jednym znaku, przesuwa kursor w prawo
 #if USE_RW == 1

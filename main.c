@@ -930,24 +930,21 @@ void czynnosc2( int com, int tog )
     {
         PCF8583_alarm_flag_on();
     }
-
     if ( com == 59 )
     {
         PCF8583_alarm_flag_off();
-    }
-    if( com == 12 )
-    {
-        lockers_print_all_memory();
     }
     if ( com == 100 )
     {
         if(pilot_state == 1)
         {
             pilot_state = 0;
+            LCD_BacklightOff();
         }
         else if(pilot_state == 0)
         {
             pilot_state = 1;
+            LCD_BacklightOn();
         }
     }
     refresh_screen = 1;
@@ -967,6 +964,10 @@ void czynnosc3( int com, int tog )
             lockers_clear_all_memory();
             c = 0;
         }
+    }
+    if( com == 41 )
+    {
+        lockers_print_all_memory();
     }
     if ( com == 32 )
     {
