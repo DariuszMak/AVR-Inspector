@@ -480,11 +480,11 @@ void show_clock_options(uint8_t index)
 {
     if(index == 0)
     {
-        LCD_WriteText("Zegar stop");
+        LCD_WriteText("Rezonator WYL.");
     }
     else if(index == 1)
     {
-        LCD_WriteText("Zegar start");
+        LCD_WriteText("Rezonator WL.");
     }
 }
 
@@ -556,7 +556,7 @@ void show_setting_flags_case(uint8_t index)
     }
     else if(index == 2)
     {
-        LCD_WriteText("Zegar");
+        LCD_WriteText("Rezonator");
     }
     else if(index == 3)
     {
@@ -866,12 +866,9 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
     LCD_EraseAll();
 
-
-
     if(u == end_of_settings())
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok, timer);
-        PCF8583_start();
         refresh_screen = 0;
         LCD_Clear();
         w = 1;
@@ -1745,7 +1742,7 @@ void sczytaj_komende( void )
             else if(temp_char == 'i') lockers_print_latest_data();
             if(temp_char != 0) refresh_screen = 1;
 
-            if(/*PCF8583_is_alarm_flag_set() == 1 || */PCF8583_is_timer_flag_set() == 1)
+            if(PCF8583_is_alarm_flag_set() == 1 || PCF8583_is_timer_flag_set() == 1)
             {
                 buzzer();
                 lockers_print_latest_data();

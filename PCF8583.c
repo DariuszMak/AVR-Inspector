@@ -198,15 +198,19 @@ void PCF8583_alarm_flag_on(void)
 */
 void PCF8583_write_word(uint8_t address,uint16_t data)
 {
-    PCF8583_write(address, (uint8_t)(data & 0xFF));
-    PCF8583_write(++address, (uint8_t)(data >> 8));
+    uint8_t table_temp[2];
+    table_temp[0] = (uint8_t)(data & 0xFF);
+    table_temp[1] = (uint8_t)(data >> 8);
+    PCF8583_write_buf(address, 2, table_temp);
 }
 
 uint16_t PCF8583_read_word(uint8_t address)
 {
     uint16_t temp;
-    temp = PCF8583_read(address) & 0xFF;
-    temp |= PCF8583_read(++address) << 8;
+    uint8_t table_temp[2];
+    PCF8583_read_buf(address, 2, table_temp);
+    temp = table_temp[0] & 0xFF;
+    temp |= table_temp[1] << 8;
     return temp;
 }
 
@@ -270,10 +274,11 @@ void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint
 
     time_f.timer = bin2bcd(timer);
 
+    uint8_t temp = PCF8583_is_clock_counting();
     PCF8583_stop();
     PCF8583_write_buf(0x01, 7, (uint8_t*)&time_f);
-    //PCF8583_start();
     PCF8583_write_buf(0x10, 2, year_table);
+    if(temp == 1) PCF8583_start();
 }
 
 /**
