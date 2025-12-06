@@ -131,7 +131,7 @@ double round_double(float number, uint8_t precision)
 
 uint8_t number_of_digits(int32_t number)
 {
-    int32_t temp_number = abs(number);
+    int32_t temp_number = (int32_t)fabs((float)number);
     uint32_t ten2 = 10;
 
     int d = 1;
@@ -163,7 +163,7 @@ struct double_format set_double_format( double value, uint8_t approximation)
 {
     value = round_double(value,approximation);
     struct double_format double_format_temp;
-    if((int16_t) abs(value) > 300)
+    if( fabs(value) > (float)300)
     {
         double_format_temp.integer_number = 0;
         double_format_temp.decimal_number = 0;
@@ -173,7 +173,7 @@ struct double_format set_double_format( double value, uint8_t approximation)
     if(approximation > 2) approximation = 2;
     double_format_temp.integer_number = (int16_t)value;
 
-    uint16_t value_temp = abs(value);
+    uint16_t value_temp = (uint16_t)fabs((float)value);
     uint16_t ten = 1;
     //uint8_t d  = 0;
     for(t = 0; t < approximation; ++t)
@@ -182,7 +182,7 @@ struct double_format set_double_format( double value, uint8_t approximation)
     }
     value *= ten;//liczba przesunięta o liczbę miejsc
     //printf("%lf, ", value);
-    value = abs(value);//liczba na pewno jest dodatnia
+    value = fabs(value);//liczba na pewno jest dodatnia
     //printf("%lf\n", value);
 
     value -= ten * value_temp;//usuniecie czesci dużej liczby, zostaje liczba po przecinku, tylko w formie całkowitej
@@ -444,7 +444,10 @@ void show_time_format(void)
     if(miesiac < 10) LCD_Int(0);
     LCD_Int(miesiac);
     LCD_WriteText(":");
-    for(t = 0; t < 4 - number_of_digits(rok); ++t)
+    uint8_t temp2_number_of_digits = number_of_digits(rok);
+    //LCD_Int(temp_number_of_digits);
+    if(temp2_number_of_digits > 4) temp2_number_of_digits = 4;
+    for(t = 0; t < 4 - temp2_number_of_digits; ++t)
     {
         LCD_WriteText("_");
     }
@@ -2378,6 +2381,9 @@ int main( void )
     //uart_puts("co wyszlo:\r\n");
 
     printf("\nInicjalizacja w toku...\n");
+
+
+    //printf("%d", number_of_digits(-3276777));
 
     /*uint8_t temp_table[2];
 
