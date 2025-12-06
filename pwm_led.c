@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "pwm_led.h"
 
 volatile uint8_t pwm1, pwm2;
 
@@ -13,10 +14,12 @@ void pwm_led_init ( void )
 	TIMSK |= ( 1 << OCIE2 );
 }
 
-ISR(_VECTOR(4))
+ISR( _VECTOR( 4 ) )
 {
-    static uint8_t cnt;
-    if(cnt>=pwm1) PORTD |= (1<<PD2); else PORTD &= ~(1<<PD2);
-    if(cnt>=pwm2) PORTD |= (1<<PD3); else PORTD &= ~(1<<PD3);
-    cnt++;
+	static uint8_t cnt;
+	if( cnt >= pwm1 ) PORTD |= ( 1 << PD2 );
+	else PORTD &= ~( 1 << PD2 );
+	if( cnt >= pwm2 ) PORTD |= ( 1 << PD3 );
+	else PORTD &= ~( 1 << PD3 );
+	cnt++;
 }

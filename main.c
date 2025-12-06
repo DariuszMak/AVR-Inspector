@@ -20,11 +20,12 @@ int main( void )
 
 	const int liczbaPodprogramow = 3;
 
+	int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
 	int t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie
 	int	cyfry = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 	int zwiekszanie = 0; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 	int menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
-	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu, czy nie (dosyć zagmatwany mechanizm)
+	int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy jest się w podprogramie = 2, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
 
 //definicje funkcji
 
@@ -68,7 +69,7 @@ int main( void )
 		case 2:
 			if ( cyfry >= 10000 ) cyfry = 10000;
 			else if( cyfry <= -10000 ) cyfry = -10000;
-			OCR0 = cyfry;
+			//OCR0 = cyfry;//zmienna przepełnienia Timera 0
 			LCD_EraseAll();
 			d_led_Int( cyfry );
 			LCD_GoTo( 0, 0 );
@@ -80,12 +81,14 @@ int main( void )
 			LCD_Int( pwm1 );
 			LCD_GoTo( 0, 1 );
 			LCD_Int( pwm2 );
+			//OCR0 = pwm1;//zmienna przepełnienia Timera 0
 			break;
 		}
 	}
 
 	void wysw_skok( int number ) // funkcja wyświetlająca numer kroku o danej wartości
 	{
+		zwiekszanie = number;
 		LCD_EraseAll();
 		for ( t = 0; t < 40; t += 8 )
 		{
@@ -97,18 +100,61 @@ int main( void )
 		_delay_ms( 500 );
 	}
 
-// najważniejsza i najbardziej skomplikowana funkcja
-
-	void pilot( int *men , int com )//
+	void czynnosc( const int * const men, int com ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 	{
-		if( !start ) start = 2;//jeśli start jest równe zero, ma przyjąć wartość 2 (jeśli wywołujemy tę funkcję z główneg menu (menu = 0) to ma się nie wykonać nic innego, jak określona czynność)
 		buzzer();
+
 		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
 
 		case 0:
 			switch ( com )
 			{
+			case 41:
+				LCD_Clear();
+				LCD_WriteText( "ATmega32 program" );
+				LCD_GoTo( 0, 1 );
+				LCD_WriteText( "Dariusz Makarew." );
+
+				rozmiar = 16;
+
+				while( 1 )
+				{
+					char * j =  ( char* ) malloc( rozmiar * sizeof * j * 2);
+
+					LCD_Home();
+
+					for( t = 0; t < rozmiar; t++ )
+					{
+						j[t] = LCD_ReadData();
+						_delay_ms( 1 );
+					}
+
+					LCD_GoTo( 0, 1 );
+
+					for( t = rozmiar; t < 2*rozmiar; t++ )
+					{
+						j[t] = LCD_ReadData();
+						_delay_ms( 1 );
+					}
+
+					LCD_Clear();
+
+					for( t = 0; t < rozmiar; t++ )
+					{
+						LCD_WriteData( j[t] );
+
+					}
+
+					LCD_GoTo( 0, 1 );
+
+					for( t = rozmiar; t < 2*rozmiar; t++ )
+					{
+						LCD_WriteData( j[t] );
+					}
+					free( j );
+				}
+				break;
 			case 12:
 				LCD_Clear();
 				LCD_GoTo( 9, 1 );
@@ -143,7 +189,7 @@ int main( void )
 
 				LCD_GoTo( 9, 1 );
 
-				int rozmiar = 6; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
+				rozmiar = 6;
 
 				char * i =  ( char* ) malloc( rozmiar * sizeof * i );
 
@@ -161,6 +207,7 @@ int main( void )
 					i[t] = LCD_ReadData();
 					_delay_ms( 100 );
 				}
+
 				LCD_ShiftLeftScreen();
 				_delay_ms( 1500 );
 
@@ -206,7 +253,6 @@ int main( void )
 			break;
 
 		case 2:
-
 			switch( com )
 			{
 			case 59:
@@ -227,20 +273,16 @@ int main( void )
 				_delay_ms( 1000 );
 				break;
 			case 55:
-				zwiekszanie = 1000;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 1000 );
 				break;
 			case 54:
-				zwiekszanie = 100;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 100 );
 				break;
 			case 50:
-				zwiekszanie = 10;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 10 );
 				break;
 			case 52:
-				zwiekszanie = 1;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 1 );
 				break;
 			case 32:
 				TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
@@ -262,20 +304,16 @@ int main( void )
 			switch ( com )
 			{
 			case 55:
-				zwiekszanie = 1000;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 1000 );
 				break;
 			case 54:
-				zwiekszanie = 100;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 100 );
 				break;
 			case 50:
-				zwiekszanie = 10;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 10 );
 				break;
 			case 52:
-				zwiekszanie = 1;
-				wysw_skok( zwiekszanie );
+				wysw_skok( 1 );
 				break;
 			case 17:
 				pwm1 -= zwiekszanie;
@@ -292,7 +330,7 @@ int main( void )
 			wysw( *men, com );
 			break;
 		}
-//komendy dla wszystkich podprogramów
+//komendy wspólne dla wszystkich podprogramów
 
 		switch ( com )
 		{
@@ -319,29 +357,39 @@ int main( void )
 		case 36:
 			LCD_PageDownScreen();
 			break;
-
 		case 14:
-			*men = 0;
-			start = 1;
+			start = 1;//oznaka wyjścia z podprogramów
 			break;
 		}
 
-		if( menu == 0 )//jeśli wyszliśmy z programu lub weszliśmy do programu
+	}
+
+// funkcja obsługująca menu dwupoziomowe
+
+	void pilot( int * const men , int com )//
+	{
+		if( !start ) start = 2;//jeśli zmienna "start" jest równa zero, ma przyjąć jakąkolwiek wartość różną od 0 i 1 - czyli np. 2 (jeśli wywołujemy tę funkcję z główneg menu (menu = 0) to ma się nie wykonać nic innego, jak określona czynność)
+
+
+		czynnosc( men, com );//wykonanie jakiejść czynności na podstawie podprogramu, w którym się aktualnie jest oraz komendy
+
+
+		if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
+		{
+			start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
+			*men = 0;//
+			TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
+			wybor( *men );
+			wysw ( *men, com );// wyświetlenie ekranu
+		}
+
+		if( *men == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
 		{
 //ważne opcje przy wchodzeniu/wychodzeniu z podprogramów
 
-			if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
+			if( com > 0 && com <= liczbaPodprogramow )//jeśli komenda była z zakresu numerów podprogramów
 			{
-				TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
-				wybor( *men );
-				start = 0;
-				wysw ( *men, com );// wyświetlenie ekranu
-			}
-
-			if( com > 0 && com <= liczbaPodprogramow )
-			{
-				*men = com;
-				start = 0;
+				*men = com;//przypisanie zmiennej menu nowej wartości
 				wybor( *men );
 
 				switch( *men )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
@@ -352,13 +400,13 @@ int main( void )
 
 				case 2:
 					TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-					pilot( men, 52 );
+					czynnosc( men, 52 );
 					//wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 
 				case 3:
-					pilot( men, 1 );
-					pilot( men, 52 );
+					czynnosc( men, 1 );
+					czynnosc( men, 52 );
 					//wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
 					break;
 				}
@@ -409,6 +457,7 @@ int main( void )
 
 	DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
 
+	pwm_led_init();//inicjaliacja diod pwm
 	LCD_Initalize();//inicjalizacja wyświetlacza
 	ir_init();//inicjalizacja odbioru sygnału z pilota
 	d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
@@ -425,4 +474,3 @@ int main( void )
 
 	return 0;
 }
-

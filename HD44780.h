@@ -135,12 +135,13 @@ void LCD_WriteData( unsigned char ); // odczytywanie danych po kolei w zależno�
 #if USE_RW == 1
 unsigned char LCD_ReadData( void ); // zapisywanie danych po kolei w zależności od pozycji kursora
 #endif
-void LCD_WriteText( char * );
+
+void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
+
+void LCD_WriteText( char * );//Wypisanie tekstu (łańcuch znaków)
 void LCD_GoTo( unsigned char, unsigned char ); // pozycja X, pozycja Y
 void LCD_Clear( void ); // czyści wszystko sprzętowo
 void LCD_Home( void ); // sprętowa funkcje powrotu ns początek (ekran i kursor)
-
-void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
 
 #if USE_LCD_Int == 1
 void LCD_Int( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
