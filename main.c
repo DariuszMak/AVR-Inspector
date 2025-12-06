@@ -77,6 +77,14 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
     LCD_Clear();
     LCD_WriteText( "Program: " );
     LCD_Int( number );
+    LCD_GoTo(0,1);
+    if(number == 0) LCD_WriteText("PROGRAM GLOWNY");
+    else if(number == 1) LCD_WriteText("PROGRAM TESTOWY");
+    else if(number == 2) LCD_WriteText("KOSTKA DO GRY");
+    else if(number == 3) LCD_WriteText("CZUWANIE");
+    else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
+    else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
+    else if(number == 6) LCD_WriteText("DANE - EEPROM");
     for ( t = 0; t < 5; ++t )
     {
         delay_ms_var_double( 10 );
@@ -133,9 +141,8 @@ void show_time_format(void)
 
 void show_alarm_format(uint8_t case_of_format)
 {
-
     if(case_of_format != 0) show_time_only_format();
-    LCD_GoTo(moveStep,1);
+    LCD_GoTo(moveStep, 1);
     if(case_of_format == 2)
     {
         if(miesiac == 0)
@@ -165,33 +172,33 @@ void show_alarm_format(uint8_t case_of_format)
     }
 }
 
-void setting_information(uint8_t case_of_time, uint8_t u)
+void setting_information(uint8_t case_of_time, uint8_t step)
 {
-
-    if(u == 0) LCD_WriteText("GODZINY");
-    else if(u == 1) LCD_WriteText("MINUTY");
-    else if(u == 2) LCD_WriteText("SEKUNDY");
-    else if(u == 3) LCD_WriteText("SETNE SEKUND");
+    LCD_Int(step);
+    if(step == 0) LCD_WriteText("GODZINY");
+    else if(step == 1) LCD_WriteText("MINUTY");
+    else if(step == 2) LCD_WriteText("SEKUNDY");
+    else if(step == 3) LCD_WriteText("SETNE SEKUND");
 
     if(case_of_time == 0 || case_of_time == 3)
     {
-        if(u == 4) LCD_WriteText("DZIEN");
-        else if(u == 5) LCD_WriteText("MIESIAC");
+        if(step == 4) LCD_WriteText("DZIEN");
+        else if(step == 5) LCD_WriteText("MIESIAC");
         if(case_of_time == 0)
         {
-            if(u == 6) LCD_WriteText("ROK");
-            else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
+            if(step == 6) LCD_WriteText("ROK");
+            else if(step == 7) LCD_WriteText("DZIEN TYGODNIA");
         }
     }
     else if( case_of_time == 2)
     {
-        if(u == 4) LCD_WriteText("PONIEDZIALEK");
-        else if(u == 5) LCD_WriteText("WTOREK");
-        else if(u == 6) LCD_WriteText("SRODA");
-        else if(u == 7) LCD_WriteText("CZWARTEK");
-        else if(u == 8) LCD_WriteText("PIATEK");
-        else if(u == 9) LCD_WriteText("SOBOTA");
-        else if(u == 10) LCD_WriteText("NIEDZIELA");
+        if(step == 4) LCD_WriteText("PONIEDZIALEK");
+        else if(step == 5) LCD_WriteText("WTOREK");
+        else if(step == 6) LCD_WriteText("SRODA");
+        else if(step == 7) LCD_WriteText("CZWARTEK");
+        else if(step == 8) LCD_WriteText("PIATEK");
+        else if(step == 9) LCD_WriteText("SOBOTA");
+        else if(step == 10) LCD_WriteText("NIEDZIELA");
     }
 }
 
@@ -550,8 +557,8 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             LCD_GoTo(moveStep, 0);
             setting_information(0, u);
-            w = 0;
             delay_ms_var(400);
+            w = 0;
             LCD_EraseAll();
         }
 
@@ -582,7 +589,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
         else
         {
-
             if(u == end_of_settings(c) || c == 0 || c == -1)
             {
                 start = 1;
@@ -605,13 +611,11 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
                         PCF8583_set_monthly_alarm(dzien,miesiac,godz,min,sek,hsek);
                     }
                     LCD_Clear();
-                    LCD_WriteText("ZAPISANO ALARM!");
+                    LCD_WriteText("ZAPISANO ALARM");
                     delay_ms_var(500);
-                                LCD_EraseAll();
-
+                    LCD_EraseAll();
                 }
             }
-
 
             if( w == 1 && start != 1)
             {
@@ -1152,12 +1156,12 @@ void pilot( int com, int tog )//
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 4:
-                PCF8583_get_wall_time();
                 u = 0;
                 w = 1;//wymuszenie wyświetlenia komunikatu
                 s = 0;
-                czynnosc( 52, tog );
-                //wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                PCF8583_get_wall_time();
+                //czynnosc( 52, tog );
+                wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                 break;
             case 5:
                 PCF8583_get_wall_alarm();
@@ -1178,7 +1182,7 @@ void pilot( int com, int tog )//
         }
     }
 
-    if( !start ) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
+    if( start == 0 ) czynnosc( com, tog );//jeśli jest się już w menu głównym, a nie idzie się właśnie do jakiegoś podprogramu
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
     {
@@ -1251,6 +1255,7 @@ int main( void )
 {
 
 //Inicjalizacja
+LCD_Initalize();//inicjalizacja wyświetlacza
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
@@ -1258,7 +1263,6 @@ int main( void )
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
-    LCD_Initalize();//inicjalizacja wyświetlacza
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
@@ -1267,8 +1271,11 @@ int main( void )
 
     sei();//włącza przerwania
 
+    setting_information(0,0);
+    delay_ms_var(1000);
+
     pilot( 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
-    pilot( 5, 0 );//przejście do podprogramu nr 3
+    pilot( 3, 0 );//przejście do podprogramu nr 3
 
     pilot_on();
     pilot_state = 1;

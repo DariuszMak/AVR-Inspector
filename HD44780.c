@@ -262,6 +262,7 @@ void LCD_Int( int value )
 #if USE_LCD_Double == 1 && USE_LCD_Int == 1
 void LCD_Double( double value, unsigned int approximation)
 {
+    if((uint16_t)abs((uint16_t)value) > 1000) return;
     if(approximation > 4) approximation = 4;
     LCD_Int((int16_t)value);
 

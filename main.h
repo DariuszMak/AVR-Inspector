@@ -35,7 +35,7 @@ uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie
 uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
-int8_t	cyfry; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+int8_t	cyfra; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 //zmienne spełniające określone funkcje
 int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
 int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
@@ -44,7 +44,7 @@ int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może 
 int8_t u; //inna (dodatkowa) zmienna pomocnicza
 int8_t w; //inna (dodatkowa) zmienna pomocnicza
 int8_t s;//inna (dodatowa zmienna)
-int8_t c;
+int8_t c;//inna (dodatowa zmienna)
 
 
 int main( void );

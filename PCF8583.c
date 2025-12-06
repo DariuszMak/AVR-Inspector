@@ -106,7 +106,7 @@ void PCF8583_init(void)
     PCF8583_hold_off();//normalne zliczanie, bez zatrzasków
     PCF8583_mask_off();//maskowanie dni i roku wyłączone
     PCF8583_write(4, PCF8583_read(4) & ~0xC0);//1100 0000 (wskaźnik am, 24 godzinny format)
-    PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
+    //PCF8583_write(8, 0x80);//1000 0000 alarm wyłączony
 }
 
 /**
