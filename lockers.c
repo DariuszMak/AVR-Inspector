@@ -10,7 +10,7 @@ void lockers_init()
 
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
-    lockers_address_of_frame = 0;
+
 
     lockers_find_latest_data();
 }
@@ -99,7 +99,7 @@ void lockers_read_frame(uint8_t index)
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     delay_ms_var(1000);
-    uint8_t temp_address = lockers_address_of_frame;//pobranie ostatniego adresu
+    uint8_t temp_address = PCF8583_read(PCF8583_CELL);;//pobranie ostatniego adresu
 
     if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1)) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
@@ -131,7 +131,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             ++temp_address;
         }
     }
-    lockers_address_of_frame = temp_address;
+    PCF8583_write(PCF8583_CELL, temp_address);
 }
 
 

@@ -11,6 +11,8 @@
 
 #define EEPROM_MAX_ADDRESS 255
 
+#define PCF8583_CELL 255
+
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 
 #define LOCKER_1_BUTTON_DIR DDRD
@@ -38,7 +40,7 @@ struct frame//struktura służąca do zapisu danych z ramki - to właściwie jes
     uint8_t information;
 } frame; //8 bajtów
 
-uint8_t lockers_address_of_frame;//adres następnej gotowej do użycia komórki pamięci, bardzo ważna zmienna
+//uint8_t lockers_address_of_frame;//adres następnej gotowej do użycia komórki pamięci, bardzo ważna zmienna
 
 uint8_t states_table[AMOUNT_OF_LOCKERS];//tablica stanów logicznych poszczególnych przycisków, na jej podstawie określa się, czy została dokonana zmiana od ostatniego sprawdzania stanów wejściowych
 uint8_t save_info_table[AMOUNT_OF_LOCKERS];//tablica pomocna do jednokrotnego zapisu danych, informacja czy szafka jest zamknięta, czy otwarta

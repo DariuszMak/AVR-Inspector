@@ -145,6 +145,38 @@ int main( void )
         show_day_of_week(dzien_tygodnia);
     }
 
+    void correction_of_time(void)
+    {
+        if(godz < 0) godz = 23;
+        else if(godz > 23) godz = 0;
+        if(min < 0) min = 59;
+        else if(min > 59) min = 0;
+        if(sek < 0) sek = 59;
+        else if(sek > 59) sek = 0;
+        if(hsek < 0) hsek = 99;
+        else if(hsek > 99) hsek = 0;
+    }
+
+    void correction_of_date(uint8_t check_with_year)//uwzględnianie dnia miesiąca względem roku
+    {
+        uint8_t case_of_day = 0;
+        if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
+        else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
+        else if (miesiac == 2 && (rok % 4) != 0 && check_with_year == 1) case_of_day = 28;
+        else if ((miesiac == 2 && (rok % 4) == 0) || check_with_year == 0) case_of_day = 29;
+
+        if(dzien < 1) dzien = case_of_day;
+        else if(dzien > case_of_day) dzien = 1;
+
+        if(miesiac < 1) miesiac = 12;
+        else if(miesiac > 12) miesiac = 1;
+
+        if(rok < -9999) rok = 9999;
+        else if(rok > 9999) rok = -9999;
+        if(dzien_tygodnia < 0) dzien_tygodnia = 6;
+        else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
+    }
+
     void show_list_of_frames (uint8_t row, int8_t number)
     {
         LCD_GoTo( 0, row );
@@ -389,34 +421,9 @@ int main( void )
                 s = 0;
             }
 
-            if(godz < 0) godz = 23;
-            else if(godz > 23) godz = 0;
-            if(min < 0) min = 59;
-            else if(min > 59) min = 0;
-            if(sek < 0) sek = 59;
-            else if(sek > 59) sek = 0;
-            if(hsek < 0) hsek = 99;
-            else if(hsek > 99) hsek = 0;
+            correction_of_time();
 
-
-            uint8_t case_of_day = 0;
-            if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
-            else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
-            else if (miesiac == 2 && (rok % 4) != 0) case_of_day = 28;
-            else if (miesiac == 2 && (rok % 4) == 0) case_of_day = 29;
-
-            if(dzien < 1) dzien = case_of_day;
-            else if(dzien > case_of_day) dzien = 1;
-
-
-            if(miesiac < 1) miesiac = 12;
-            else if(miesiac > 12) miesiac = 1;
-
-
-            if(rok < -9999) rok = 9999;
-            else if(rok > 9999) rok = -9999;
-            if(dzien_tygodnia < 0) dzien_tygodnia = 6;
-            else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
+            correction_of_date(1);
 
             moveStep = 0;
             show_time_format();
@@ -966,7 +973,7 @@ int main( void )
                 case 6:
                     //czynnosc( men, 50, tog );
                     lockers_find_latest_data();
-                    u = lockers_convert_address_to_index_of_frame(lockers_address_of_frame);
+                    u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
                 }
