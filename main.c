@@ -37,14 +37,62 @@ int main( void )
 		PORTD &= ~( 1 << PD7 );
 	}
 
+	void wybor( int number )
+	{
+		LCD_Clear();
+		//LCD_WriteText( "Glowne menu" );
+
+		LCD_WriteText( "Program: " );
+		LCD_Int( number );
+		_delay_ms( 500 );
+		LCD_Clear();
+	}
+	void wysw( int way, int com )
+	{
+		switch ( way )
+		{
+		case 0:
+			LCD_EraseAll();
+			LCD_GoTo( 0, 0 );
+			LCD_WriteText( "Wybierz:");
+			LCD_GoTo( 0, 1 );
+			LCD_WriteText("1 - 3");
+			break;
+		case 1:
+			LCD_EraseAll();
+			LCD_GoTo( 0, 0 );
+			LCD_Int( com );
+			LCD_GoTo( 6, 0 );
+			LCD_Int( address );
+			LCD_GoTo( 0, 1 );
+			LCD_Int( toggle_bit );
+			break;
+		case 2:
+			if ( cyfry >= 10000 ) cyfry = 10000;
+			else if( cyfry <= -10000 ) cyfry = -10000;
+			OCR0 = cyfry;
+			LCD_EraseAll();
+			d_led_Int( cyfry );
+			LCD_GoTo( 0, 0 );
+			LCD_Int( cyfry );
+			break;
+		case 3:
+			LCD_EraseAll();
+			LCD_GoTo( 0, 0 );
+			LCD_WriteText( "PWM dla diod" );
+
+			break;
+		}
+	}
+
 	void pilot( int *men , int com )
 	{
 		if( !start ) start = 2;
 		buzzer();
 		switch( *men )
 		{
+//#######################################################################
 		case 0:
-
 			switch ( com )
 			{
 			case 12:
@@ -134,19 +182,15 @@ int main( void )
 				LCD_ScreenOn();
 				break;
 			}
-
+			wysw( *men, com );
 			break;
+//#######################################################################
 		case 1:
 
-			LCD_EraseAll();
-			LCD_GoTo( 0, 0 );
-			LCD_Int( com );
-			LCD_GoTo( 6, 0 );
-			LCD_Int( address );
-			LCD_GoTo( 0, 1 );
-			LCD_Int( toggle_bit );
+			wysw( *men, com );
 
 			break;
+//#######################################################################
 		case 2:
 
 			switch( com )
@@ -193,18 +237,15 @@ int main( void )
 				cyfry += zwiekszanie;
 				break;
 			}
-			if ( cyfry >= 10000 ) cyfry = 10000;
-			else if( cyfry <= -10000 ) cyfry = -10000;
-			OCR0 = cyfry;
-			LCD_EraseAll();
-			d_led_Int( cyfry );
-			LCD_GoTo( 0, 0 );
-			LCD_Int( cyfry );
+			wysw( *men, com );
 			break;
+//#######################################################################
 		case 3:
+			wysw( *men, com );
 			break;
 		}
-
+//komendy dla wszystkich
+//#######################################################################
 		switch ( com )
 		{
 		case 38:
@@ -234,39 +275,48 @@ int main( void )
 
 		if( menu == 0 )
 		{
-			if( start == 1 )
+
+			if ( start == 1 )
 			{
-				LCD_Clear();
-				LCD_WriteText( "Glowne menu" );
+				wybor( *men );
 				start = 0;
-				_delay_ms( 500 );
-				LCD_Clear();
+				pilot( &menu, 59 );
+
 			}
+
+
+
 
 
 			if( com > 0 && com <= 9 )
 			{
 				*men = com;
-				LCD_Clear();
 
+				wybor( *men );
+
+
+
+
+				start = 0;
 				switch( *men )
 				{
 				case 1:
-					LCD_WriteText( "Program 1" );
+					pilot( &menu, 0 );
 					break;
 
 				case 2:
-					LCD_WriteText( "Program 2" );
+					pilot( &menu, 52 );
+					pilot( &menu, 16 );
+					pilot( &menu, 55 );
+					pilot( &menu, 17 );
+					pilot( &menu, 50 );
 					break;
 
 				case 3:
-					LCD_WriteText( "Program 3" );
+					pilot( &menu, 0 );
 					break;
 				}
-				_delay_ms( 500 );
 
-				LCD_Clear();
-				start = 0;
 			}
 		}
 	}
@@ -302,18 +352,11 @@ int main( void )
 	while( 1 )
 	{
 		zczytaj_komende();
-		if ( !start )
-		{
-			switch( menu )
-			{
-			case 1:
-				pilot( &menu, 0 );
-				break;
-			}
 
-		}
 
 	}
+
+
 
 	return 0;
 }
