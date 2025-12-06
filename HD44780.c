@@ -5,9 +5,7 @@
 // Plik : HD44780.c
 // Mikrokontroler : Atmel AVR
 // Kompilator : avr-gcc
-// Autor : Rados≥aw KwiecieÒ
-// èrÛd≥o : http://radzio.dxp.pl/hd44780/
-// Data : 24.03.2007
+// Autorzy : Rados≥aw KwiecieÒ & Dariusz Makarewicz
 //-------------------------------------------------------------------------------------------------
 
 #include "HD44780.h"
@@ -102,7 +100,6 @@ unsigned char _LCD_Read(void)
     LCD_E_PORT &= ~LCD_E;
     return tmp;
 }
-
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu rozkazu do wyúwietlacza
@@ -221,7 +218,96 @@ void LCD_Initalize(void)
     LCD_WriteCommand(HD44780_ENTRY_MODE | HD44780_EM_SHIFT_CURSOR | HD44780_EM_INCREMENT);// inkrementaja adresu i przesuwanie kursora
     LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK); // w≥πcz LCD, bez kursora i mrugania
 }
+//-------------------------------------------------------------------------------------------------
+//
+// Pomocnicze zmienne
+//
+//-------------------------------------------------------------------------------------------------
 
+const int czterdziesci = 40;
+
+//-------------------------------------------------------------------------------------------------
+//
+// Efekt przesuniÍcia zawartoúci o okreúlonej czÍstotliwoúci kroku oraz liczbie krokÛw
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_MoveRight (unsigned int freq, unsigned int step, unsigned int way)
+{
+    int temp;
+    for (temp=0; temp<step; temp++)
+    {
+        if (way)LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT);
+        else LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_RIGHT);
+        if (freq) _delay_ms(freq);
+    }
+}
+//-------------------------------------------------------------------------------------------------
+//
+// Efekt przesuniÍcia zawartoúci o ca≥y ekran w prawo
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_MoveLeft (unsigned int freq, unsigned int step, unsigned int way)
+{
+    int temp;
+    for (temp=0; temp<step; temp++)
+    {
+        if (way)LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT);
+        else LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_LEFT);
+        if (freq) _delay_ms(freq);
+    }
+}
+//-------------------------------------------------------------------------------------------------
+//
+// Czyszczenie zawartoúci okna
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_Erase (unsigned int row)
+{
+    int temp;
+    if (row == 0 || row == 1)
+    {
+        LCD_GoTo(0,0);
+        for (temp=0; temp<czterdziesci; temp++)
+        {
+            LCD_WriteText(" ");
+        }
+    }
+
+    if (row == 0 || row == 2)
+    {
+        LCD_GoTo(0,1);
+        for (temp=0; temp<czterdziesci; temp++)
+        {
+            LCD_WriteText(" ");
+        }
+    }
+}
+//-------------------------------------------------------------------------------------------------
+//
+// RÛøne opcje wyúwielania
+//
+//-------------------------------------------------------------------------------------------------
+void LCD_Displaying (unsigned int option)
+{
+    switch (option)
+    {
+    case 1:
+        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON);
+        break;
+    case 2:
+        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_OFF);
+        break;
+    case 3:
+        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_ON);
+        break;
+    case 4:
+        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_BLINK);
+        break;
+    case 5:
+        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_ON | HD44780_CURSOR_BLINK);
+        break;
+    }
+}
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.c

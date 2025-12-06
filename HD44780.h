@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------
 // Wyœwietlacz alfanumeryczny ze sterownikiem HD44780
-// Sterowanie w trybie 4-bitowym bez odczytu flagi zajêtoœci
+// Sterowanie w trybie 4-bitowym z odczytem flagi zajêtoœci
 // z dowolnym przypisaniem sygna³ów steruj¹cych
 // Plik : HD44780.h
 // Mikrokontroler : Atmel AVR
@@ -105,8 +105,8 @@
 void LCD_WriteCommand(unsigned char);
 unsigned char LCD_ReadStatus(void);
 
-void LCD_WriteData(unsigned char);
-unsigned char LCD_ReadData(void);
+void LCD_WriteData(unsigned char); // odczytywanie danych po kolei w zale¿noœci od pozycji kursora
+unsigned char LCD_ReadData(void); // zapisywanie danych po kolei w zale¿noœci od pozycji kursora
 
 void LCD_WriteText(char *);
 void LCD_GoTo(unsigned char, unsigned char);
@@ -114,6 +114,26 @@ void LCD_Clear(void);
 void LCD_Home(void);
 void LCD_Initalize(void);
 
+void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // czêstotliwoœæ kroku, iloœæ kroków, 0 - kursor, 1 - ekran
+void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // czêstotliwoœæ kroku, iloœæ kroków, 0 - kursor, 1 - ekran
+#define LCD_ShiftRightCursor() LCD_MoveRight(0,1,0) // jeden krok kursora w prawo
+#define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
+#define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
+#define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
+#define LCD_PageUpScreen() LCD_MoveRight(20,15,1) // przesuniêcie o ca³y ekran w prawo
+#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesuniêcie o ca³y ekran w lewo
+
+void LCD_Erase(unsigned int); // uzuoe³nianie spacjami wyœwietlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
+#define LCD_EraseAll() LCD_Erase(0) // uzuoe³nianie spacjami wyœwietlacza - dwa wiersze
+#define LCD_EraseUp() LCD_Erase(1) // uzuoe³nianie spacjami wyœwietlacza 1 - górny wiersz,
+#define LCD_EraseDown() LCD_Erase(2) // uzuoe³nianie spacjami wyœwietlacza 2 - dolny wiersz
+
+void LCD_Displaying(unsigned int);
+#define LCD_ScreenOn() LCD_Displaying(1) // zwyk³y tryb pracy wyœwietlacza bez kursora
+#define LCD_ScreenOff() LCD_Displaying(2) // wy³¹czenie wyœwietlacza (nic nie wyœwietla, ale wci¹¿ pracuje)
+#define LCD_Cursor() LCD_Displaying(3) // tryb pracy z kursorem
+#define LCD_Blink() LCD_Displaying(4) // tryb pracy z migaj¹cym prostok¹tem
+#define LCD_CursorBlink() LCD_Displaying(5) // tryb pracy z kursorem i z migaj¹cym prostok¹tem
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.h

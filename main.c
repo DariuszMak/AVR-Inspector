@@ -5,82 +5,83 @@
 #include "HD44780.h"
 
 //##############################################################################
-int main(void)
+void main(void)
 {
+    int t, rozmiar=7;
+    char i[rozmiar];
+    LCD_Initalize();   //inicjalizacja LCD
+
     while(1)
     {
-        int t, rozmiar=7;
-        char i[rozmiar];
-        LCD_Initalize();   //inicjalizacja LCD
-        LCD_GoTo(3, 1);      //Ustawienie kursora w pozycji (0,0)
+
+        LCD_GoTo(9, 1);      //Ustawienie kursora w pozycji (0,0)
         LCD_WriteText("Witaj!");
         _delay_ms(500);
+        LCD_ShiftLeftScreen();
 
         LCD_Home();
         LCD_WriteText("(D)Arek");
         _delay_ms(500);
+        LCD_ShiftRightScreen();
 
-        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_ON);
-        _delay_ms(1500);
-
-        LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_ON | HD44780_CURSOR_BLINK);
+        _delay_ms(700);
+        LCD_ScreenOff();
+        _delay_ms(700);
+        LCD_ScreenOn();
+        _delay_ms(700);
+        LCD_ScreenOff();
+        _delay_ms(700);
+        LCD_CursorBlink();
+        _delay_ms(1000);
+        LCD_Blink() ;
+        _delay_ms(1000);
+        LCD_Cursor();
+        _delay_ms(1000);
+        LCD_CursorBlink() ;
+        LCD_GoTo(0,1);
+        LCD_WriteText("Czytam..");
         _delay_ms(1500);
 
         LCD_Home();
-        for(t=0; t<rozmiar; t++){
+        for(t=0; t<rozmiar; t++)
+        {
             i[t] = LCD_ReadData();
             _delay_ms(150);
         }
         _delay_ms(1500);
-
-        LCD_Clear();
+        LCD_Cursor();
+        //LCD_Clear();
+        LCD_EraseAll();
         _delay_ms(1500);
 
         LCD_GoTo(0,1);
-        for(t=0; t<rozmiar; t++){
+        for(t=0; t<rozmiar; t++)
+        {
             LCD_WriteData(i[t]);
             _delay_ms(50);
         }
-
+        LCD_Blink();
         LCD_GoTo(8,0);
-        for(t=0; t<rozmiar; t++){
+        for(t=0; t<rozmiar; t++)
+        {
             LCD_WriteData(i[t]);
+            i[t]=0;
             _delay_ms(50);
         }
-
+        LCD_Cursor();
         _delay_ms(1500);
-        for (t=0; t<15; t++){
-            LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT);
-            _delay_ms(25);
-        }
+        LCD_PageUpScreen ();
+        LCD_PageDownScreen();
+        LCD_EraseUp();
+        LCD_Blink();
+        _delay_ms(1000);
+        LCD_PageDownScreen();
+        LCD_PageUpScreen();
+        LCD_Cursor();
+        _delay_ms(500);
+        LCD_EraseDown();
+        _delay_ms(500);
 
-        for (t=0; t<15; t++){
-            LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT);
-            _delay_ms(25);
-        }
-
-
-        for (t=0; t<15; t++){
-            LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT);
-            _delay_ms(25);
-        }
-
-        for (t=0; t<15; t++){
-            LCD_WriteCommand(HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT);
-            _delay_ms(25);
-        }
-
-
-        _delay_ms(1500);
         LCD_Clear();
-
-//        i = LCD_ReadData();
-//        _delay_ms(500);
-//        LCD_Clear();
-//        _delay_ms(500);
-//        LCD_WriteText('i');
-//        _delay_ms(500);
-        ;
     }
-
 }
