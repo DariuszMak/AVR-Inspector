@@ -27,10 +27,10 @@
 
 //zmienne te mają jedynie charakter bufora, przed każdym użyciem należy upewnić się, czy ich wartości nie uległy zmianie
 
-uint8_t godz, min, sek, hsek;
+int8_t godz, min, sek, hsek;
 
-uint8_t dzien,dzien_tygodnia, miesiac;
-uint16_t rok;
+int8_t dzien,dzien_tygodnia, miesiac;
+int16_t rok;
 
 
 /**-------------------------------------------------------------------------------------------------

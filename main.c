@@ -236,17 +236,19 @@ int main( void )
 
             show_time_format();
 
-            LCD_GoTo(18, 0);
-            LCD_WriteText("|");
 
-            LCD_GoTo(18, 1);
-            LCD_WriteText("|");
 
             PCF8583_get_wall_alarm();//wczytanie wartości umieszczonych w alarmie
             moveStep=22;
 
             if(u != 0)
             {
+                LCD_GoTo(18, 0);
+                LCD_WriteText("|");
+
+                LCD_GoTo(18, 1);
+                LCD_WriteText("|");
+
                 LCD_GoTo( 0 + moveStep, 0 );
                 if(godz < 10) LCD_Int(0);
                 LCD_Int(godz);
@@ -299,7 +301,8 @@ int main( void )
                 PCF8583_set_date(dzien,dzien_tygodnia,miesiac,rok);
                 LCD_Clear();
                 LCD_GoTo(0,0);
-                LCD_WriteText("Zapisano!");
+                LCD_WriteText("ZAPISANO!");
+                delay_ms_var(500);
                 start = 1;
             }
 
@@ -316,7 +319,8 @@ int main( void )
                 else if(u == 6) LCD_WriteText("ROK");
                 else if(u == 7) LCD_WriteText("DZIEN TYGODNIA");
                 w = 0;
-                _delay_ms(400);
+                delay_ms_var(300);
+                LCD_EraseAll();
             }
 
             if( s != 0 )
@@ -347,7 +351,22 @@ int main( void )
                 s = 0;
             }
 
-
+            if(godz < 0) godz = 23;
+            else if(godz > 23) godz = 0;
+            if(min < 0) min = 59;
+            else if(min > 59) min = 0;
+            if(sek < 0) sek = 59;
+            else if(sek > 59) sek = 0;
+            if(hsek < 0) hsek = 99;
+            else if(hsek > 99) hsek = 0;
+            if(dzien < 1) dzien = 31;
+            else if(dzien > 31) dzien = 1;
+            if(miesiac < 1) miesiac = 12;
+            else if(miesiac > 12) miesiac = 1;
+            if(rok < -9999) rok = 9999;
+            else if(rok > 9999) rok = -9999;
+            if(dzien_tygodnia < 0) dzien_tygodnia = 6;
+            else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
 
             moveStep = 0;
             show_time_format();
