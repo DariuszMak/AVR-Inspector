@@ -174,7 +174,6 @@ void show_alarm_format(uint8_t case_of_format)
 
 void setting_information(uint8_t case_of_time, uint8_t step)
 {
-    LCD_Int(step);
     if(step == 0) LCD_WriteText("GODZINY");
     else if(step == 1) LCD_WriteText("MINUTY");
     else if(step == 2) LCD_WriteText("SEKUNDY");
@@ -671,9 +670,8 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     if( menu == 0)
     {
 
-        switch ( com )
+        if ( com == 41 )
         {
-        case 41:
             pilot_off();
             LCD_Clear();
             rozmiar = LCD_CHARSPERLINE;
@@ -778,8 +776,9 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             buzzer();
             pilot_on();
 
-            break;
-        case 12:
+        }
+        if ( com == 12 )
+        {
             pilot_off();
             LCD_Clear();
             LCD_Blink();
@@ -869,7 +868,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             LCD_Clear();
             LCD_ScreenOn();
             pilot_on();
-            break;
         }
         wysw();
     }
@@ -880,10 +878,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     }
     else if( menu == 2 )
     {
-        switch( com )
+        if ( com == 41 || com == 100)
         {
-        case 100://reakcja na naciśnięcie przycisku "stop"
-        case 41://reakcja na naciśnięcie przyciku z pilota RC5
+            //reakcja na naciśnięcie przycisku "stop"
+            //reakcja na naciśnięcie przyciku z pilota RC5
 
             t = 1;//zmienna odpowiedzialna za ilość podjętych prób losowań
             u = 1;//zmienna pomocnicza, pamięta wylosowaną liczbę kropek na kostce, przydaje się w różnych trybach wyświetlania
@@ -923,51 +921,61 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             u = -1;//tryb wyświetlania
             wysw();
             //cy1 = 8;
-            break;
-        case 59:
+        }
+        if ( com == 59 )
+        {
             cyfra = 0;
             pozycja = 0;
             u = -1;
             wysw();
-            break;
-        case 55:
+        }
+        if ( com == 55 )
+        {
             wysw_skok( 1000 );
-            break;
-        case 54:
+        }
+        if ( com == 54 )
+        {
             wysw_skok( 100 );
-            break;
-        case 50:
+        }
+        if ( com == 50 )
+        {
             wysw_skok( 10 );
-            break;
-        case 52:
+        }
+        if ( com == 52 )
+        {
             wysw_skok( 1 );
-            break;
-        case 32:
+        }
+        if ( com == 32 )
+        {
             TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
-            break;
-        case 33:
+        }
+        if ( com == 33 )
+        {
             TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer wyłączony
-            break;
-        case 17:
+        }
+        if ( com == 17 )
+        {
             //cyfry -= zwiekszanie;
-            break;
-        case 16:
+        }
+        if ( com == 16 )
+        {
             //cyfry += zwiekszanie;
-            break;
-        case 14:
-            switch(tog)
+        }
+        if ( com == 14 )
+        {
+            if( tog == 0)
             {
-            case 0:
-                break;
-            case 1://wygaszenie elementów wyświetlacza podczas opuszczania podprogramu
+            }
+            if( tog == 1)
+            {
+                //wygaszenie elementów wyświetlacza podczas opuszczania podprogramu
                 TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
                 cy1 = 10;
                 cy2 = 10;
                 cy3 = 10;
                 cy4 = 10;
-                break;
+
             }
-            break;
         }
         wysw();
     }
@@ -1020,56 +1028,59 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
     else if( menu == 5 )
     {
-        switch ( com )
+        if ( com == 16 )
         {
-        case 16:
             ++u;
             w = 1;//wymuszenie wyświetlenia komunikatu
-            break;
-        case 17:
+        }
+        if ( com == 17 )
+        {
             --u;
             w = 1;//wymuszenie wyświetlenia komunikatu
-            break;
-        case 32://zwiększenie
+        }
+        if ( com == 32 )
+        {
             if(u == -1) c -= zwiekszanie;
             else s = 1;
-            break;
-        case 33://zmniejszenie
+        }
+        if ( com == 33 )
+        {
             if(u == -1) c += zwiekszanie;
             else s = 2;
-            break;
-        case 59:
+        }
+        if ( com == 59 )
+        {
             u = end_of_settings(c);
-            break;
+
         }
         wysw();
     }
     else if( menu == 6 )
     {
-        switch ( com )
-        {
-        case 12:
 
-            switch(tog)
+        if ( com == 12 )
+        {
+            if( tog == 0)
             {
-            case 0:
-                break;
-            case 1:
+            }
+            if( tog == 1)
+            {
                 EEPROM_clear_all_memory();
                 PCF8583_write(PCF8583_CELL, 0);
                 u = 0;
-                break;
             }
-            break;
-        case 32:
+        }
+        if ( com == 32 )
+        {
             u -= zwiekszanie;
-            break;
-        case 33:
+        }
+        if ( com == 33 )
+        {
             u += zwiekszanie;
-            break;
-        case 59:
+        }
+        if ( com == 59 )
+        {
             u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
-            break;
         }
 
         wysw();
@@ -1080,9 +1091,9 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
 
 //komendy wspólne dla wszystkich podprogramów
 
-    switch ( com )
+    if ( com == 38 )
     {
-    case 38:
+
         LCD_Clear();
         LCD_WriteText( "Na poczatek" );
         LCD_GoTo( 0, 1 );
@@ -1092,36 +1103,41 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_PageDownScreen();
         LCD_Clear();
         wysw();
-        break;
-    case 46:
+    }
+    if ( com == 46 )
+    {
         LCD_ShiftRightScreen();
-        break;
-    case 34:
+    }
+    if ( com == 34 )
+    {
         LCD_ShiftLeftScreen();
-        break;
-    case 36:
+    }
+    if ( com == 36 )
+    {
         LCD_PageUpScreen();
-        break;
-    case 35:
-        LCD_PageDownScreen();
-        break;
-    case 44:
-        step_increase();
-        break;
-    case 45:
-        step_decrease();
-        break;
 
-    case 14:
-        switch(tog)
+    }
+    if ( com == 35 )
+    {
+        LCD_PageDownScreen();
+    }
+    if ( com == 44 )
+    {
+        step_increase();
+    }
+    if ( com == 45 )
+    {
+        step_decrease();
+    }
+    if ( com == 14 )
+    {
+        if( tog == 0)
         {
-        case 0:
-            break;
-        case 1:
-            start = 1;//oznaka wyjścia z podprogramów
-            break;
         }
-        break;
+        if( tog == 1)
+        {
+            start = 1;//oznaka wyjścia z podprogramów
+        }
     }
 }
 
@@ -1141,37 +1157,38 @@ void pilot( int com, int tog )//
             menu = com;//przypisanie zmiennej menu nowej wartości
             wybor( menu );
 
-            switch( menu )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
+            if ( menu == 1 )
             {
-            case 1:
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-                break;
-
-            case 2:
+            }
+            else if ( menu == 2 )
+            {
                 rozmiar = 4;
                 u = -1;//wymuszenie wykonania animacji z kreskami
                 t = 0;
                 TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-                break;
-
-            case 3:
+            }
+            else if ( menu == 3 )
+            {
                 //czynnosc( men, 50, tog );
                 lockers_beginning_actions();
                 TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
                 checking_lockers_state = 1;
                 u = PCF8583_recognise_type_of_alarm();
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-                break;
-            case 4:
+            }
+            else if ( menu == 4 )
+            {
                 u = 0;
                 w = 1;//wymuszenie wyświetlenia komunikatu
                 s = 0;
                 PCF8583_get_wall_time();
                 //czynnosc( 52, tog );
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-                break;
-            case 5:
+            }
+            else if ( menu == 5 )
+            {
                 PCF8583_get_wall_alarm();
                 //czynnosc( men, 50, tog );
                 u = -1;
@@ -1179,13 +1196,13 @@ void pilot( int com, int tog )//
                 s = 0;
                 c = PCF8583_recognise_type_of_alarm();
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-                break;
-            case 6:
+            }
+            else if ( menu == 6 )
+            {
                 //czynnosc( men, 50, tog );
                 //lockers_find_latest_data();
                 u = lockers_convert_address_to_index_of_frame(PCF8583_read(PCF8583_CELL));
                 wysw();//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-                break;
             }
         }
     }
@@ -1279,8 +1296,7 @@ int main( void )
 
     sei();//włącza przerwania
 
-    setting_information(0,0);
-    delay_ms_var(1000);
+
 
     pilot( 0, 0 );//rozpoczęcie programu od głównego menu - konieczny krok
     pilot( 3, 0 );//przejście do podprogramu nr 3
