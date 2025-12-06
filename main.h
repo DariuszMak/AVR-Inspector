@@ -33,6 +33,7 @@ uint8_t moveStep;//zmienna do przesunięcia wyświetlanych partii danych (dla da
 uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 int8_t backlight_of_lcd;
+uint8_t start_program;
 //zmienne zarezerwowane dla podprogramu nr 2:
 
 //zmienne spełniające określone funkcje

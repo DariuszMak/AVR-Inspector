@@ -242,11 +242,18 @@ void lockers_print_entire_frame(void)
 void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
 {
     uint8_t index_of_frame = 0;
-    for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
+    if(numbers_of_frames == 0)
     {
-        lockers_queue_read(index_of_frame);
-        printf("%d. ", index_of_frame + 1);
-        lockers_print_entire_frame();
+        printf("Brak danych\n");
+    }
+    else
+    {
+        for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
+        {
+            lockers_queue_read(index_of_frame);
+            printf("%d. ", index_of_frame + 1);
+            lockers_print_entire_frame();
+        }
     }
 }
 

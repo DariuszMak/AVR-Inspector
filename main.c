@@ -90,25 +90,31 @@ void step_decrease(void)
 void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 {
     refresh_screen = 0;
-    LCD_Clear();
-    LCD_WriteText( "Program: " );
-    LCD_Int( number );
-    LCD_GoTo(0,1);
-    if(number == 0) LCD_WriteText("PROGRAM GLOWNY");
-    else if(number == 1) LCD_WriteText("PROGRAM TESTOWY");
-    else if(number == 2) LCD_WriteText("CZUWANIE");
-    else if(number == 3) LCD_WriteText("DANE - EEPROM");
-    else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
-    else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
-    else if(number == 6) LCD_WriteText("");
-    for ( t = 0; t < 5; ++t )
+    if(start_program == 0)
     {
-        delay_ms_var_double( 30 );
-        buzzer_time(5);
+        LCD_Clear();
+        LCD_WriteText( "Program: " );
+        LCD_Int( number );
+        LCD_GoTo(0,1);
+        if(number == 0) LCD_WriteText("PROGRAM GLOWNY");
+        else if(number == 1) LCD_WriteText("PROGRAM TESTOWY");
+        else if(number == 2) LCD_WriteText("CZUWANIE");
+        else if(number == 3) LCD_WriteText("DANE - EEPROM");
+        else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
+        else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
+        else if(number == 6) LCD_WriteText("");
+
+
+        for ( t = 0; t < 5; ++t )
+        {
+            delay_ms_var_double( 30 );
+            buzzer_time(5);
+        }
+        delay_ms_var_double( 500 );
+        LCD_PageUpScreen();
+        LCD_Clear();
+
     }
-    delay_ms_var_double( 500 );
-    LCD_PageUpScreen();
-    LCD_Clear();
     refresh_screen = 1;
 }
 
@@ -413,7 +419,7 @@ void show_list_case(index)
 {
     if(menu == 3)
     {
-        lockers_read_frame(index);
+        lockers_queue_read(index);
         show_frame(index+1);
     }
     else if (menu == 5)
@@ -425,17 +431,25 @@ void show_list_case(index)
 
 void show_list(int16_t current_index, int16_t max_index)
 {
-
-    if ( current_index != -1)
+    if(max_index == -1)
     {
         LCD_GoTo(0, 0);
-        show_list_case(current_index);
+        LCD_WriteText("Brak danych");
     }
-
-    if(current_index != max_index)
+    else
     {
-        LCD_GoTo(0, 1);
-        show_list_case(current_index + 1);
+
+        if ( current_index != -1)
+        {
+            LCD_GoTo(0, 0);
+            show_list_case(current_index);
+        }
+
+        if(current_index != max_index)
+        {
+            LCD_GoTo(0, 1);
+            show_list_case(current_index + 1);
+        }
     }
 }
 
@@ -1178,8 +1192,8 @@ void zczytaj_komende( void )
 
         uint8_t temp_char = USART_Recieve_without_waiting();
 
-        if(temp_char == 'R') lockers_print_all_memory();
-        else if(temp_char == 'r') lockers_print_latest_data();
+        if(temp_char == 'I') lockers_print_all_memory();
+        else if(temp_char == 'i') lockers_print_latest_data();
         if(temp_char != 0) refresh_screen = 1;
         if( menu == 2 )
         {
@@ -1289,7 +1303,17 @@ int main( void )
 
     backlight(1);
 
+    start_program = 1;
+
     sei();//włącza przerwania
+
+    LCD_WriteText("AVR INSPECTOR");
+    delay_ms_var(1500);
+    LCD_GoTo(8,1);
+    LCD_WriteText("Darek M.");
+    delay_ms_var(1000);
+    LCD_PageUpScreen();
+    LCD_Clear();
 
     zczytaj_komende();
     switch_menu = 2;
@@ -1299,7 +1323,7 @@ int main( void )
     //PCF8583_write_word(254, 1256);
 
     //główna pętla programu
-
+    start_program = 0;
 
 
     while( 1 )
