@@ -54,7 +54,7 @@ int main( void )
         LCD_Clear();
     }
 
-    void wysw( int men, int add ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
+    void wysw( int men ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
     {
         switch ( men )
         {
@@ -73,7 +73,7 @@ int main( void )
         case 1:
             LCD_EraseAll();
             LCD_GoTo( 0, 0 );
-            LCD_Int( add );
+            LCD_Int( command );
             LCD_GoTo( 6, 0 );
             LCD_Int( address );
             LCD_GoTo( 0, 1 );
@@ -138,7 +138,7 @@ int main( void )
                     }
                 }
 
-                /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";
+                /*original_text[0] = "ATmega32 programabcdefghijklmnopqrstuvwx";//błąd, bo nie działa przy powtórnym użyciu
                 original_text[1] = "Dariusz M. proj.yz1234567890987654321!@$";*/
 
                 for( t = 0; t < LCD_CHARSPERLINE; ++t )
@@ -204,7 +204,6 @@ int main( void )
                         {
                             LCD_WriteData( buffer_table[1][t] );
                         }
-
                     }
 
                     for ( t = 0; t < 2; ++t )
@@ -317,16 +316,18 @@ int main( void )
                 LCD_ScreenOn();
                 break;
             }
-            wysw( *men, com );
+            wysw( *men );
             break;
-
         case 1:
             LCD_Displaying( com );
-            wysw( *men, com );
+            wysw( *men );
             break;
         case 2:
             switch( com )
             {
+            case 100:
+
+                break;
             case 59:
                 cy1 = 9;
                 cy2 = 0;
@@ -383,10 +384,8 @@ int main( void )
                 }
                 break;
             }
-
-            wysw( *men, com );
+            wysw( *men );
             break;
-
         case 3:
             switch ( com )
             {
@@ -415,7 +414,7 @@ int main( void )
                 pwm2 -= zwiekszanie;
                 break;
             }
-            wysw( *men, com );
+            wysw( *men );
             break;
         }
 //komendy wspólne dla wszystkich podprogramów
@@ -431,7 +430,7 @@ int main( void )
             LCD_PageUpScreen();
             LCD_PageDownScreen();
             LCD_Clear();
-            wysw( *men, com );
+            wysw( *men );
             break;
         case 34:
             LCD_ShiftRightScreen();
@@ -501,7 +500,7 @@ int main( void )
                 switch( *men )//można podać tu komendy które mają wykonać się podczas wchodzenia do podprogramu
                 {
                 case 1:
-                    wysw( *men, com );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
+                    wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 
                 case 2:
@@ -527,7 +526,7 @@ int main( void )
             *men = 0;//
             TCCR0 &= ~( ( 1 << CS02 ) | ( 1 << CS00 ) ); // timer 0 od wyświetlacza alfanumerycznego wyłączony
             wybor( *men );
-            wysw ( *men, com );// wyświetlenie ekranu
+            wysw ( *men );// wyświetlenie ekranu
         }
     }
 
@@ -535,6 +534,13 @@ int main( void )
 
     void zczytaj_komende( void )
     {
+        if ( stop_button() )
+        {
+            _delay_ms(30);
+            if (stop_button()) pilot( &menu, 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
+            _delay_ms(100);
+        }
+
         if( Ir_key_press_flag )
         {
             if( !address )
