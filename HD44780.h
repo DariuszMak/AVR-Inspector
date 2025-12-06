@@ -133,9 +133,9 @@ void _LCD_JustWrite( unsigned char );
 void LCD_JustWriteCommand( unsigned char );
 void LCD_JustWriteData( unsigned char );
 unsigned char LCD_NotBusy( void );
-int LCDWriteToBuffer( unsigned char, unsigned char, char * );
+int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str );
 void LCDClearBuffer( void );
-int LCDUpdateTask( void );
+void LCDUpdateTask( void );
 #endif
 #if USE_RW == 1
 unsigned char _LCD_Read( void );

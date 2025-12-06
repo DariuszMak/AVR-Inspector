@@ -15,6 +15,11 @@
 //Program glowny:
 
 
+
+
+
+
+
 int main( void )
 {
 
@@ -29,86 +34,6 @@ int main( void )
 
 //definicje funkcji
 
-#if BUFFERING == 1
-
-// Wywoływane funkcje zewnętrzne :
-//		LCD_NotBusy - zwraca 0 jeśli wyświetlacz jest zajęty, w przeciwnym razie zwraca 1
-//		LCD_JustWriteCommand - zapisuje rozkaz do sterownika wyświetlacza (bezzwłocznie)
-//		LCD_JustWriteData	 - zapisuje dane do sterownika wyświetlacza (bezzwłocznie)
-//=================================================================================================
-#define 	  LCD_LINES				2
-#define 	  LCD_CHARSPERLINE		40
-
-	unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];
-	unsigned char LCDNeedUpdate[LCD_LINES];
-	signed 	 char LCDCharIndex[LCD_LINES];
-	unsigned char LCDLineIndex;
-	unsigned char LCDLineAddress[4] = {0x00, 0x40, 0x14, 0x54};
-
-//=================================================================================================
-//
-//=================================================================================================
-	int LCDWriteToBuffer( unsigned char x, unsigned char y, char * str )
-	{
-		int cnt = 0;
-		while( *str != 0 )
-		{
-			LCDBuffer[y][x + cnt] = *str;
-			str++;
-			cnt++;
-		}
-		LCDNeedUpdate[y] = 1;
-		return cnt;
-	}
-//=================================================================================================
-//
-//=================================================================================================
-	void LCDClearBuffer( void )
-	{
-		int i, j;
-		for( j = 0; j < LCD_LINES; j++ )
-		{
-			LCDCharIndex[j] = -1;
-			for( i = 0; i < LCD_CHARSPERLINE; i++ )
-			{
-				LCDBuffer[j][i] = 32;
-			}
-		}
-	}
-//=================================================================================================
-// Należy wywoływać cykliczne w pętli głównej
-//=================================================================================================
-	void LCDUpdateTask( void )
-	{
-		if( LCDNeedUpdate[LCDLineIndex] )
-		{
-			if( LCD_NotBusy() )
-			{
-				if( LCDCharIndex[LCDLineIndex] == -1 )
-				{
-					LCD_JustWriteCommand( 0x80 | LCDLineAddress[LCDLineIndex] );
-					LCDCharIndex[LCDLineIndex]++;
-					return;
-				}
-				LCD_JustWriteData( LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++] );
-				if( LCDCharIndex[LCDLineIndex] == ( LCD_CHARSPERLINE - 1 ) )
-				{
-					LCDCharIndex[LCDLineIndex] 		= -1;
-					LCDNeedUpdate[LCDLineIndex] 	= 0;
-				}
-			}
-			return;
-		}
-		LCDLineIndex++;
-		if( LCDLineIndex == LCD_LINES )
-			LCDLineIndex = 0;
-	}
-
-
-
-#endif
-
-
 	void buzzer( void )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę
 	{
 		PORTD |= ( 1 << PD7 );
@@ -118,16 +43,16 @@ int main( void )
 
 	void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
 	{
-	    _delay_ms(50);
-	    buzzer();
-	    _delay_ms(20);
-	    buzzer();
+		buzzer();
 		LCD_Clear();
 		LCD_WriteText( "Program: " );
 		LCD_Int( number );
 		_delay_ms( 500 );
 		LCD_Clear();
 	}
+
+
+
 
 	void wysw( int men, int add ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 	{
@@ -190,7 +115,7 @@ int main( void )
 
 	void czynnosc( const int * const men, int com ) //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 	{
-	    buzzer();
+		buzzer();
 
 		switch( *men )//warianty w zależności od zmiennej menu, na końcu każdego wywoływana jest funkcja wyświetlająca
 		{
