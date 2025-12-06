@@ -253,82 +253,105 @@ void setting_information(uint8_t case_of_time, int8_t step)
     refresh_screen = 1;
 }
 
-void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s)
+void set_appropriate_values_of_time()
 {
     int16_t temp = 0;
     if(s == 2) temp -= zwiekszanie;
     else if (s == 1) temp = zwiekszanie;
 
-
-    if(u == 0) godz += temp;
-    else if(u == 1) min += temp;
-    else if(u == 2) sek += temp;
-    else if(u == 3) hsek += temp;
-
-    if(case_of_time == 0 || case_of_time == 3)
+    if(u == -2) e += temp;
+    else
     {
-        if(u == 4) dzien += temp;
-        else if(u == 5) miesiac += temp;
-        if(case_of_time == 0)
+        if(e == 0)
         {
-            if(u == 6)rok += temp;
-            else if(u == 7) dzien_tygodnia += temp;
-            else if(u == 8) timer += temp;
+            if(u == -1) c += temp;
+            else
+            {
+                if(u == 0) godz += temp;
+                else if(u == 1) min += temp;
+                else if(u == 2) sek += temp;
+                else if(u == 3) hsek += temp;
+
+                if(c == 0 || c == 3)
+                {
+                    if(u == 4) dzien += temp;
+                    else if(u == 5) miesiac += temp;
+                    if(c == 0)
+                    {
+                        if(u == 6)rok += temp;
+                        else if(u == 7) dzien_tygodnia += temp;
+                        else if(u == 8) timer += temp;
+                    }
+                }
+                else if( c == 2)
+                {
+                    if(u == 4)
+                    {
+                        if(s == 1) miesiac |= (1 << 0);
+                        else if(s == 2) miesiac &= ~(1 << 0);
+                    }
+                    else if(u == 5)
+                    {
+                        if(s == 1) miesiac |= (1 << 1);
+                        else if(s == 2) miesiac &= ~(1 << 1);
+                    }
+                    else if(u == 6)
+                    {
+                        if(s == 1) miesiac |= (1 << 2);
+                        else if(s == 2) miesiac &= ~(1 << 2);
+                    }
+                    else if(u == 7)
+                    {
+                        if(s == 1) miesiac |= (1 << 3);
+                        else if(s == 2) miesiac &= ~(1 << 3);
+                    }
+                    else if(u == 8)
+                    {
+                        if(s == 1) miesiac |= (1 << 4);
+                        else if(s == 2) miesiac &= ~(1 << 4);
+                    }
+                    else if(u == 9)
+                    {
+                        if(s == 1) miesiac |= (1 << 5);
+                        else if(s == 2) miesiac &= ~(1 << 5);
+                    }
+                    else if(u == 10)
+                    {
+                        if(s == 1) miesiac |= (1 << 6);
+                        else if(s == 2) miesiac &= ~(1 << 6);
+                    }
+                }
+            }
+        }
+        else if(e == 1)
+        {
+            if(u == -1) d += temp;
         }
     }
-    else if( case_of_time == 2)
-    {
-        if(u == 4)
-        {
-            if(s == 1) miesiac |= (1 << 0);
-            else if(s == 2) miesiac &= ~(1 << 0);
-        }
-        else if(u == 5)
-        {
-            if(s == 1) miesiac |= (1 << 1);
-            else if(s == 2) miesiac &= ~(1 << 1);
-        }
-        else if(u == 6)
-        {
-            if(s == 1) miesiac |= (1 << 2);
-            else if(s == 2) miesiac &= ~(1 << 2);
-        }
-        else if(u == 7)
-        {
-            if(s == 1) miesiac |= (1 << 3);
-            else if(s == 2) miesiac &= ~(1 << 3);
-        }
-        else if(u == 8)
-        {
-            if(s == 1) miesiac |= (1 << 4);
-            else if(s == 2) miesiac &= ~(1 << 4);
-        }
-        else if(u == 9)
-        {
-            if(s == 1) miesiac |= (1 << 5);
-            else if(s == 2) miesiac &= ~(1 << 5);
-        }
-        else if(u == 10)
-        {
-            if(s == 1) miesiac |= (1 << 6);
-            else if(s == 2) miesiac &= ~(1 << 6);
-        }
-    }
+
+
 }
 
-void check_step_value(uint8_t case_of_time, int8_t u)
+void check_step_value(void)
 {
-    if(u == -1 && zwiekszanie > 1) wysw_skok(1);
-    if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
 
-
-    if(case_of_time == 0 || case_of_time == 3)
+    if((u == -2 || u == -1) && zwiekszanie > 1) wysw_skok(1);
+    if(e == 0)
     {
-        if(( u == 4 || u == 5 )&& zwiekszanie > 10) wysw_skok(10);
-        if(case_of_time == 0)
+        if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
+
+        if(c == 0 || c == 3)
         {
-            if(u == 7 && zwiekszanie > 1) wysw_skok(1);
+            if(( u == 4 || u == 5 )&& zwiekszanie > 10) wysw_skok(10);
+            if(c == 0)
+            {
+                if(u == 7 && zwiekszanie > 1) wysw_skok(1);
+            }
         }
+    }
+    else if(e == 1)
+    {
+        if(u == 0 && zwiekszanie > 10) wysw_skok(10);
     }
 }
 
@@ -604,7 +627,7 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if (u < 0) u = 0;
-    check_step_value(0, u);
+    check_step_value();
     LCD_EraseAll();
 
     if(u == end_of_settings(0))
@@ -619,7 +642,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if( s != 0 )
     {
-        set_appropriate_values_of_time(0, u, s);
+        set_appropriate_values_of_time();
 
         s = 0;
     }
@@ -641,26 +664,24 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
     if (u < -2) u = -2;
-    check_step_value(c, u);//zrobic
+    check_step_value();//zrobic
     LCD_EraseAll();
+    if( s != 0 )
+    {
+        set_appropriate_values_of_time();
+
+        s = 0;
+    }
+
     if(u == -2)
     {
-        if(e < -1) c = 1;
+        if(e < -1) e = 1;
         else if(e > 1) e = -1;
         show_list(e, 1);
     }
     else
     {
         if(e == 0)
-        {
-            if(u == -1)
-            {
-                if(d < -1) d = 1;
-                else if(d > 1) d = -1;
-                show_list(d, 1);
-            }
-        }
-        else if( e == 1)
         {
             if(u == -1)
             {
@@ -684,13 +705,6 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     }
                 }
 
-                if( s != 0 )
-                {
-                    set_appropriate_values_of_time(c, u, s);
-
-                    s = 0;
-                }
-
                 correction_of_time();
 
                 correction_of_date(c);
@@ -708,6 +722,16 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                     w = 0;
                 }
             }
+        }
+        else if( e == 1)
+        {
+            if(u == -1)
+            {
+                if(d < -1) d = 1;
+                else if(d > 1) d = -1;
+                show_list(d, 1);
+            }
+
         }
     }
 }
@@ -796,6 +820,7 @@ void czynnosc0( int com, int tog )
         else if ( menu == 4 )
         {
             u = 0;
+            c = 0;
             w = 1;//wymuszenie wyświetlenia komunikatu
             s = 0;
             PCF8583_get_wall_time();
@@ -1130,13 +1155,11 @@ void czynnosc5( int com, int tog )
     }
     if ( com == 32 )
     {
-        if(u == -1) c -= zwiekszanie;
-        else s = 1;
+        s = 1;
     }
     if ( com == 33 )
     {
-        if(u == -1) c += zwiekszanie;
-        else s = 2;
+        s = 2;
     }
     if ( com == 59 )
     {

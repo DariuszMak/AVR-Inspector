@@ -92,9 +92,9 @@ void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca
 
 void setting_information(uint8_t case_of_time, int8_t u);
 
-void set_appropriate_values_of_time(uint8_t case_of_time, int8_t u, int8_t s);
+void set_appropriate_values_of_time();
 
-void check_step_value(uint8_t case_of_time, int8_t u);
+void check_step_value(void);
 
 uint8_t end_of_settings(uint8_t case_of_time);
 
