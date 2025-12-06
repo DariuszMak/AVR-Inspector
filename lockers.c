@@ -247,3 +247,18 @@ uint8_t locker_2_button(void)//przycisk fizycznie umieszczony na płytce
     }
     return temp;
 }
+
+
+void lockers_clear_all_memory(void)
+{
+    EEPROM_clear_all_memory();
+    uint16_t i = 0;
+
+    for(; i < INTERNAL_EEPROM_MAX_INDEX; ++i)
+    {
+        eeprom_busy_wait();
+        eeprom_write_word((uint16_t*)i, 0);
+    }
+
+    PCF8583_write_word(PCF8583_CELL, 0);
+}

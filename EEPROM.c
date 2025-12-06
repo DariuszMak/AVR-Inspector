@@ -66,7 +66,7 @@ uint16_t EEPROM_read_word(uint8_t address)
 void EEPROM_clear_all_memory(void)
 {
     uint8_t i = 0;
-    for(i = 0; i < 255; ++i)
+    for(; i < EEPROM_MAX_ADDRESS; ++i)
     {
         EEPROM_write((uint8_t) i, 0);
     }

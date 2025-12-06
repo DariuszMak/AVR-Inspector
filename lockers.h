@@ -66,4 +66,6 @@ uint8_t lockers_number_of_frames_exteral_EEPROM(void);
 
 uint16_t lockers_number_of_frames_internal_EEPROM(void);
 
+void lockers_clear_all_memory(void);
+
 #endif // LOCKERS_H_

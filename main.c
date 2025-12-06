@@ -1108,8 +1108,9 @@ void czynnosc6( int com, int tog )
         }
         if( tog == 1)
         {
-            EEPROM_clear_all_memory();
-            PCF8583_write_word(PCF8583_CELL, 0);
+            LCD_Clear();
+            LCD_WriteText("Czyszczenie...");
+            lockers_clear_all_memory();
             c = 0;
         }
     }
@@ -1165,8 +1166,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     {
         czynnosc6(com, tog);
     }
-
-
 
 
 //komendy wspólne dla wszystkich podprogramów
@@ -1398,7 +1397,7 @@ int main( void )
 
     zczytaj_komende();
 
-        //eeprom_write_word((uint16_t*)257,5);
+    //eeprom_write_word((uint16_t*)257,5);
 
 
 
