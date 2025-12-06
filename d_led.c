@@ -63,6 +63,8 @@ void d_led_init( void )
     LED_ANODY_CA4_DIR |= CA4;
     LED_ANODY_CA4_PORT |= CA4;
 
+
+
     TCCR0 |= ( 1 << WGM01 ); // tryb CTC timera 0
     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // preskaler 1024
     OCR0 = 78; //78 specjalna zmienna - rejestr przepe³nienia (maksymalna wartoœæ = 255)
