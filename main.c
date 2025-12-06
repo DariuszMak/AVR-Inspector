@@ -478,31 +478,6 @@ int main( void )
             LCD_PageDownScreen();
             break;
 
-            /*case 34://ograniczenie przesuwania ekranu do dwóch zamiast czterech przycisków
-                switch(tog)
-                {
-                case 0:
-                    LCD_ShiftRightScreen();
-                    break;
-                case 1:
-                    LCD_PageUpScreen();
-                    break;
-                }
-
-                break;
-            case 46:
-                switch(tog)
-                {
-                case 0:
-                    LCD_ShiftLeftScreen();
-
-                    break;
-                case 1:
-                    LCD_PageDownScreen();
-                    break;
-                }
-                break;*/
-
         case 14:
             switch(tog)
             {
@@ -520,6 +495,7 @@ int main( void )
 
     void pilot( int * const men , int com, int tog )//
     {
+        TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
 
         if( *men == 0 )//jeśli wyszliśmy z podprogramu lub weszliśmy do podprogramu
         {
@@ -538,16 +514,6 @@ int main( void )
 
                 case 2:
                     TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony od wyświetlacza alfanumerycznego
-                    /*czynnosc( men, 52, tog );
-                        for(t = 0; t < 7; ++t)
-                        {
-                            buzzer();
-                            _delay_ms(t);
-                            buzzer();
-                            _delay_ms(400-50*t);
-                            cyfry = t;
-                            wysw( *men );
-                        }*/
                     wysw( *men );//niepotrzebne, gdy mają być wywoływane jakieś przyciski
                     break;
 
@@ -570,6 +536,25 @@ int main( void )
             wybor( *men );
             wysw ( *men );// wyświetlenie ekranu
         }
+#if TIMER1_PRESCALER == 1
+        TCCR1B |= ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 8
+        TCCR1B |= ( 1 << CS11 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 64
+        TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 256
+        TCCR1B |= ( 1 << CS12 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 1024
+        TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
     }
 
 // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkazy, nie będzie można odzczytać innego przysisku
@@ -587,7 +572,7 @@ int main( void )
         {
             if( !address )
             {
-                TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
+                //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
                 t = 0;//zmienna pomocnicza
                 if(toggle != 2)//jeśli zmiaenna "toggle" ma wartość inną niż na samym początku programu
                 {
@@ -603,25 +588,6 @@ int main( void )
                 Ir_key_press_flag = 0;
                 command = 0xff;
                 address = 0xff;
-#if TIMER1_PRESCALER == 1
-                TCCR1B |= ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 8
-                TCCR1B |= ( 1 << CS11 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 64
-                TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 256
-                TCCR1B |= ( 1 << CS12 );
-#endif // TIMER1_PRESCALER
-
-#if TIMER1_PRESCALER == 1024
-                TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
-#endif // TIMER1_PRESCALER
             }
         }
     }
