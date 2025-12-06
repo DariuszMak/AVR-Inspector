@@ -410,31 +410,31 @@ void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany pod
 //    refresh_screen = 0;
     //if(start_program != 1)
     //{
-        LCD_Home();
-        LCD_Clear();
-        LCD_WriteText( "Program: " );
-        LCD_Int( number );
-        LCD_GoTo(0,1);
-        if(number == 0) LCD_WriteText("PROGRAM GLOWNY");
-        else if(number == 1) LCD_WriteText("PROGRAM TESTOWY");
-        else if(number == 2) LCD_WriteText("CZUWANIE");
-        else if(number == 3) LCD_WriteText("DANE - EEPROM");
-        else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
-        else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
-        else if(number == 6) LCD_WriteText("USTAWIENIA FLAG");
-        else if(number == 7) LCD_WriteText("TEMP. KRYTYCZNA");
+    LCD_Home();
+    LCD_Clear();
+    LCD_WriteText( "Program: " );
+    LCD_Int( number );
+    LCD_GoTo(0,1);
+    if(number == 0) LCD_WriteText("PROGRAM GLOWNY");
+    else if(number == 1) LCD_WriteText("PROGRAM TESTOWY");
+    else if(number == 2) LCD_WriteText("CZUWANIE");
+    else if(number == 3) LCD_WriteText("DANE - EEPROM");
+    else if(number == 4) LCD_WriteText("NASTAWA GODZINY");
+    else if(number == 5) LCD_WriteText("NASTAWA ALARMU");
+    else if(number == 6) LCD_WriteText("USTAWIENIA FLAG");
+    else if(number == 7) LCD_WriteText("TEMP. KRYTYCZNA");
 
-        if(lockers_is_flag_bit(2) == 1) send_all_screen();
+    if(lockers_is_flag_bit(2) == 1) send_all_screen();
 
-        for ( t = 0; t < 5; ++t )
-        {
-            delay_ms_var_double( 30 );
-            buzzer_time(5);
-        }
-        delay_ms_var_double( 500 );
-        LCD_PageUpScreen();
-        LCD_Home();
-        LCD_Clear();
+    for ( t = 0; t < 5; ++t )
+    {
+        delay_ms_var_double( 30 );
+        buzzer_time(5);
+    }
+    delay_ms_var_double( 500 );
+    LCD_PageUpScreen();
+    LCD_Home();
+    LCD_Clear();
     //}
     pilot_reset();
     //refresh_screen = 1;
@@ -2386,11 +2386,11 @@ void sczytaj_komende( void )
             {
                 lockers_save_events();
             }
-            else
+            /*else
             {
-//                lockers_beginning_actions();
+            //                lockers_beginning_actions();
                 no_colors_RGB();
-            }
+            }*/
         }
     }
 
@@ -2553,90 +2553,90 @@ void sczytaj_komende( void )
 
         if(start_program == 2 || start_program == 3)
         {
-            if(menu != 4 && menu != 5)
+            change_color_RGB();
+
+            ds18b20_temperature();//odczytanie nowej wartości temperatury
+            //lockers_check_events();
+
+            //obróbka danych temperatury do dwóch zmiennych typu "double"
+            struct double_format double_format_temp_from_pcf;
+            i2c_read_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&double_format_temp_from_pcf);
+            double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
+            double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
+
+            uint8_t changing_temperature_state = 0;//zmienna pomocnicza przyjmująca wartość 1, gdy nastąpiła zmiana flagi odnośnie temperatury na przeciwną
+
+
+            if(current_temp_temperature > maximum_temp_temperature)
             {
-                change_color_RGB();
-                ds18b20_temperature();//odczytanie nowej wartości temperatury
-                //lockers_check_events();
+                if(lockers_is_flag_bit(1) == 0) changing_temperature_state = 1;
+                lockers_flag_bit_on(1);
+                if(beginning_report == 0) beginning_report = 2;
+                //show_properties(1);
+                //buzzer();
+                //lockers_print_temperature();
+            }
+            else
+            {
+                if(lockers_is_flag_bit(1) == 1) changing_temperature_state = 1;
+                lockers_flag_bit_off(1);
+                //show_properties(1);
+                //buzzer_time(10);
+                //lockers_print_temperature();
+            }
 
-                //obróbka danych temperatury do dwóch zmiennych typu "double"
-                struct double_format double_format_temp_from_pcf;
-                i2c_read_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&double_format_temp_from_pcf);
-                double current_temp_temperature = get_double_form_double_format( set_double_format(termometer_temperature, 2));
-                double maximum_temp_temperature = get_double_form_double_format( double_format_temp_from_pcf );
 
-                uint8_t changing_temperature_state = 0;//zmienna pomocnicza przyjmująca wartość 1, gdy nastąpiła zmiana flagi odnośnie temperatury na przeciwną
+            if(lockers_is_flag_bit(1) == 1)
+            {
+                alert_colors_RGB();
+                buzzer_time(50);
+            }
+            else if(menu == 4 || menu == 5) no_colors_RGB();
 
+            if(menu != 4 && menu != 5 && start_program == 2)
+            {
+                //else if(temp_char == 'u') set_time_by_uart();
+                //if(temp_char != 0) refresh_screen = 1;
 
-                if(current_temp_temperature > maximum_temp_temperature)
+                //printf(" \b");
+
+                //printf("%d", Ir_key_press_flag);
+
+                if(PCF8583_is_timer_flag_set() == 1)
                 {
-                    if(lockers_is_flag_bit(1) == 0) changing_temperature_state = 1;
-                    lockers_flag_bit_on(1);
-                    if(beginning_report == 0) beginning_report = 2;
-                    //show_properties(1);
-                    //buzzer();
-                    //lockers_print_temperature();
+                    backlight(2);
+                    buzzer();
+                    lockers_print_latest_data();
+                    PCF8583_timer_flag_off();
                 }
-                else
+
+                if(changing_temperature_state == 1 || beginning_report == 2)
                 {
-                    if(lockers_is_flag_bit(1) == 1) changing_temperature_state = 1;
-                    lockers_flag_bit_off(1);
-                    //show_properties(1);
-                    //buzzer_time(10);
-                    //lockers_print_temperature();
-                }
-
-                if(lockers_is_flag_bit(1) == 1)
-                {
-                    alert_colors_RGB();
-                    buzzer_time(50);
-                }
-
-                if(start_program == 2)
-                {
-                    //else if(temp_char == 'u') set_time_by_uart();
-                    //if(temp_char != 0) refresh_screen = 1;
-
-                    //printf(" \b");
-
-                    //printf("%d", Ir_key_press_flag);
-
-                    if(PCF8583_is_timer_flag_set() == 1)
+                    if(lockers_is_flag_bit(1) == 1)
                     {
-                        backlight(2);
+                        //lockers_flag_bit_off(1);
+                        show_properties(1);
+                        buzzer_time(10);
+                    }
+                    else if(lockers_is_flag_bit(1) == 0)
+                    {
+                        //lockers_flag_bit_on(1);
+                        show_properties(1);
                         buzzer();
-                        lockers_print_latest_data();
-                        PCF8583_timer_flag_off();
                     }
+                    beginning_report = 1;
+                    changing_temperature_state = 0;
+                    lockers_print_temperature();
+                }
 
-                    if(changing_temperature_state == 1 || beginning_report == 2)
-                    {
-                        if(lockers_is_flag_bit(1) == 1)
-                        {
-                            //lockers_flag_bit_off(1);
-                            show_properties(1);
-                            buzzer_time(10);
-                        }
-                        else if(lockers_is_flag_bit(1) == 0)
-                        {
-                            //lockers_flag_bit_on(1);
-                            show_properties(1);
-                            buzzer();
-                        }
-                        beginning_report = 1;
-                        changing_temperature_state = 0;
-                        lockers_print_temperature();
-                    }
-
-                    if( PCF8583_is_alarm_flag_set() == 1)
-                    {
-                        backlight(2);
-                        buzzer();
-                        //if(lockers_is_flag_bit(1) == 1) printf("\nUWAGA!");
-                        lockers_print_temperature();
-                        PCF8583_alarm_flag_off();
-                        //PCF8583_alarm_flag_off();
-                    }
+                if( PCF8583_is_alarm_flag_set() == 1)
+                {
+                    backlight(2);
+                    buzzer();
+                    //if(lockers_is_flag_bit(1) == 1) printf("\nUWAGA!");
+                    lockers_print_temperature();
+                    PCF8583_alarm_flag_off();
+                    //PCF8583_alarm_flag_off();
                 }
             }
             /*else
