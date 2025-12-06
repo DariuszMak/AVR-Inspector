@@ -182,6 +182,8 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
     uint8_t index_of_frame = 0;
     if(numbers_of_frames == 0)
     {
+        delay_ms_var(10);
+        buzzer_time(200);
         printf("Brak danych\n");
     }
     else
@@ -189,6 +191,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
         refresh_screen = 1;
         for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
         {
+            buzzer_time(1);
             lockers_queue_read(index_of_frame);
             printf("%03d. ", index_of_frame + 1);
             lockers_print_entire_frame();
@@ -217,21 +220,21 @@ void lockers_print_temperature(void)
 void lockers_print_all_memory(void)
 {
     //uint16_t temp = 0;
-    printf("\nRAPORT AWARYJNY. ");
+    show_properties(15);
+    //printf("\nRAPORT AWARYJNY. ");
     lockers_print_date_of_report();
     lockers_print_amount_of_first_frames(lockers_number_of_frames());
 }
 
 void lockers_print_latest_data(void)
 {
-    if(lockers_is_queue_empty() == 0)
-    {
-        printf("\nRAPORT. ");
-        lockers_print_date_of_report();
-        lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
-        lockers_queue_empty();
-    }
-    else buzzer_time(5);
+    show_properties(14);
+
+    //printf("\nRAPORT. ");
+    lockers_print_date_of_report();
+    lockers_print_amount_of_first_frames(lockers_queue_number_of_records());
+    lockers_queue_empty();
+
 }
 
 uint8_t lockers_tail(void)
@@ -325,8 +328,8 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
         if(save_info_table[i])
         {
             //printf("%d %d %d \n",lockers_tail(), lockers_head(), lockers_number_of_frames());
-            //buzzer_time(5);
-            //delay_ms_var(5);
+            delay_ms_var(1);
+            buzzer_time(5);
 
 
             if( lockers_is_queue_full() == 1)
@@ -354,6 +357,8 @@ void lockers_queue_dequeue(void)
 {
     if(lockers_is_queue_empty() == 0)
     {
+        //delay_ms_var(1);
+        buzzer_time(1);
         if(lockers_head() == lockers_number_of_frames() - 1) PCF8583_write_word(PCF8583_HEAD, lockers_convert_index_of_frame_to_address(0));
         else PCF8583_write_word(PCF8583_HEAD, lockers_convert_index_of_frame_to_address(lockers_head() + 1));
     }
@@ -415,9 +420,10 @@ void lockers_clear_all_memory(void)
 
     for(; i < lockers_convert_index_of_frame_to_address(lockers_number_of_frames()); ++i)
     {
+        delay_ms_var(1);
+        buzzer_time(1);
         eeprom_busy_wait();
         eeprom_update_byte((uint8_t*)i, 0);
     }
-
     lockers_queue_empty();
 }

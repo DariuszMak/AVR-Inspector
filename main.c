@@ -446,7 +446,22 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     LCD_Home();
     LCD_Clear();
 
-    if(number == 13)
+
+    if(number == 16)
+    {
+        LCD_WriteText("CZYSZCZENIE");
+    }
+    else if(number == 14 || number == 15)
+    {
+        LCD_WriteText("RAPORT");
+        if(number == 15)
+        {
+            LCD_GoTo(0,1);
+            LCD_WriteText("AWARYJNY");
+        }
+    }
+
+    else if(number == 13)
     {
         LCD_WriteText("OCZEKIWANIE NA");
         LCD_GoTo(0,1);
@@ -541,7 +556,7 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             }
         }
     }
-    if( !(number == 8 || number == 4) || lockers_is_flag_bit(2) == 1) send_all_screen();
+    if( !(number == 8 || number == 4 || number == 16) || lockers_is_flag_bit(2) == 1) send_all_screen();
 
     delay_ms_var_double( 500 );
     pilot_reset();
@@ -2010,13 +2025,9 @@ void czynnosc3( int com, int tog )
 {
     if ( com == 12 )
     {
-        if( tog == 0)
-        {
-        }
         if( tog == 1)
         {
-            LCD_Clear();
-            LCD_WriteText("Czyszczenie...");
+            show_properties(16);
             lockers_clear_all_memory();
             //c = 0;
         }
@@ -2383,7 +2394,7 @@ void sczytaj_komende( void )
             {
                 buzzer();
                 backlight(2);
-                printf("#");
+                printf("!");
 
                 if(reset_variable == 1)
                 {
@@ -2442,8 +2453,7 @@ void sczytaj_komende( void )
                 {
                     //else if(temp_char == 'u') set_time_by_uart();
                     //if(temp_char != 0) refresh_screen = 1;
-
-                    printf(" ");
+                    printf(" \b");
                     //printf("%d", Ir_key_press_flag);
 
                     if(PCF8583_is_timer_flag_set() == 1)
@@ -2586,6 +2596,7 @@ void sczytaj_komende( void )
                 else if(temp_char == 'v') pilot(100, 0);
                 else if(temp_char == 'p') pilot(15, 0);
                 else if(temp_char == 'c') pilot(12, 0);
+                else if(temp_char == 'C') pilot(12, 1);
                 else if(temp_char == '[') pilot(46, 0);
                 else if(temp_char == ']') pilot(34, 0);
                 else if(temp_char == '{') pilot(36, 0);
