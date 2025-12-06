@@ -35,7 +35,7 @@ void backlight(int8_t state)
             buzzer_time(3);
             backlight_of_lcd = -1;
         }
-        else if(state == 2) backlight_of_lcd = 50;
+        else if(state == 2 && backlight_of_lcd != -1) backlight_of_lcd = 50;
     }
 }
 
