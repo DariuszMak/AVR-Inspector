@@ -54,11 +54,19 @@ int8_t e;//inna (dodatkowa zmienna)
 
 uint8_t refresh_screen;
 
+struct double_format
+{
+    int16_t integer_number;
+    uint8_t decimal_number;
+}double_format_global;
+
 int main( void );
 
 uint8_t number_of_digits(uint32_t);
 
-void LCD_Double(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
+void show_current_temperature(void);
+
+int8_t put_double_format(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
 
 void change_color_RGB(void);
 

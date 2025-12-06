@@ -37,14 +37,25 @@ uint8_t number_of_digits(uint32_t number)
     return d;
 }
 
-void LCD_Double( double value, unsigned int approximation)
+void show_current_temperature(void)
 {
-    if((int16_t) abs(value) > 300) return;
+    uint8_t temp = put_double_format(ds18b20_temperature(), 2);
+    LCD_Int (double_format_global.integer_number);
+    for(t = 0; t < temp; ++t)
+    {
+        LCD_Int(0);
+    }
+    LCD_Int (double_format_global.decimal_number);
+}
+
+int8_t put_double_format( double value, unsigned int approximation)
+{
+    if((int16_t) abs(value) > 300) return - 1;
     if(approximation > 2) approximation = 2;
-    LCD_Int((int16_t)value);
+    double_format_global.integer_number = (int16_t)value;
 
     uint16_t value_temp = abs(value);
-    uint32_t ten = 10;
+    uint16_t ten = 10;
     uint16_t a = 1;
     for(; a < approximation; ++a)
     {
@@ -56,21 +67,25 @@ void LCD_Double( double value, unsigned int approximation)
     //printf("%lf\n", value);
 
     value -= ten * value_temp;
-    if(approximation)//wyświetlanie liczb po przecinku
+    //if(approximation)//wyświetlanie liczb po przecinku
+    //{
+
+
+    uint16_t d = number_of_digits((uint16_t)value);
+
+    uint8_t f = number_of_digits(ten);
+
+    /*for(a = 1; (int16_t)a < (int16_t)(f-d); ++a)
     {
-        LCD_WriteText(".");
+        LCD_Int(0);
+    }*/
 
-        uint16_t d = number_of_digits((uint16_t)value);
+    double_format_global.decimal_number = (uint8_t) value;
 
-        uint8_t f = number_of_digits(ten);
+    return (int8_t)f - d - 1;
 
-        for(a = 1; (int16_t)a < (int16_t)(f-d); ++a)
-        {
-            LCD_Int(0);
-        }
-
-        LCD_Int((uint16_t)value);
-    }
+    //LCD_Int((uint16_t)value);
+    //}
 }
 
 void change_color_RGB(void)
@@ -956,7 +971,15 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     LCD_GoTo(12, 0);
-    LCD_Double(ds18b20_temperature(),1);
+    show_current_temperature();
+
+    /*LCD_Double(-23.301,2);
+    LCD_Double(-23.3015,2);
+    LCD_Double(-299.9015,4);
+    LCD_Double(-299.901,3);
+    LCD_Double(299.901,3);
+    LCD_Double(200.324,3);*/
+
 
     //LCD_Int( pwm1 );
     //LCD_Int( pwm2 );
