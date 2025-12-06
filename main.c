@@ -23,6 +23,56 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 //definicje funkcji
 
+
+uint8_t number_of_digits(uint32_t number)
+{
+    uint32_t ten2 = 10;
+
+    int d = 1;
+    while ( number >= ten2 )
+    {
+        d += 1;
+        ten2 *= 10;
+    }
+    return d;
+}
+
+void LCD_Double( double value, unsigned int approximation)
+{
+    if((int16_t) abs(value) > 300) return;
+    if(approximation > 2) approximation = 2;
+    LCD_Int((int16_t)value);
+
+    uint16_t value_temp = abs(value);
+    uint32_t ten = 10;
+    uint16_t a = 1;
+    for(; a < approximation; ++a)
+    {
+        ten *= 10;
+    }
+    value *= ten;
+    //printf("%lf, ", value);
+    value = abs(value);
+    //printf("%lf\n", value);
+
+    value -= ten * value_temp;
+    if(approximation)//wyświetlanie liczb po przecinku
+    {
+        LCD_WriteText(".");
+
+        uint16_t d = number_of_digits((uint16_t)value);
+
+        uint8_t f = number_of_digits(ten);
+
+        for(a = 1; (int16_t)a < (int16_t)(f-d); ++a)
+        {
+            LCD_Int(0);
+        }
+
+        LCD_Int((uint16_t)value);
+    }
+}
+
 void change_color_RGB(void)
 {
     static uint8_t temp = 0;
@@ -122,13 +172,7 @@ void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (
 
 void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
 {
-    uint8_t d = 1;
-    t = 10;
-    while ( number >= t )
-    {
-        d += 1;
-        t *= 10;
-    }
+    uint8_t d = number_of_digits(number);
 
     zwiekszanie = number;
     LCD_EraseAll();
@@ -912,7 +956,12 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     }
 
     LCD_GoTo(12, 0);
-    LCD_Double(ds18b20_temperature(),1);
+    LCD_Double(-23.301,2);
+    LCD_Double(-23.3015,2);
+    LCD_Double(-299.9015,4);
+    LCD_Double(-299.901,3);
+    LCD_Double(299.901,3);
+    LCD_Double(200.324,3);
 
     //LCD_Int( pwm1 );
     //LCD_Int( pwm2 );

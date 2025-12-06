@@ -285,53 +285,6 @@ void LCD_Int( int value )
 //
 //-------------------------------------------------------------------------------------------------
 
-#if USE_LCD_Double == 1 && USE_LCD_Int == 1
-void LCD_Double( double value, unsigned int approximation)
-{
-    if((uint16_t)abs((uint16_t)value) > 1000) return;
-    if(approximation > 4) approximation = 4;
-    LCD_Int((int16_t)value);
-
-    uint32_t value_temp = abs(value);
-    uint16_t ten = 10;
-    uint16_t a = 1;
-    for(; a < approximation; ++a)
-    {
-        ten *= 10;
-    }
-    value *= ten;
-    value = abs(value);
-    value -= ten * value_temp;
-    if(approximation)//wyświetlanie liczb po przecinku
-    {
-        LCD_WriteText(".");
-        uint16_t ten2 = 10;
-
-        int d = 1;
-        while ( (uint16_t)value >= ten2 )
-        {
-            d += 1;
-            ten2 *= 10;
-        }
-
-
-        ten2 = 10;
-        uint8_t f = 1;
-        while ( ten >= ten2 )
-        {
-            f += 1;
-            ten2 *= 10;
-        }
-
-        for(a = 1; a < f-d; ++a)
-        {
-            LCD_Int(0);
-        }
-
-        LCD_Int((uint16_t)value);
-    }
-}
-#endif // USE_LCD_Double
 
 //-------------------------------------------------------------------------------------------------
 //

@@ -56,6 +56,10 @@ uint8_t refresh_screen;
 
 int main( void );
 
+uint8_t number_of_digits(uint32_t);
+
+void LCD_Double(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
+
 void change_color_RGB(void);
 
 void all_colors_RGB(void);

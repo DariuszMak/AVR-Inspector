@@ -165,10 +165,6 @@ void LCD_Home( void ); // sprzętowa funkcja powrotu na początek (ekran i kurso
 void LCD_Int( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
 #endif // USE_LCD_Int
 
-#if USE_LCD_Double == 1 && USE_LCD_Int == 1
-void LCD_Double(double, unsigned int);// wyświetla liczby (pobiera liczbę zmiennoprzecinkową i wyświetla w systemie dziesiętnym z dokładnością do podajego miejsca po pawej stronie przecinka - maksymalna ilość miejsc to cztery)
-#endif // USE_LCD_Double
-
 #if USE_LCD_Hex == 1
 void LCD_Hex( int ); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
 #endif // USE_LCD_Hex
