@@ -1573,7 +1573,7 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
             wysw7();
         }
     }
-    send_all_screen();
+    if(lockers_is_flag_bit(2) == 1) send_all_screen();
 }
 
 void czynnosc0( int com, int tog )
@@ -2362,26 +2362,34 @@ void sczytaj_komende( void )
             else pilot(0, 0);
         }
 
-        else if(temp_char == 'e') pilot(59, 0);
-        else if(temp_char == 'w') pilot(32, 0);
-        else if(temp_char == 's') pilot(33, 0);
-        else if(temp_char == 'd') pilot(16, 0);
-        else if(temp_char == 'a') pilot(17, 0);
-        else if(temp_char == 'q') pilot(14, 0);
-        else if(temp_char == 'Q') pilot(14, 1);
-        else if(temp_char == 'k') pilot(38, 0);
-        else if(temp_char == 'p') pilot(15, 0);
-        else if(temp_char == 'P') pilot(15, 1);
-        else if(temp_char == 't') pilot(12, 0);
-        else if(temp_char == '[') pilot(46, 0);
-        else if(temp_char == ']') pilot(34, 0);
-        else if(temp_char == '{') pilot(36, 0);
-        else if(temp_char == '}') pilot(35, 0);
-        else if(temp_char == '!') pilot(41, 0);
-        else if(temp_char == '<') pilot(45, 0);
-        else if(temp_char == '>') pilot(44, 0);
-        //else if(temp_char == 'R') lockers_print_all_memory();
-        //else if(temp_char == 'r') lockers_print_latest_data();
+        if(lockers_is_flag_bit(2) == 1)
+        {
+            if(temp_char == 'e') pilot(59, 0);
+            else if(temp_char == 'w') pilot(32, 0);
+            else if(temp_char == 's') pilot(33, 0);
+            else if(temp_char == 'd') pilot(16, 0);
+            else if(temp_char == 'a') pilot(17, 0);
+            else if(temp_char == 'q') pilot(14, 0);
+            else if(temp_char == 'Q') pilot(14, 1);
+            else if(temp_char == 'k') pilot(38, 0);
+            else if(temp_char == 'p') pilot(15, 0);
+            else if(temp_char == 'P') pilot(15, 1);
+            else if(temp_char == 'c') pilot(12, 0);
+            else if(temp_char == '[') pilot(46, 0);
+            else if(temp_char == ']') pilot(34, 0);
+            else if(temp_char == '{') pilot(36, 0);
+            else if(temp_char == '}') pilot(35, 0);
+            else if(temp_char == '!') pilot(41, 0);
+            else if(temp_char == '<') pilot(45, 0);
+            else if(temp_char == '>') pilot(44, 0);
+            else if(temp_char == 't') lockers_flag_bit_off(2);
+            //else if(temp_char == 'R') lockers_print_all_memory();
+            //else if(temp_char == 'r') lockers_print_latest_data();
+        }
+        else
+        {
+            if(temp_char == 'T') lockers_flag_bit_on(2);
+        }
 
     }
 }
