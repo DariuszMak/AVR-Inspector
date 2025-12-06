@@ -88,6 +88,8 @@ void send_all_screen(void);
 
 //void set_time_by_uart(void);
 
+void forget_input_values(void);//funkcja resetująca wszystkie wartości z wejścia
+
 double round_double(float number, uint8_t precision);
 
 uint8_t number_of_digits(int32_t);//funkcja zwracjąca ilość cyfr dla danej liczby

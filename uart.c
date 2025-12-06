@@ -74,6 +74,7 @@ char uart_getc(void)
     return UART_RX_BUF[uart_rx_t];
 }
 
+
 /*void uart_gets(char * temporary_table, uint16_t size_of_table)
 {
     //uart_putint(sizeof(temporary_table),10);

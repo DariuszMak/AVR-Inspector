@@ -140,6 +140,13 @@ printf("Zapisano!\n");
 lockers_print_date_of_report();
 }*/
 
+void forget_input_values(void)//funkcja resetująca wszystkie wartości z wejścia
+{
+    pilot_reset();
+    pilot_button_pressed = 0;
+}
+
+
 double round_double(float number, uint8_t precision)
 {
     uint32_t ten = 1;
@@ -2565,8 +2572,7 @@ void sczytaj_komende( void )
             }
             else if (lockers_is_queue_empty() == 0)lockers_print_latest_data();
 
-            pilot_reset();
-            pilot_button_pressed = 0;
+            forget_input_values();
             start_program = 2;
             pilot( 59, 0 );//przejście do podprogramu nr 2
         }
@@ -2844,8 +2850,7 @@ int main( void )
     switch_menu = 2;
 
     start_program = 3;
-    pilot_reset();
-    pilot_button_pressed = 0;
+forget_input_values();
 
     //PCF8583_write_word(254, 1256);
 
