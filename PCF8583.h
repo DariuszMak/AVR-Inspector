@@ -170,7 +170,6 @@ void PCF8583_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *hsec, 
 */
 void PCF8583_set_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t day_of_week, uint8_t month, int16_t year);
 
-
 /**
  Czyta czas alarmu z układu
  \param hour godzina
@@ -189,32 +188,20 @@ void PCF8583_get_alarm_time(int8_t *hour, int8_t *min, int8_t *sec, int8_t *hsec
 */
 void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t type_of_alarm);
 
-/**
- Wyłącza alarm
-*/
-void PCF8583_alarm_off(void);
-
-/**
- Załącza alarm codzienny
-*/
-void PCF8583_alarm_every_day(void);
-
-/**
- Załącza alarm dla dni w tygodniu - niewygodna opcja, ponieważ inaczej porównuje bity (zajrzeć do dokumantacji)
-*/
-void PCF8583_alarm_weekly(void);
-
-/**
- Załącza alarm dla dni w miesiącu
-*/
-void PCF8583_alarm_monthly(void);
-
 
 
 
 /*****************************PRZYDATNE FUNKCJE ZEWNĘTRZNE********************************/
 
 //flagi
+
+//flaga timera
+
+void PCF8583_timer_flag_off(void);
+
+void PCF8583_timer_flag_on(void);
+
+uint8_t PCF8583_is_timer_flag_set(void);
 
 //flaga alarmu
 
@@ -224,13 +211,6 @@ void PCF8583_alarm_flag_on(void);
 
 uint8_t PCF8583_is_alarm_flag_set(void);
 
-//flaga timera
-
-void PCF8583_timer_flag_off(void);
-
-void PCF8583_timer_flag_on(void);
-
-uint8_t PCF8583_is_timer_flag_set(void);
 
 //odliczanie zegara
 
@@ -254,9 +234,12 @@ void PCF8583_timer_interrupt_on(void);
 
 uint8_t PCF8583_is_timer_interrupt(void);
 
-//alarm alarmu - do zrobienia
+//alarm alarmu
 
 uint8_t PCF8583_recognise_type_of_alarm(void);
+
+void PCF8583_set_type_of_alarm(uint8_t);
+
 
 //alarm timera
 
@@ -275,15 +258,7 @@ void PCF8583_alarm_interrupt_on(void);
 uint8_t PCF8583_is_alarm_interrupt(void);
 
 
-
-
-
-
-
-
-
-
-
+//
 
 void PCF8583_get_wall_alarm(void);
 

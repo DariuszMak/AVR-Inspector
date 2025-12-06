@@ -548,6 +548,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     if(u == end_of_settings(0))
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok);
+        PCF8583_start();
         refresh_screen = 0;
         LCD_Clear();
         w = 1;
@@ -595,25 +596,10 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
             w = 1;
             if(c != -1)
             {
+                PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                 if(c == 0)
                 {
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                     PCF8583_alarm_flag_off();
-                }
-                else if(c == 1)
-                {
-                    //PCF8583_alarm_every_day();
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
-                }
-                else if(c == 2)
-                {
-                    //PCF8583_alarm_weekly();
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
-                }
-                else if(c == 3)
-                {
-                    //PCF8583_alarm_monthly();
-                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,c);
                 }
             }
         }
@@ -1075,11 +1061,11 @@ void czynnosc5( int com, int tog )
     refresh_screen = 1;
 }
 
-/*void czynnosc6( int com, int tog )
+void czynnosc6( int com, int tog )
 {
 
     refresh_screen = 1;
-}*/
+}
 
 
 
@@ -1120,10 +1106,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         {
             czynnosc5(com, tog);
         }
-        /*else if( menu == 6 )
+        else if( menu == 6 )
         {
             czynnosc6(com, tog);
-        }*/
+        }
 
 //komendy wspólne dla wszystkich podprogramów
 
