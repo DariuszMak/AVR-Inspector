@@ -42,6 +42,7 @@ void _LCD_OutNibble(unsigned char nibbleToWrite)
 // Funkcja wystawiaj¹ca pó³bajt na magistralê danych
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_RW == 1
 unsigned char _LCD_InNibble(void)
 {
     unsigned char tmp = 0;
@@ -56,6 +57,7 @@ unsigned char _LCD_InNibble(void)
         tmp |= (1 << 3);
     return tmp;
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu bajtu do wyœwietacza (bez rozró¿nienia instrukcja/dane).
@@ -63,26 +65,32 @@ unsigned char _LCD_InNibble(void)
 //-------------------------------------------------------------------------------------------------
 void _LCD_Write(unsigned char dataToWrite)
 {
+#if USE_RW == 1
     LCD_DB4_DIR |= LCD_DB4;
     LCD_DB5_DIR |= LCD_DB5;
     LCD_DB6_DIR |= LCD_DB6;
     LCD_DB7_DIR |= LCD_DB7;
 
     LCD_RW_PORT &= ~LCD_RW;
+#endif
     LCD_E_PORT |= LCD_E;
     _LCD_OutNibble(dataToWrite >> 4);
     LCD_E_PORT &= ~LCD_E;
     LCD_E_PORT |= LCD_E;
     _LCD_OutNibble(dataToWrite);
     LCD_E_PORT &= ~LCD_E;
+#if USE_RW == 1
     while(LCD_ReadStatus()&0x80);
+#else
+    _delay_us(50);
+#endif
 }
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja odczytu bajtu z wyœwietacza (bez rozró¿nienia instrukcja/dane).
 //
 //-------------------------------------------------------------------------------------------------
-
+#if USE_RW == 1
 unsigned char _LCD_Read(void)
 {
     unsigned char tmp = 0;
@@ -100,6 +108,8 @@ unsigned char _LCD_Read(void)
     LCD_E_PORT &= ~LCD_E;
     return tmp;
 }
+#endif
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu rozkazu do wyœwietlacza
@@ -116,11 +126,13 @@ void LCD_WriteCommand(unsigned char commandToWrite)
 // Funkcja odczytu bajtu statusowego
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_RW == 1
 unsigned char LCD_ReadStatus(void)
 {
     LCD_RS_PORT &= ~LCD_RS;
     return _LCD_Read();
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja zapisu danych do pamiêci wyœwietlacza
@@ -136,11 +148,13 @@ void LCD_WriteData(unsigned char dataToWrite)
 // Funkcja odczytu danych z pamiêci wyœwietlacza
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_RW == 1
 unsigned char LCD_ReadData(void)
 {
     LCD_RS_PORT |= LCD_RS;
     return _LCD_Read();
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wyœwietlenia napisu na wyswietlaczu.
@@ -194,11 +208,15 @@ void LCD_Initalize(void)
     LCD_DB7_DIR |= LCD_DB7; //
     LCD_E_DIR 	|= LCD_E;   //
     LCD_RS_DIR 	|= LCD_RS;  //
+#if USE_RW == 1
     LCD_RW_DIR 	|= LCD_RW;  //
+#endif
     _delay_ms(15); // oczekiwanie na ustalibizowanie się napiecia zasilajacego
     LCD_RS_PORT &= ~LCD_RS; // wyzerowanie linii RS
     LCD_E_PORT &= ~LCD_E;  // wyzerowanie linii E
+#if USE_RW == 1
     LCD_RW_PORT &= ~LCD_RW;
+#endif
     for(i = 0; i < 3; i++) // trzykrotne powtórzenie bloku instrukcji
     {
         LCD_E_PORT |= LCD_E; //  E = 1
@@ -215,6 +233,9 @@ void LCD_Initalize(void)
     LCD_WriteCommand(HD44780_FUNCTION_SET | HD44780_FONT5x7 | HD44780_TWO_LINE | HD44780_4_BIT); // interfejs 4-bity, 2-linie, znak 5x7
     LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_OFF); // wy³¹czenie wyswietlacza
     LCD_WriteCommand(HD44780_CLEAR); // czyszczenie zawartosæi pamieci DDRAM
+#if USE_RW == 0
+    _delay_ms(2);
+#endif
     LCD_WriteCommand(HD44780_ENTRY_MODE | HD44780_EM_SHIFT_CURSOR | HD44780_EM_INCREMENT);// inkrementaja adresu i przesuwanie kursora
     LCD_WriteCommand(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_ON | HD44780_CURSOR_OFF | HD44780_CURSOR_NOBLINK); // w³¹cz LCD, bez kursora i mrugania
 }

@@ -3,16 +3,29 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "HD44780.h"
+void pisz(void);
 
 //##############################################################################
-void main(void)
+int main(void)
 {
-    int t, rozmiar=7;
+
+    int t, rozmiar=6;
     char i[rozmiar];
     LCD_Initalize();   //inicjalizacja LCD
+    void pisz(void)
+    {
+        for(t=0; t<rozmiar; t++)
+        {
+            LCD_WriteData(i[t]);
+            _delay_ms(50);
+        }
+    }
+
 
     while(1)
     {
+
+
         LCD_GoTo(9, 1);
         LCD_WriteText("Witaj!");
         _delay_ms(500);
@@ -30,7 +43,6 @@ void main(void)
 
         LCD_ScreenOff();
         _delay_ms(700);
-        LCD_ShiftLeftScreen();
         LCD_CursorBlink();
         _delay_ms(1000);
         LCD_Blink() ;
@@ -41,36 +53,32 @@ void main(void)
         _delay_ms(1000);
         LCD_CursorBlink() ;
         LCD_GoTo(0,1);
-        LCD_WriteText("Czytam..");
+        LCD_WriteText("Czytam:");
         _delay_ms(1500);
 
-        LCD_Home();
+        LCD_GoTo(9,1);
+
         for(t=0; t<rozmiar; t++)
         {
             i[t] = LCD_ReadData();
             _delay_ms(100);
         }
+        LCD_ShiftLeftScreen();
         _delay_ms(1500);
 
         LCD_Cursor();
         LCD_EraseAll();
         _delay_ms(1500);
         LCD_GoTo(0,1);
-
-        for(t=0; t<rozmiar; t++)
-        {
-            LCD_WriteData(i[t]);
-            _delay_ms(50);
-        }
+        pisz();
         LCD_Blink();
-        LCD_GoTo(8,0);
-
-        for(t=0; t<rozmiar; t++)
-        {
-            LCD_WriteData(i[t]);
-            i[t]=0;
-            _delay_ms(50);
-        }
+        LCD_GoTo(9,0);
+        pisz();
+        LCD_GoTo(8,1);
+        LCD_CursorBlink();
+        pisz();
+        LCD_GoTo(1,0);
+        pisz();
 
         LCD_Cursor();
         _delay_ms(1500);
@@ -82,10 +90,15 @@ void main(void)
         LCD_PageDownScreen();
         LCD_PageUpScreen();
         LCD_Cursor();
-        _delay_ms(500);
         LCD_EraseDown();
         _delay_ms(500);
 
         LCD_Clear();
+
     }
+
+
+
 }
+
+

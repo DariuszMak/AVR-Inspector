@@ -17,17 +17,21 @@
 // Można zmienić stosownie do potrzeb.
 //
 //-------------------------------------------------------------------------------------------------
-#define USE_RW 1
+#define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
+
+
+#if USE_RW == 1
+#define LCD_RW_DIR		DDRD
+#define LCD_RW_PORT		PORTD
+#define LCD_RW_PIN		PIND
+#define LCD_RW			(1 << PD1)
+#endif
+
 
 #define LCD_RS_DIR		DDRD
 #define LCD_RS_PORT 	PORTD
 #define LCD_RS_PIN		PIND
 #define LCD_RS			(1 << PD2)
-
-#define LCD_RW_DIR		DDRD
-#define LCD_RW_PORT		PORTD
-#define LCD_RW_PIN		PIND
-#define LCD_RW			(1 << PD1)
 
 #define LCD_E_DIR		DDRD
 #define LCD_E_PORT		PORTD
@@ -101,18 +105,29 @@
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
-void LCD_Initalize(void); // Inicjalizacja wyświetlacza
-
+void _LCD_OutNibble(unsigned char);
+#if USE_RW == 1
+unsigned char _LCD_InNibble(void);
+#endif
+void _LCD_Write(unsigned char);
+#if USE_RW == 1
+unsigned char _LCD_Read(void);
+#endif
 void LCD_WriteCommand(unsigned char);
+#if USE_RW == 1
 unsigned char LCD_ReadStatus(void);
-
+#endif
 void LCD_WriteData(unsigned char); // odczytywanie danych po kolei w zależności od pozycji kursora
+#if USE_RW == 1
 unsigned char LCD_ReadData(void); // zapisywanie danych po kolei w zależności od pozycji kursora
-
+#endif
 void LCD_WriteText(char *);
 void LCD_GoTo(unsigned char, unsigned char); // pozycja X, pozycja Y
 void LCD_Clear(void); // czyści wszystko sprzętowo
 void LCD_Home(void); // sprętowa funkcje powrotu ns początek (ekran i kursor)
+
+void LCD_Initalize(void); // Inicjalizacja wyświetlacza
+
 
 void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
 void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
