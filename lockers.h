@@ -105,8 +105,6 @@ uint8_t lockers_head(void);
 
 void lockers_queue_empty(void);
 
-uint8_t lockers_queue_length(void);
-
 uint8_t lockers_queue_number_of_records(void);
 
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
@@ -141,6 +139,8 @@ uint8_t lockers_state_of_single_button( uint8_t );//funkcja zwracająca stan pos
 void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych wejść, jeśli wykryje jakieś zmiany, tworzy tablicę zmian i nakazuje zapis
 
 void lockers_save_events(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
+
+void lockers_queue_read(uint8_t index);
 
 void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapis do struktury
 
