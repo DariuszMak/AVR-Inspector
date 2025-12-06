@@ -11,13 +11,13 @@ Archive member included because of file (symbol)
 /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_clear_bss.o)
                               obj/Release/d_led.o (__do_clear_bss)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(cmpsf2.o)
-                              obj/Release/HD44780.o (__ltsf2)
+                              obj/Release/delay_lib.o (__ltsf2)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3.o)
-                              obj/Release/HD44780.o (__divsf3)
+                              obj/Release/delay_lib.o (__divsf3)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3x.o)
                               /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3.o) (__divsf3x)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
-                              obj/Release/HD44780.o (__fixunssfsi)
+                              obj/Release/delay_lib.o (__fixunssfsi)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(floatsisf.o)
                               obj/Release/main.o (__floatsisf)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_cmp.o)
@@ -37,9 +37,9 @@ Archive member included because of file (symbol)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fp_zero.o)
                               /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixunssfsi.o) (__fp_zero)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(gesf2.o)
-                              obj/Release/HD44780.o (__gtsf2)
+                              obj/Release/delay_lib.o (__gtsf2)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3.o)
-                              obj/Release/HD44780.o (__mulsf3)
+                              obj/Release/delay_lib.o (__mulsf3)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3x.o)
                               /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3.o) (__mulsf3x)
 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
@@ -98,6 +98,7 @@ Linker script and memory map
 
 LOAD /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
 LOAD obj/Release/d_led.o
+LOAD obj/Release/delay_lib.o
 LOAD obj/Release/HD44780.o
 LOAD obj/Release/inverter.o
 LOAD obj/Release/ir_decode.o
@@ -282,11 +283,12 @@ END GROUP
                 0x000000000000009e                d_led_init
                 0x00000000000000e6                __vector_10
                 0x00000000000001c6                d_led_Int
- .text          0x000000000000035a      0x46c obj/Release/HD44780.o
+ .text          0x000000000000035a      0x14e obj/Release/delay_lib.o
                 0x000000000000035a                delay_ms_var
                 0x0000000000000370                delay_us_var
                 0x0000000000000382                delay_ms_var_double
                 0x000000000000041a                delay_us_var_double
+ .text          0x00000000000004a8      0x31e obj/Release/HD44780.o
                 0x00000000000004a8                _LCD_OutNibble
                 0x00000000000004d2                _LCD_InNibble
                 0x00000000000004e6                _LCD_Read
@@ -615,6 +617,7 @@ END GROUP
  *(.data)
  .data          0x0000000000800060        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
  .data          0x0000000000800060        0x1 obj/Release/d_led.o
+ .data          0x0000000000800061        0x0 obj/Release/delay_lib.o
  .data          0x0000000000800061        0x0 obj/Release/HD44780.o
  .data          0x0000000000800061        0x0 obj/Release/inverter.o
  .data          0x0000000000800061        0x0 obj/Release/ir_decode.o
@@ -673,6 +676,7 @@ END GROUP
  *(.bss)
  .bss           0x0000000000800108        0x0 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
  .bss           0x0000000000800108        0x0 obj/Release/d_led.o
+ .bss           0x0000000000800108        0x0 obj/Release/delay_lib.o
  .bss           0x0000000000800108        0x0 obj/Release/HD44780.o
  .bss           0x0000000000800108        0x0 obj/Release/inverter.o
  .bss           0x0000000000800108        0x6 obj/Release/ir_decode.o
@@ -781,6 +785,7 @@ END GROUP
  *(.comment)
  .comment       0x0000000000000000       0x11 obj/Release/d_led.o
                                          0x12 (size before relaxing)
+ .comment       0x0000000000000000       0x12 obj/Release/delay_lib.o
  .comment       0x0000000000000000       0x12 obj/Release/HD44780.o
  .comment       0x0000000000000000       0x12 obj/Release/inverter.o
  .comment       0x0000000000000000       0x12 obj/Release/ir_decode.o
@@ -904,7 +909,7 @@ __divmodhi4                                       /usr/lib/gcc/avr/4.8.1/avr5/li
 __divmodsi4                                       /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_divmodsi4.o)
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(rand.o)
 __divsf3                                          /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3.o)
-                                                  obj/Release/HD44780.o
+                                                  obj/Release/delay_lib.o
 __divsf3_pse                                      /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3x.o)
 __divsf3x                                         /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3x.o)
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(divsf3.o)
@@ -920,7 +925,7 @@ __do_copy_data                                    /usr/lib/gcc/avr/4.8.1/avr5/li
                                                   obj/Release/d_led.o
 __eqsf2                                           /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(cmpsf2.o)
 __fixunssfsi                                      /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
-                                                  obj/Release/HD44780.o
+                                                  obj/Release/delay_lib.o
 __floatsisf                                       /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(floatsisf.o)
                                                   obj/Release/main.o
 __floatunsisf                                     /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(floatsisf.o)
@@ -955,7 +960,7 @@ __fp_zero                                         /usr/lib/gcc/avr/4.8.1/../../.
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
 __gesf2                                           /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(gesf2.o)
 __gtsf2                                           /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(gesf2.o)
-                                                  obj/Release/HD44780.o
+                                                  obj/Release/delay_lib.o
 __heap_end                                        /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
 __heap_start                                      /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
@@ -964,14 +969,14 @@ __itoa_ncheck                                     /usr/lib/gcc/avr/4.8.1/../../.
                                                   obj/Release/HD44780.o
 __lesf2                                           /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(cmpsf2.o)
 __ltsf2                                           /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(cmpsf2.o)
-                                                  obj/Release/HD44780.o
+                                                  obj/Release/delay_lib.o
 __malloc_heap_end                                 /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
 __malloc_heap_start                               /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
 __malloc_margin                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)
 __mulohisi3                                       /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_mulshisi3.o)
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(rand.o)
 __mulsf3                                          /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3.o)
-                                                  obj/Release/HD44780.o
+                                                  obj/Release/delay_lib.o
 __mulsf3_pse                                      /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3x.o)
 __mulsf3x                                         /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3x.o)
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libm.a(mulsf3.o)
@@ -1036,11 +1041,12 @@ cyfry                                             obj/Release/d_led.o
 d_led_Int                                         obj/Release/d_led.o
 d_led_init                                        obj/Release/d_led.o
                                                   obj/Release/main.o
-delay_ms_var                                      obj/Release/HD44780.o
-delay_ms_var_double                               obj/Release/HD44780.o
+delay_ms_var                                      obj/Release/delay_lib.o
+                                                  obj/Release/HD44780.o
+delay_ms_var_double                               obj/Release/delay_lib.o
                                                   obj/Release/main.o
-delay_us_var                                      obj/Release/HD44780.o
-delay_us_var_double                               obj/Release/HD44780.o
+delay_us_var                                      obj/Release/delay_lib.o
+delay_us_var_double                               obj/Release/delay_lib.o
 exit                                              /usr/lib/gcc/avr/4.8.1/avr5/libgcc.a(_exit.o)
                                                   /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/crtm32.o
 free                                              /usr/lib/gcc/avr/4.8.1/../../../avr/lib/avr5/libc.a(malloc.o)

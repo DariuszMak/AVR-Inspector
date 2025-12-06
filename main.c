@@ -2,7 +2,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
+#include "delay_lib.h"
 #include "HD44780.h"
 #include "ir_decode.h"
 #include "d_led.h"
@@ -187,7 +187,7 @@ int main( void )
 
             break;
         case 3:
-                            LCD_EraseAll();
+            LCD_EraseAll();
 
             for(t = 0; t < 2; ++t)
             {
@@ -224,13 +224,7 @@ int main( void )
                 LCD_Int(miesiac);
                 LCD_WriteText(":");
                 LCD_Int(rok);
-
             }
-
-
-
-
-
 
             //LCD_Int( pwm1 );
             //LCD_Int( pwm2 );
@@ -748,7 +742,7 @@ int main( void )
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
 
-    PCF8583_set_alarm_time(1,2,15,4);//dwadzieścia sekund czasu do alarmu
+    PCF8583_set_alarm_time(1,2,8,4);//dwadzieścia sekund czasu do alarmu
     PCF8583_set_alarm_date(5,6);
 
 

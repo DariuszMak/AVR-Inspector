@@ -1,5 +1,3 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include "ir_decode.h"
 
 volatile uint8_t address;

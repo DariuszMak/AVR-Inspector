@@ -1,6 +1,9 @@
 #ifndef IR_DECODE_H_
 #define IE_DECODE_H_
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
 #define IR_DIR DDRD
 #define IR_PORT	PORTD
 #define IR_PIN PIND

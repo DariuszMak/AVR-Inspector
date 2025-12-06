@@ -10,9 +10,9 @@
 #define HD44789_H_
 
 #include <avr/io.h>
-#include <util/delay.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>
+#include "delay_lib.h"
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -117,11 +117,6 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-
-void delay_ms_var( uint16_t ); // czekaj określoną ilość milisekund
-void delay_us_var( uint16_t ); // czekaj określoną ilość mikrosekund
-void delay_ms_var_double( double ); // czekaj określoną ilość milisekund
-void delay_us_var_double( double ); // czekaj określoną ilość mikrosekund
 
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1
