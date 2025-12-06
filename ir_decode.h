@@ -6,7 +6,7 @@
 #define IR_PIN PIND
 #define IR_IN (1 << PD6)
 
-//#define IR_PORT D
+//#define IR_PORT D // te dyrektywy s¹ autorstwa Miros³wa Kardasia
 //#define IR_PIN 6
 //#define IR_IN (1<<IR_PIN)
 

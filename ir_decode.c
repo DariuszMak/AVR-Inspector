@@ -34,15 +34,16 @@ void ir_init()
 	TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
 #endif // TIMER1_PRESCALER
 
-	TCCR1B &= ~( 1 << ICES1 );
-	rc5cnt = 0;
+	TCCR1B &= ~( 1 << ICES1 ); //zbocze opadaj¹ce na ICP
+	rc5cnt = 0; // zerowanie licznika wystêpuj¹cych zboczy
 
-	TIMSK |= ( 1 << TICIE1 );
+	TIMSK |= ( 1 << TICIE1 ); //przerwanie
 	Ir_key_press_flag = 0;
 }
 
 ISR( TIMER1_CAPT_vect )
 {
+
 #define FRAME_RESTART 0
 #define FRAME_OK 1
 #define FRAME_END 2

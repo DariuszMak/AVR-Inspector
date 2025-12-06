@@ -85,6 +85,19 @@ int main( void )
 		}
 	}
 
+	void wysw_skok( int number )
+	{
+		LCD_EraseAll();
+		for ( t = 0; t < 40; t += 8 )
+		{
+			LCD_GoTo( t, 0 );
+			LCD_Int( number );
+			LCD_GoTo( t, 1 );
+			LCD_Int( number );
+		}
+		_delay_ms( 500 );
+	}
+
 // najważniejsza i najbardziej skomplikowana funkcja
 //##############################################################################
 	void pilot( int *men , int com )
@@ -188,9 +201,8 @@ int main( void )
 			break;
 //##############################################################################
 		case 1:
-
+			LCD_Displaying( com );
 			wysw( *men, com );
-
 			break;
 //##############################################################################
 		case 2:
@@ -216,15 +228,19 @@ int main( void )
 				break;
 			case 55:
 				zwiekszanie = 1000;
+				wysw_skok( zwiekszanie );
 				break;
 			case 54:
 				zwiekszanie = 100;
+				wysw_skok( zwiekszanie );
 				break;
 			case 50:
 				zwiekszanie = 10;
+				wysw_skok( zwiekszanie );
 				break;
 			case 52:
 				zwiekszanie = 1;
+				wysw_skok( zwiekszanie );
 				break;
 			case 32:
 				TCCR0 |= ( 1 << CS02 ) | ( 1 << CS00 ); // timer włączony
@@ -326,18 +342,36 @@ int main( void )
 		}
 	}
 
-	int zczytaj_komende( void ) // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkacy, nie będzie można odzczytać innego przysisku
+	void zczytaj_komende( void ) // funkcja odpowiedzialna za odczytanie komend z pilota i przekazaniu ich do fukcji pilot, dopóki nie zostaną wykonane wszystkie rozkacy, nie będzie można odzczytać innego przysisku
 	{
 		if( Ir_key_press_flag )
 		{
 			if( !address )
 			{
+				TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
 				pilot( &menu, command );
 				Ir_key_press_flag = 0;
 				command = 0xff;
 				address = 0xff;
-				return 1;
+#if TIMER1_PRESCALER == 1
+				TCCR1B |= ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
 
+#if TIMER1_PRESCALER == 8
+				TCCR1B |= ( 1 << CS11 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 64
+				TCCR1B |= ( 1 << CS11 ) | ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 256
+				TCCR1B |= ( 1 << CS12 );
+#endif // TIMER1_PRESCALER
+
+#if TIMER1_PRESCALER == 1024
+				TCCR1B |= ( 1 << CS12 ) | ( 1 << CS10 );
+#endif // TIMER1_PRESCALER
 			}
 		}
 	}
@@ -355,8 +389,6 @@ int main( void )
 	{
 		zczytaj_komende();
 	}
-
-
 
 	return 0;
 }
