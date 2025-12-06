@@ -95,10 +95,15 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     delay_ms_var(400);
     uint8_t temp_address = PCF8583_read(PCF8583_CELL);;//pobranie ostatniego adresu
+    uint8_t overflow_flag = 0;
 
-    if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1)) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+    if((EEPROM_MAX_ADDRESS - temp_address) < (SIZE_OF_FRAME - 1))
+    {
+        temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
+        overflow_flag = 1;
+    }
 
-    int i = 0;
+    uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
 
@@ -127,6 +132,8 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
         }
     }
     PCF8583_write(PCF8583_CELL, temp_address);
+    if(temp_address == 0) overflow_flag = 1;
+    if(overflow_flag == 1) buzzer_time(1000);//przepełnienie pamięci
 }
 
 

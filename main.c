@@ -8,16 +8,196 @@
 //zmienne zarezerwowane globalnie dla całego programu
 const int liczbaPodprogramow = 6;
 uint8_t menu = 0;// zmienna odpowiedzialna za przebywanie w danym podprogramie
-int start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
-int toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
+int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
+int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
-int pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
-int	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
+int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 
 
+void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
+{
+    PORTD |= ( 1 << PD7 );
+    delay_ms_var_double( 1 );
+    PORTD &= ~( 1 << PD7 );
+}
+
+void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
+{
+    PORTD |= ( 1 << PD7 );
+    delay_ms_var_double( time );
+    PORTD &= ~( 1 << PD7 );
+}
+
+void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
+{
+    uint8_t d = 1;
+    t = 10;
+    while ( number >= t )
+    {
+        d += 1;
+        t *= 10;
+    }
+
+    zwiekszanie = number;
+    LCD_EraseAll();
+    for ( t = 0; t < 40 - (d + 1); t += d + 3 )
+    {
+        LCD_GoTo( t, 0 );
+        LCD_Int( zwiekszanie );
+        LCD_GoTo( t, 1 );
+        LCD_Int( zwiekszanie );
+    }
+    delay_ms_var_double( 500 );
+    wysw();
+}
+
+void step_increase(void)
+{
+    zwiekszanie *= 10;
+    if(zwiekszanie > 1000) zwiekszanie = 1000;
+    wysw_skok(zwiekszanie);
+}
+
+void step_decrease(void)
+{
+    zwiekszanie /= 10;
+    if (zwiekszanie < 1 ) zwiekszanie = 1;
+    wysw_skok(zwiekszanie);
+}
+
+void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
+{
+    LCD_Clear();
+    LCD_WriteText( "Program: " );
+    LCD_Int( number );
+    for ( t = 0; t < 5; ++t )
+    {
+        delay_ms_var_double( 10 );
+        buzzer();
+    }
+    delay_ms_var_double( 500 );
+    LCD_Clear();
+}
+
+void show_day_of_week( uint8_t day)
+{
+    if(day == 0) LCD_WriteText("Pn.");
+    else if(day == 1) LCD_WriteText("Wt.");
+    else if(day == 2) LCD_WriteText("Sr.");
+    else if(day == 3) LCD_WriteText("Cz.");
+    else if(day == 4) LCD_WriteText("Pt.");
+    else if(day == 5) LCD_WriteText("So.");
+    else if(day == 6) LCD_WriteText("Nd.");
+}
+
+void show_time_only_format(void)
+{
+    LCD_GoTo( 0 + moveStep, 0 );
+    if(godz < 10) LCD_Int(0);
+    LCD_Int(godz);
+    LCD_WriteText(":");
+    if(min < 10) LCD_Int(0);
+    LCD_Int(min);
+    LCD_WriteText(":");
+    if(sek < 10) LCD_Int(0);
+    LCD_Int(sek);
+    LCD_WriteText(":");
+    if(hsek < 10) LCD_Int(0);
+    LCD_Int(hsek);
+
+}
+
+void show_time_format(void)
+{
+    show_time_only_format();
+
+    LCD_GoTo( 0 + moveStep, 1 );
+    if(dzien < 10) LCD_Int(0);
+    LCD_Int(dzien);
+    LCD_WriteText(":");
+    if(miesiac < 10) LCD_Int(0);
+    LCD_Int(miesiac);
+    LCD_WriteText(":");
+    LCD_Int(rok);
+
+    LCD_GoTo(13,1);
+    show_day_of_week(dzien_tygodnia);
+}
+
+void correction_of_time(void)
+{
+    if(godz < 0) godz = 23;
+    else if(godz > 23) godz = 0;
+    if(min < 0) min = 59;
+    else if(min > 59) min = 0;
+    if(sek < 0) sek = 59;
+    else if(sek > 59) sek = 0;
+    if(hsek < 0) hsek = 99;
+    else if(hsek > 99) hsek = 0;
+}
+
+void correction_of_date(uint8_t check_with_year)//uwzględnianie dnia miesiąca względem roku
+{
+
+    if(miesiac < 1) miesiac = 12;
+    else if(miesiac > 12) miesiac = 1;
+
+    uint8_t case_of_day = 0;
+    if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
+    else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
+    else if (miesiac == 2 && (rok % 4) != 0 && check_with_year == 1) case_of_day = 28;
+    else if ((miesiac == 2 && (rok % 4) == 0) || check_with_year == 0) case_of_day = 29;
+
+    if(dzien < 1) dzien = case_of_day;
+    else if(dzien > case_of_day) dzien = 1;
+
+    if(rok < -9999) rok = 9999;
+    else if(rok > 9999) rok = -9999;
+
+    if(dzien_tygodnia < 0) dzien_tygodnia = 6;
+    else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
+}
+
+void show_frame( int8_t number)
+{
+    LCD_Int(number);
+    LCD_WriteText(". ");
+    if(frame.hours < 10) LCD_Int(0);
+    LCD_Int(frame.hours);
+    LCD_WriteText(":");
+    if(frame.minutes < 10) LCD_Int(0);
+    LCD_Int(frame.minutes);
+    LCD_WriteText(":");
+    if(frame.seconds < 10) LCD_Int(0);
+    LCD_Int(frame.seconds);
+    LCD_WriteText(" ");
+
+    if(frame.day < 10) LCD_Int(0);
+    LCD_Int(frame.day);
+    LCD_WriteText(":");
+    if(frame.month < 10) LCD_Int(0);
+    LCD_Int(frame.month);
+    LCD_WriteText(":");
+    LCD_Int(frame.year);
+
+    LCD_WriteText(" ");
+
+    number = frame.information % 100;
+    if(number != 0)
+    {
+
+        LCD_WriteText("NR: ");
+        LCD_Int(number);
+        LCD_WriteText(" ");
+        t = frame.information / 100;
+        if(t == 1) LCD_WriteText("OTWARTA");
+        else if(t == 2) LCD_WriteText("ZAMKNIETA");
+    }
+}
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
@@ -250,214 +430,25 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         LCD_EraseAll();
         if(u < 0) u = lockers_number_of_frames();
         else if(u > lockers_number_of_frames()) u = 0;
-        if(u == 0)//przypadek na początku listy
-        {
-            lockers_read_frame(u);
-            LCD_EraseUp();
-            show_list_of_frames(1, u + 1);
 
-
-        }
-        else if (u == lockers_number_of_frames())//przypadek na końcu listy
+        if ( u != 0)//przypadek na końcu listy
         {
             lockers_read_frame(u-1);
-            show_list_of_frames(0, u);
-            LCD_EraseDown();
-
+            LCD_GoTo(0, 0);
+            show_frame(u);
         }
-        else//przypadek w środku listy
+
+        if(u != lockers_number_of_frames())//przypadek na początku listy
         {
-            lockers_read_frame(u - 1);
-            show_list_of_frames(0, u);
             lockers_read_frame(u);
-            show_list_of_frames(1, u + 1);
+            //LCD_EraseUp();
+            LCD_GoTo(0, 1);
+            show_frame(u + 1);
+
+
         }
+
         break;
-    }
-}
-
-
-
-
-void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
-{
-    PORTD |= ( 1 << PD7 );
-    delay_ms_var_double( 1 );
-    PORTD &= ~( 1 << PD7 );
-}
-
-void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
-{
-    PORTD |= ( 1 << PD7 );
-    delay_ms_var_double( time );
-    PORTD &= ~( 1 << PD7 );
-}
-
-void wysw_skok( uint16_t number ) // funkcja wyświetlająca numer kroku o danej wartości
-{
-    int d = 1;
-    t = 10;
-    while ( number >= t )
-    {
-        d += 1;
-        t *= 10;
-    }
-
-    zwiekszanie = number;
-    LCD_EraseAll();
-    for ( t = 0; t < 40 - (d + 1); t += d + 3 )
-    {
-        LCD_GoTo( t, 0 );
-        LCD_Int( zwiekszanie );
-        LCD_GoTo( t, 1 );
-        LCD_Int( zwiekszanie );
-    }
-    delay_ms_var_double( 500 );
-    wysw();
-}
-
-void step_increase(void)
-{
-    zwiekszanie *= 10;
-    if(zwiekszanie > 1000) zwiekszanie = 1000;
-    wysw_skok(zwiekszanie);
-}
-
-void step_decrease(void)
-{
-    zwiekszanie /= 10;
-    if (zwiekszanie < 1 ) zwiekszanie = 1;
-    wysw_skok(zwiekszanie);
-}
-
-void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
-{
-    LCD_Clear();
-    LCD_WriteText( "Program: " );
-    LCD_Int( number );
-    for ( t = 0; t < 5; ++t )
-    {
-        delay_ms_var_double( 10 );
-        buzzer();
-    }
-    delay_ms_var_double( 500 );
-    LCD_Clear();
-}
-
-void show_day_of_week( uint8_t day)
-{
-    if(day == 0) LCD_WriteText("Pn.");
-    else if(day == 1) LCD_WriteText("Wt.");
-    else if(day == 2) LCD_WriteText("Sr.");
-    else if(day == 3) LCD_WriteText("Cz.");
-    else if(day == 4) LCD_WriteText("Pt.");
-    else if(day == 5) LCD_WriteText("So.");
-    else if(day == 6) LCD_WriteText("Nd.");
-}
-
-void show_time_only_format(void)
-{
-    LCD_GoTo( 0 + moveStep, 0 );
-    if(godz < 10) LCD_Int(0);
-    LCD_Int(godz);
-    LCD_WriteText(":");
-    if(min < 10) LCD_Int(0);
-    LCD_Int(min);
-    LCD_WriteText(":");
-    if(sek < 10) LCD_Int(0);
-    LCD_Int(sek);
-    LCD_WriteText(":");
-    if(hsek < 10) LCD_Int(0);
-    LCD_Int(hsek);
-
-}
-
-void show_time_format(void)
-{
-    show_time_only_format();
-
-    LCD_GoTo( 0 + moveStep, 1 );
-    if(dzien < 10) LCD_Int(0);
-    LCD_Int(dzien);
-    LCD_WriteText(":");
-    if(miesiac < 10) LCD_Int(0);
-    LCD_Int(miesiac);
-    LCD_WriteText(":");
-    LCD_Int(rok);
-
-    LCD_GoTo(13,1);
-    show_day_of_week(dzien_tygodnia);
-}
-
-void correction_of_time(void)
-{
-    if(godz < 0) godz = 23;
-    else if(godz > 23) godz = 0;
-    if(min < 0) min = 59;
-    else if(min > 59) min = 0;
-    if(sek < 0) sek = 59;
-    else if(sek > 59) sek = 0;
-    if(hsek < 0) hsek = 99;
-    else if(hsek > 99) hsek = 0;
-}
-
-void correction_of_date(uint8_t check_with_year)//uwzględnianie dnia miesiąca względem roku
-{
-
-    if(miesiac < 1) miesiac = 12;
-    else if(miesiac > 12) miesiac = 1;
-
-    uint8_t case_of_day = 0;
-    if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
-    else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
-    else if (miesiac == 2 && (rok % 4) != 0 && check_with_year == 1) case_of_day = 28;
-    else if ((miesiac == 2 && (rok % 4) == 0) || check_with_year == 0) case_of_day = 29;
-
-    if(dzien < 1) dzien = case_of_day;
-    else if(dzien > case_of_day) dzien = 1;
-
-    if(rok < -9999) rok = 9999;
-    else if(rok > 9999) rok = -9999;
-
-    if(dzien_tygodnia < 0) dzien_tygodnia = 6;
-    else if(dzien_tygodnia > 6) dzien_tygodnia = 0;
-}
-
-void show_list_of_frames (uint8_t row, int8_t number)
-{
-    LCD_GoTo( 0, row );
-    LCD_Int(number);
-    LCD_WriteText(". ");
-    if(frame.hours < 10) LCD_Int(0);
-    LCD_Int(frame.hours);
-    LCD_WriteText(":");
-    if(frame.minutes < 10) LCD_Int(0);
-    LCD_Int(frame.minutes);
-    LCD_WriteText(":");
-    if(frame.seconds < 10) LCD_Int(0);
-    LCD_Int(frame.seconds);
-    LCD_WriteText(" ");
-
-    if(frame.day < 10) LCD_Int(0);
-    LCD_Int(frame.day);
-    LCD_WriteText(":");
-    if(frame.month < 10) LCD_Int(0);
-    LCD_Int(frame.month);
-    LCD_WriteText(":");
-    LCD_Int(frame.year);
-
-    LCD_WriteText(" ");
-
-    number = frame.information % 100;
-    if(number != 0)
-    {
-
-        LCD_WriteText("NR: ");
-        LCD_Int(number);
-        LCD_WriteText(" ");
-        t = frame.information / 100;
-        if(t == 1) LCD_WriteText("OTWARTA");
-        else if(t == 2) LCD_WriteText("ZAMKNIETA");
     }
 }
 

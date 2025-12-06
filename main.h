@@ -27,15 +27,15 @@
 //zmienne zarezerwowane globalnie dla całego programu
 const int liczbaPodprogramow;
 uint8_t menu;// zmienna odpowiedzialna za przebywanie w danym podprogramie
-int start; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
-int toggle;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
+int8_t start; // zmienna pomocna do stwierdzenia, czy jest się już w glownym menu = 0, czy właśnie wyszło się z podprogramu i trzeba np. zatrzymać jakiś timer = 1
+int8_t toggle;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 uint16_t zwiekszanie; // zmienna potrzebna do zmiany wartości liczby na wyświetlaczu alfanumerycznym (przyjmuje wartości 1,10,100,1000)
 uint8_t moveStep;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
-int pozycja;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
-int	cyfry; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
+uint8_t pozycja;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
+int8_t	cyfry; // zmienna przechowująca wartość wyświetlaną póżniej na wyświetlaczu alfanumerycznym
 //zmienne spełniające określone funkcje
 int rozmiar; // zmienna odpowiedzialna za rozmiar tablicy dynamicznej
 int16_t t; // zmienna pomocnicza wykorzystana w pętlach for do iteracji, może być używana do przeróżnych innych operacji w programie, nie można polegać na globalnej wartości tej zmiennej, ponieważ bardzo często ulega zmianie
@@ -47,8 +47,6 @@ int8_t s;//inna (dodatowa zmienna)
 
 
 int main( void );
-
-void wysw( void);// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
 void buzzer();//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 
@@ -72,7 +70,9 @@ void correction_of_time(void);
 
 void correction_of_date(uint8_t check_with_year);//uwzględnianie dnia miesiąca względem roku
 
-void show_list_of_frames (uint8_t row, int8_t number);
+void show_frame( int8_t number);
+
+void wysw( void );// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 
 void czynnosc( int com, int tog ); //funkcja odpowiedzialna za wywołanie odpowiedniej czynności (pierwszy argument musi być przez wskaźnik, ponieważ, może być dokonana zmiana zmiennej "menu")
 
