@@ -12,8 +12,8 @@ volatile uint8_t rc5cnt;
 
 void ir_init()
 {
-	DDR( IR_PORT ) &= ~IR_IN;
-	PORT( IR_PORT ) |= IR_IN;
+	IR_DIR &= ~IR_IN;
+	IR_PORT |= IR_IN;
 #if TIMER1_PRESCALER == 1
 	TCCR1B |= ( 1 << CS10 );
 #endif // TIMER1_PRESCALER

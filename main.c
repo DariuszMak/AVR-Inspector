@@ -8,7 +8,6 @@
 #define _delay_ms delay_ms_var_double
 #define _delay_us delay_ms_var_double
 
-void pisz( void );
 
 //##############################################################################
 int main( void )
@@ -32,17 +31,47 @@ int main( void )
 	{
 		if( Ir_key_press_flag )
 		{
-			LCD_Clear();
-			LCD_Int( command );
-			LCD_GoTo( 6, 0 );
-			LCD_Int( address );
-			LCD_GoTo( 0, 1 );
-			LCD_Int( toggle_bit );
+			if( !address )
+			{
+
+				LCD_EraseAll();
+				LCD_GoTo( 0, 0 );
+				LCD_Int( command );
+				LCD_GoTo( 6, 0 );
+				LCD_Int( address );
+				LCD_GoTo( 0, 1 );
+				LCD_Int( toggle_bit );
+
+				switch ( command )
+				{
+				case 59:
+				    LCD_PageUpScreen();
+				    LCD_PageDownScreen();
+					LCD_Clear();
+					break;
+				case 16:
+					LCD_ShiftRightScreen();
+					break;
+				case 17:
+					LCD_ShiftLeftScreen();
+					break;
+				case 32:
+					LCD_PageUpScreen();
+					break;
+				case 33:
+					LCD_PageDownScreen();
+					break;
+				}
+
+
+
+			}
 
 			Ir_key_press_flag = 0;
 			command = 0xff;
 			address = 0xff;
 		}
+
 
 //        LCD_GoTo(9, 1);
 //        LCD_WriteText("Witaj!");
