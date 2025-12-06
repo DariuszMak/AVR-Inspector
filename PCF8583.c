@@ -4,10 +4,6 @@
 
 #include "PCF8583.h"//sprzętowa obsługa magistrali TWI (I2C)
 
-
-
-
-
 /**-------------------------------------------------------------------------------------------------
 
   Name         :  uint8_t bcd2bin(uint8_t bcd)
@@ -46,16 +42,9 @@ uint8_t bin2bcd(uint8_t bin)
 */
 uint8_t PCF8583_read(uint8_t address)
 {
-    uint8_t a;
-    a = (PCF8583_A0 << 1) | PCF8583_ADDRESS;
-    i2cStart();
-    i2cWrite(a);
-    i2cWrite(address);
-    i2cStart();
-    i2cWrite(a + 1);
-    a = i2cRead(NOACK);
-    i2cStop();
-    return a;
+    uint8_t temp;
+    PCF8583_read_buf( address, 1, &temp );
+    return temp;
 }
 
 void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf )
@@ -88,11 +77,7 @@ void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
 */
 void PCF8583_write(uint8_t address,uint8_t data)
 {
-    i2cStart();
-    i2cWrite((PCF8583_A0 << 1) | PCF8583_ADDRESS);
-    i2cWrite(address);
-    i2cWrite(data);
-    i2cStop();
+     PCF8583_write_buf(address, 1, &data );
 }
 
 
