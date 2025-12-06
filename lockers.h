@@ -1,6 +1,7 @@
 #ifndef LOCKERS_H_
 #define LOCKERS_H_
 
+#include <stdio.h>
 #include <avr/io.h>
 #include "delay_lib.h"
 #include "PCF8583.h"
@@ -29,9 +30,20 @@
 #define LOCKER_2_BUTTON_PIN PIND
 #define LOCKER_2_BUTTON_IN (1 << PD3)
 
+
+/* Inicjuje port szeregowy AVRa */
+void USART_init(unsigned int myubrr);
+
+/* Wysyła znak do portu szeregowego */
+uint8_t USART_Transmit(char c, FILE *stream);
+
 void lockers_init();//inicjalizacja wejść
 
 void lockers_beginning_actions(void);//przypisanie wartości początkowych dla przycisków
+
+void lockers_print_entire_frame(void);
+
+void lockers_print_all_memory(void);
 
 struct frame//struktura służąca do zapisu danych z ramki - to właściwie jest ramka danych
 {
@@ -58,11 +70,11 @@ void lockers_check_events(void);//nasłuchiwanie zdarzeń, stanów logicznych we
 
 void lockers_save_events(void);//zapis zdarzeń do pamięci EEPROM na podstawie tablicy ze zdarzeniemi
 
-void lockers_read_frame(uint16_t);//wczytywanie ramki o ustalonym indeksie i zapis do struktury
+void lockers_read_frame(uint8_t);//wczytywanie ramki o ustalonym indeksie i zapis do struktury
 
-uint16_t lockers_convert_address_to_index_of_frame(uint16_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
+uint8_t lockers_convert_address_to_index_of_frame(uint16_t );//funkcja podająca indek ramki danych w zależności od aldresu podanej komórki danych
 
-uint16_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
+uint8_t lockers_number_of_frames(void);//liczba ramek danych dla pamięci liczona bez zera (np. 32 dla 8-bajtowych ramek o pamięci 256 bajtów)
 
 uint8_t lockers_number_of_frames_exteral_EEPROM(void);
 

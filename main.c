@@ -22,31 +22,6 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 //definicje funkcji
 
 
-/* Inicjuje port szeregowy AVRa */
-void USART_init(unsigned int myubrr)
-{
-    /* Ustala prędkość transmisji */
-    UBRRH = (unsigned char)(myubrr>>8);
-    UBRRL = (unsigned char)myubrr;
-
-    /* Włącza nadajnika */
-    UCSRB = (1<<TXEN);
-
-    /* Format ramki: 8 bitów danych, 1 bit stopu, brak bitu parzystości */
-    UCSRC = (1<<URSEL)|(3<<UCSZ0);
-}
-
-
-/* Wysyła znak do portu szeregowego */
-uint8_t USART_Transmit(char c, FILE *stream)
-{
-    while(!(UCSRA & (1<<UDRE)));
-    UDR = c;
-
-    return 0;
-}
-
-
 
 
 
@@ -1056,9 +1031,14 @@ void czynnosc3( int com, int tog )
     {
         PCF8583_alarm_flag_on();
     }
+
     if ( com == 59 )
     {
         PCF8583_alarm_flag_off();
+    }
+    if( com == 12 )
+    {
+        lockers_print_all_memory();
     }
     if ( com == 100 )
     {
@@ -1414,17 +1394,6 @@ int main( void )
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
 
-
-/* Tworzy strumienia danych o nazwie 'mystdout' połączony
-    z funkcją 'USART_Transmit' */
- FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
-
-    /* Inicjalizuje  port szeregowy AVRa */
-    USART_init(MYUBRR);
-
-    /* Przekierowuje standardowe wyjście do  'mystdout' */
-    stdout = &mystdout;
-
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
@@ -1433,7 +1402,6 @@ int main( void )
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
 
     //PCF8583_alarm_monthly();
-
 
 
     //eeprom_write_word((uint16_t*)257,5);
@@ -1448,12 +1416,6 @@ int main( void )
 
 
 
-    while(1)
-    {
-
-        printf("Temperatura powietrza:\n\r");
-        delay_ms_var(500);
-    }
 
     //PCF8583_write_word(254, 1256);
 

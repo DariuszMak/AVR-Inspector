@@ -1,6 +1,31 @@
 #include "lockers.h"
 
 
+/* Inicjuje port szeregowy AVRa */
+void USART_init(unsigned int myubrr)
+{
+    /* Ustala prędkość transmisji */
+    UBRRH = (unsigned char)(myubrr>>8);
+    UBRRL = (unsigned char)myubrr;
+
+    /* Włącza nadajnika */
+    UCSRB = (1<<TXEN);
+
+    /* Format ramki: 8 bitów danych, 1 bit stopu, brak bitu parzystości */
+    UCSRC = (1<<URSEL)|(3<<UCSZ0);
+}
+
+
+/* Wysyła znak do portu szeregowego */
+uint8_t USART_Transmit(char c, FILE *stream)
+{
+    while(!(UCSRA & (1<<UDRE)));
+    UDR = c;
+
+    return 0;
+}
+
+
 
 void lockers_init()
 {
@@ -11,6 +36,15 @@ void lockers_init()
     LOCKER_2_BUTTON_DIR  &= ~LOCKER_2_BUTTON_IN;//inicjowanie przycisku jako wejście
     LOCKER_2_BUTTON_PORT |= LOCKER_2_BUTTON_IN;//podciągnięcie przycisku tranzystorami
 
+    /* Tworzy strumienia danych o nazwie 'mystdout' połączony
+    z funkcją 'USART_Transmit' */
+    static FILE mystdout = FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
+
+    /* Inicjalizuje  port szeregowy AVRa */
+    USART_init(MYUBRR);
+
+    /* Przekierowuje standardowe wyjście do  'mystdout' */
+    stdout = &mystdout;
 
     //lockers_find_latest_data();
 }
@@ -53,7 +87,7 @@ void lockers_check_events()
 }
 
 
-uint16_t lockers_number_of_frames(void)
+uint8_t lockers_number_of_frames(void)
 {
     return lockers_number_of_frames_exteral_EEPROM() + lockers_number_of_frames_internal_EEPROM();
 }
@@ -68,12 +102,12 @@ uint16_t lockers_number_of_frames_internal_EEPROM(void)
     return ((INTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
 }
 
-uint16_t lockers_convert_address_to_index_of_frame(uint16_t add)
+uint8_t lockers_convert_address_to_index_of_frame(uint16_t add)
 {
     return (add / SIZE_OF_FRAME);
 }
 
-void lockers_read_frame(uint16_t index)
+void lockers_read_frame(uint8_t index)
 {
     uint16_t temp_address = SIZE_OF_FRAME * index;
     if(lockers_convert_address_to_index_of_frame(temp_address) < lockers_number_of_frames_exteral_EEPROM())
@@ -115,6 +149,22 @@ void lockers_read_frame(uint16_t index)
         temp_address++;
 
         frame.information = eeprom_read_byte((uint8_t*)temp_address++);
+    }
+}
+
+void lockers_print_entire_frame(void)
+{
+    printf("%d:%d:%d %d:%d:%d %d\n\r", frame.hours, frame.minutes, frame.seconds, frame.day, frame.month, frame.year, frame.information );
+}
+
+void lockers_print_all_memory(void)
+{
+    //uint16_t temp = 0;
+    uint8_t index_of_frame = 0;
+    for(; index_of_frame < lockers_number_of_frames(); ++ index_of_frame)
+    {
+        lockers_read_frame(index_of_frame);
+        lockers_print_entire_frame();
     }
 }
 
