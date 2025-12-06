@@ -57,10 +57,10 @@ uint8_t refresh_screen;
 struct double_format
 {
     int16_t integer_number;
-    uint8_t decimal_number;
+    int8_t decimal_number;
 };
 
-//struct double_format maximum_temperature;
+struct double_format maximum_temperature;
 
 int main( void );
 
@@ -125,6 +125,8 @@ void show_setting_flags_case(uint8_t index);
 void show_alarm_options(uint8_t index);
 
 //koniec funkcji składowych do menu wyboru dla różnych podrogramów
+
+void correction_of_temperature(void);//funkcja porawiająca zbyt duże lub zbyt małe wartośći temperatury
 
 void correction_of_time(void);//funkcja korygująca po pojednczym wywołaniu właściwe wartości formatu godziny z minutami, sekundami oraz częściami setnych
 

@@ -58,6 +58,7 @@ uint8_t number_of_digits(int32_t number)
 
 void show_double(double number, uint8_t approximation)
 {
+    LCD_GoTo(moveStep, 0);
     struct double_format temp_double_format = set_double_format(number, approximation);
     LCD_Int (temp_double_format.integer_number);
     LCD_WriteText(".");
@@ -416,23 +417,32 @@ void setting_information()
         }
         else
         {
-            if( e == 0 || menu == 4)
+            if( e == 0 || menu == 4 || menu == 7)
             {
                 if(u == end_of_settings())
                 {
                     if(c == 0)
                     {
-                        if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
+                        if(menu == 7)LCD_WriteText("ZAPISANO TEMP.");
+                        else if(menu == 4)LCD_WriteText("ZAPISANO GODZINE");
                         else if( menu == 5 ) LCD_WriteText("WYLACZONO ALARM");
                     }
                     else LCD_WriteText("ZAPISANO ALARM");
                 }
                 else
                 {
-                    if(u == 0) LCD_WriteText("GODZINY");
-                    else if(u == 1) LCD_WriteText("MINUTY");
-                    else if(u == 2) LCD_WriteText("SEKUNDY");
-                    else if(u == 3) LCD_WriteText("SETNE SEKUND");
+                    if(menu == 7)
+                    {
+                        if(u == 0) LCD_WriteText("CZ. CALKOWITA");
+                        else if(u == 1) LCD_WriteText("CZ. ULAMKOWA");
+                    }
+                    else
+                    {
+                        if(u == 0) LCD_WriteText("GODZINY");
+                        else if(u == 1) LCD_WriteText("MINUTY");
+                        else if(u == 2) LCD_WriteText("SEKUNDY");
+                        else if(u == 3) LCD_WriteText("SETNE SEKUND");
+                    }
 
                     if(c == 0 || c == 3)
                     {
@@ -491,15 +501,24 @@ void set_appropriate_values_of_time()
         }
         else
         {
-            if(e == 0 || menu == 4)
+            if(e == 0 || menu == 4 || menu == 7)
             {
                 if(u == -1) c -= temp;
                 else
                 {
-                    if(u == 0) godz += temp;
-                    else if(u == 1) min += temp;
-                    else if(u == 2) sek += temp;
-                    else if(u == 3) hsek += temp;
+                    if(menu == 7)
+                    {
+                        if (u == 0) maximum_temperature.integer_number += temp;
+                        if (u == 1) maximum_temperature.decimal_number += temp;
+                    }
+                    else
+                    {
+                        if(u == 0) godz += temp;
+                        else if(u == 1) min += temp;
+                        else if(u == 2) sek += temp;
+                        else if(u == 3) hsek += temp;
+                    }
+
 
                     if(c == 0 || c == 3)
                     {
@@ -571,13 +590,18 @@ void check_step_value(void)
 {
     if((u == -2 || u == -1) && zwiekszanie > 1) wysw_skok(1);
 
-    if(e == 0 || menu == 4)
+    if(e == 0 || menu == 4 || menu == 7)
     {
-        if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
+        if(menu == 7)
+        {
+            if(u == 0 && zwiekszanie > 100) wysw_skok(100);
+            if(u == 1 && zwiekszanie > 10) wysw_skok (10);
+        }
+        else if((u == 0 || u == 1 || u == 2 || u == 3 ) && zwiekszanie > 10) wysw_skok(10);
 
         if(c == 0 || c == 3)
         {
-            if(( u == 4 || u == 5 )&& zwiekszanie > 10) wysw_skok(10);
+            if(( u == 4 || u == 5 ) && zwiekszanie > 10) wysw_skok(10);
             if(c == 0)
             {
                 if(u == 7 && zwiekszanie > 1) wysw_skok(1);
@@ -613,6 +637,7 @@ uint8_t end_of_settings(void)
         }
     }
     else if(menu == 6) return 0;
+    else if(menu == 7) return 2;
     return 0;
 }
 
@@ -778,6 +803,15 @@ void show_alarm_options(uint8_t index)
     {
         LCD_WriteText("Alarm miesieczny");
     }
+}
+
+void correction_of_temperature(void)
+{
+    if(maximum_temperature.integer_number < -300 ) maximum_temperature.integer_number = 300;
+    else if(maximum_temperature.integer_number > 300) maximum_temperature.integer_number = -300;
+    if(maximum_temperature.decimal_number < 0 ) maximum_temperature.decimal_number = 99;
+    else if(maximum_temperature.decimal_number > 99 ) maximum_temperature.decimal_number = 0;
+    if(maximum_temperature.integer_number > 300 || maximum_temperature.integer_number < -300) maximum_temperature.decimal_number = 0;
 }
 
 void correction_of_time(void)
@@ -1015,7 +1049,7 @@ void wysw2( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         show_timer_alarm_format();
     }
 
-    LCD_GoTo(12, 0);
+    moveStep = 12;
     show_double(termometer_temperature,1);
 
     /*LCD_Double(-23.301,2);
@@ -1294,7 +1328,38 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
+    if (u < 0) u = 0;
+    check_step_value();
+    if( s != 0 )
+    {
+        set_appropriate_values_of_time();
+
+        s = 0;
+    }
     LCD_EraseAll();
+
+    if(u == end_of_settings())
+    {
+        i2c_write_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&maximum_temperature);
+        refresh_screen = 0;
+        LCD_Clear();
+        w = 1;
+        start = 1;
+    }
+    else
+    {
+        correction_of_temperature();
+
+        moveStep = 0;
+
+        show_double(get_double_form_double_format(maximum_temperature),2);
+    }
+
+    if( w == 1 )
+    {
+        setting_information();
+        w = 0;
+    }
 }
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -1385,7 +1450,7 @@ void czynnosc0( int com, int tog )
         }
         else if ( menu == 4 )
         {
-            u = 0;
+            u = 0;//przechodzenie przez poziomy w prawo w lewo
             c = 0;
             w = 1;//wymuszenie wyświetlenia komunikatu
             s = 0;
@@ -1409,10 +1474,20 @@ void czynnosc0( int com, int tog )
             u = -2;//przechodzenie przez poziomy w prawo w lewo
             w = 1;//wymuszenie wyświetlenia komunikatu
             s = 0;//
-            e = 0;//zmienna odpowiedzialna za wybór ustawiania albo alarmu alarmu albo alarmu timera
+            e = 0;//zmienna odpowiedzialna za wybór danej rzeczy do ustawienia
             //d = 0;
             c = 0;//zmienna odpowiedzialna za typ alarmu
             refresh_screen = 1;
+        }
+        else if ( menu == 7 )
+        {
+            u = 0;//przechodzenie przez poziomy w prawo w lewo
+            c = 0;
+            w = 1;//wymuszenie wyświetlenia komunikatu
+            s = 0;
+            i2c_read_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&maximum_temperature);
+            //czynnosc( 52, tog );
+            refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
         }
     }
 
@@ -1772,7 +1847,24 @@ void czynnosc6( int com, int tog )
 
 void czynnosc7( int com, int tog )
 {
-
+    if ( com == 16 )
+    {
+        ++u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 17 )
+    {
+        --u;
+        w = 1;//wymuszenie wyświetlenia komunikatu
+    }
+    if ( com == 32 )
+    {
+        s = 1;
+    }
+    if ( com == 33 )
+    {
+        s = 2;
+    }
     if ( com == 59 )
     {
         u = end_of_settings();
@@ -1810,6 +1902,10 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     else if( menu == 6 )
     {
         czynnosc6(com, tog);
+    }
+    else if( menu == 7 )
+    {
+        czynnosc7(com, tog);
     }
 
 //komendy wspólne dla wszystkich podprogramów
@@ -1887,7 +1983,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
             pilot_on();
             backlight(2);
         }
-
     }
 }
 
@@ -2132,7 +2227,7 @@ int main( void )
 
     start_program = 1;
 
-    double test_of_double = -310.0;
+    /*double test_of_double = -310.0;
 
     while(test_of_double < 310.0)
     {
@@ -2145,7 +2240,7 @@ int main( void )
         printf("%d.%02d\n", temp_doub.integer_number, temp_doub.decimal_number);
         test_of_double += 0.11;
         //delay_ms_var(2);
-    }
+    }*/
 
 
     LCD_WriteText("AVR INSPECTOR");
@@ -2168,13 +2263,6 @@ int main( void )
 //    start_program = 0;
 
     lockers_beginning_actions();
-
-    struct double_format maximum_temperature;
-
-    maximum_temperature.integer_number = 26;
-    maximum_temperature.decimal_number = 15;
-
-    i2c_write_buf(PCF8583_address(), PCF8583_TEMPERATURE_CELLS, 3, (uint8_t*)&maximum_temperature);
 
     printf("Inicjalizacja zakonczona.\n");
 
