@@ -69,7 +69,7 @@ ISR( TIMER1_CAPT_vect )
 		IrData = 0;
 		IrPulseCount = 0;
 		TCCR1B |= ( 1 << ICES1 );
-		rc5cnt++;
+		++rc5cnt;
 		frame_status = FRAME_END;
 	}
 

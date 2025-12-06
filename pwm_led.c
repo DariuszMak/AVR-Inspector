@@ -21,5 +21,5 @@ ISR( _VECTOR( 4 ) )
 	else PORTD &= ~( 1 << PD2 );
 	if( cnt >= pwm2 ) PORTD |= ( 1 << PD3 );
 	else PORTD &= ~( 1 << PD3 );
-	cnt++;
+	++cnt;
 }

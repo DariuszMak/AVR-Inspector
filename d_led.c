@@ -9,7 +9,7 @@ volatile uint8_t cy2;
 volatile uint8_t cy3;
 volatile uint8_t cy4;
 
-uint8_t cyfry[11] PROGMEM =
+const uint8_t cyfry[11] PROGMEM =
 {
 	~( SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F ),//0
 	~( SEG_B | SEG_C ),//1

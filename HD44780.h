@@ -132,17 +132,19 @@ void LCD_WriteCommand( unsigned char );
 unsigned char LCD_ReadStatus( void );
 #endif // USE_RW
 
-void LCD_WriteData( unsigned char ); // odczytywanie danych po kolei w zależności od pozycji kursora
-#if USE_RW == 1
-unsigned char LCD_ReadData( void ); // zapisywanie danych po kolei w zależności od pozycji kursora
-#endif // USE_RW
 
 //-------------------------------------------------------------------------------------------------
 //Najczęściej używane funkcje
 
-void LCD_Initalize( void ); // Inicjalizacja wyświetlacza
 
-void LCD_WriteText( char * );//Wypisanie tekstu (łańcucha znaków)
+void LCD_Initalize( void ); // inicjalizacja wyświetlacza
+
+void LCD_WriteData( unsigned char ); // zapisywanie danych po jednym znaku, przesuwa kursor w prawo
+#if USE_RW == 1
+unsigned char LCD_ReadData( void ); // odczytywanie danych po jednym znaku, przesuwa kursor w prawo
+#endif // USE_RW
+
+void LCD_WriteText( char * );//wypisanie tekstu (łańcucha znaków)
 void LCD_GoTo( unsigned char, unsigned char ); // pozycja X, pozycja Y - pozycja X (0 - (liczba_wierszy - 1)), pozycja kursora w wierszu), pozycja Y (0 - górny wiersz, 1 - dolny wiersz)
 void LCD_Clear( void ); // czyści cały wyświetlacz sprzętowo
 void LCD_Home( void ); // sprzętowa funkcja powrotu na początek (ekran i kursor)
