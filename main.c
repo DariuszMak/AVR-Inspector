@@ -2182,6 +2182,24 @@ void sczytaj_komende( void )
         //printf("%d\n",LCD_position);
     }
 
+    if(timer_cycle_overflow == 1)
+    {
+        timer_cycle_overflow = 0;
+
+        if(start_program == 2 || start_program == 3)
+        {
+            if(menu != 4 && menu != 5)
+            {
+                lockers_check_events();
+            }
+            else
+            {
+                lockers_beginning_actions();
+                no_colors_RGB();
+            }
+        }
+    }
+
     if( interr == 1 )
     {
         overflow_timer_2 = 0;
@@ -2236,7 +2254,7 @@ void sczytaj_komende( void )
             {
                 change_color_RGB();
                 ds18b20_temperature();
-                lockers_check_events();
+                //lockers_check_events();
 
                 if(start_program == 2)
                 {
@@ -2300,11 +2318,11 @@ void sczytaj_komende( void )
                     }
                 }
             }
-            else
+            /*else
             {
                 lockers_beginning_actions();
                 no_colors_RGB();
-            }
+            }*/
         }
 
         if( menu == 2 )

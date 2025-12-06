@@ -1,13 +1,15 @@
 #include "timer_2.h"
 
-volatile uint8_t pwm1, pwm2;
-
 void timer_2_init( void )
 {
     TCCR2 |= ( 1 << WGM21 );// tryb CTC
     //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024
     OCR2 = 5;
     TIMSK |= ( 1 << OCIE2 );
+    cnt = 0;
+    overflow_timer_2 = 0;
+    timer_cycle_overflow = 0;
+    interr = 0;
 }
 
 void RGB_init()
@@ -32,6 +34,7 @@ void refreshing_interrupt_off()
 
 ISR( _VECTOR( 4 ) )
 {
+    timer_cycle_overflow = 1;
     if( overflow_timer_2 == 1500 ) interr = 1;
     if( cnt >= RGB_Red ) RGB_R_PORT |= RGB_R;
     else RGB_R_PORT &= ~RGB_R;

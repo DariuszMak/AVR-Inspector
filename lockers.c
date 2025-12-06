@@ -113,8 +113,9 @@ void lockers_check_events()
     {
         blue_colors_RGB();
         lockers_queue_enque();
-        refresh_screen = 1;
-        buzzer_time(10);
+        //refresh_screen = 1;
+        buzzer_time(300);
+        change_color_RGB();
     }
 }
 
@@ -324,7 +325,7 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
             {
                 if(start_program == 3)
                 {
-                    buzzer_time(3000);
+                    buzzer_time(2000);
                     lockers_queue_dequeue();
                 }
                 else

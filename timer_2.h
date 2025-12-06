@@ -34,5 +34,6 @@ void refreshing_interrupt_off();
 
 volatile uint8_t cnt;
 volatile uint16_t overflow_timer_2;
+volatile uint8_t timer_cycle_overflow;
 volatile uint8_t interr;
 #endif // _RANDOM_GENERATOR_H_
