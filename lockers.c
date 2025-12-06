@@ -162,7 +162,6 @@ void lockers_read_frame(uint8_t index)
 
 void lockers_print_entire_frame(void)
 {
-    buzzer_time(0.5);
     printf("%04d:%02d:%02d %02d:%02d:%02d", frame.year, frame.month, frame.day, frame.hours, frame.minutes, frame.seconds);
 
     uint8_t number = frame.information % 100;
@@ -175,6 +174,7 @@ void lockers_print_entire_frame(void)
         else if(t == 2) printf("ZAMKNIECIE");
     }
     printf("\n");
+    buzzer_time(0.5);
 }
 
 void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
@@ -182,16 +182,15 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
     uint8_t index_of_frame = 0;
     if(numbers_of_frames == 0)
     {
+        printf("Brak danych\n");
         delay_ms_var(10);
         buzzer_time(200);
-        printf("Brak danych\n");
     }
     else
     {
         refresh_screen = 1;
         for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
         {
-            buzzer_time(1);
             lockers_queue_read(index_of_frame);
             printf("%03d. ", index_of_frame + 1);
             lockers_print_entire_frame();
@@ -296,6 +295,8 @@ void lockers_save_frame(uint8_t index, uint8_t i)
     }
 
     PCF8583_write_word(PCF8583_TAIL, temp_address);
+    delay_ms_var(1);
+    buzzer_time(5);
 }
 
 uint8_t lockers_is_queue_full(void)
@@ -328,9 +329,6 @@ void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
         if(save_info_table[i])
         {
             //printf("%d %d %d \n",lockers_tail(), lockers_head(), lockers_number_of_frames());
-            delay_ms_var(1);
-            buzzer_time(5);
-
 
             if( lockers_is_queue_full() == 1)
             {
@@ -357,7 +355,7 @@ void lockers_queue_dequeue(void)
 {
     if(lockers_is_queue_empty() == 0)
     {
-        //delay_ms_var(1);
+        delay_ms_var(1);
         buzzer_time(1);
         if(lockers_head() == lockers_number_of_frames() - 1) PCF8583_write_word(PCF8583_HEAD, lockers_convert_index_of_frame_to_address(0));
         else PCF8583_write_word(PCF8583_HEAD, lockers_convert_index_of_frame_to_address(lockers_head() + 1));
@@ -420,10 +418,10 @@ void lockers_clear_all_memory(void)
 
     for(; i < lockers_convert_index_of_frame_to_address(lockers_number_of_frames()); ++i)
     {
-        delay_ms_var(1);
-        buzzer_time(1);
         eeprom_busy_wait();
         eeprom_update_byte((uint8_t*)i, 0);
+        //delay_ms_var(1);
+        buzzer_time(1);
     }
     lockers_queue_empty();
 }
