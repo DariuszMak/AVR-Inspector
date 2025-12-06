@@ -19,13 +19,15 @@
 
 #define EXTERNAL_EEPROM_MAX_INDEX 255//wartość ostatniej największej komórki zewnętrznej pamięci eeprom do wykorzystania
 
-//#define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
+#define PCF8583_TAIL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
 
-//#define PCF8583_HEAD 252//komórka głowy
+#define PCF8583_HEAD 252//komórka głowy
 
 #define PCF8583_SAFETY_CELL 251
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
+
+#define SAFETY_BIT 0
 
 #define LOCKER_1_BUTTON_DIR DDRD
 #define LOCKER_1_BUTTON_PORT PORTD
@@ -79,15 +81,18 @@
 
 uint8_t state_temp;
 
-uint16_t lockers_queue_tail;
+//uint16_t lockers_queue_tail;
 
-uint16_t lockers_queue_head;
+//uint16_t lockers_queue_head;
+
+#if SAFETY_BIT == 1
 
 void lockers_safety_bit_on(void);
 
 void lockers_safety_bit_off(void);
 
 uint8_t lockers_is_safety_bit(void);
+#endif
 
 /* Inicjuje port szeregowy AVRa */
 void USART_init(uint16_t myubrr);

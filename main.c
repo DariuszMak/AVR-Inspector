@@ -1223,14 +1223,18 @@ void zczytaj_komende( void )
         {
             buzzer();
             backlight(2);
+            printf("Oczekiwanie...\n");
         }
         else
         {
+            #if SAFETY_BIT == 1
+
             if(lockers_is_safety_bit() == 1 && start_program == 0)
             {
                 lockers_print_all_memory();
                 lockers_safety_bit_off();
             }
+            #endif
             start_program = 2;
 
             uint8_t temp_char = USART_Recieve_without_waiting();
@@ -1320,6 +1324,7 @@ int main( void )
 //Inicjalizacja
 
     BUZZER_DIR |= BUZZER;// PORTD7 jako wyjście do buzzera
+    delay_ms_var(1000);
     LCD_Initalize();//inicjalizacja wyświetlacza
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz

@@ -1,5 +1,7 @@
 #include "lockers.h"
 
+#if SAFETY_BIT == 1
+
 void lockers_safety_bit_on(void)
 {
     PCF8583_write(PCF8583_SAFETY_CELL,1);
@@ -12,10 +14,12 @@ void lockers_safety_bit_off(void)
 
 uint8_t lockers_is_safety_bit(void)
 {
-    return 0;//usunąć, gdy będzie PCF8563
+    //return 0;//usunąć, gdy będzie PCF8563
     if (PCF8583_read(PCF8583_SAFETY_CELL) == 0) return 0;
     else return 1;
 }
+
+#endif
 
 /* Inicjuje port szeregowy AVRa */
 void USART_init(uint16_t myubrr)
@@ -248,6 +252,7 @@ void lockers_print_amount_of_first_frames(uint8_t numbers_of_frames)
     }
     else
     {
+        refresh_screen = 1;
         for(; index_of_frame < numbers_of_frames; ++ index_of_frame)
         {
             lockers_queue_read(index_of_frame);
@@ -376,7 +381,9 @@ void lockers_save_frame(uint8_t index, uint8_t i)
 void lockers_queue_enque(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
+    #if SAFETY_BIT == 1
     lockers_safety_bit_on();
+    #endif
     PCF8583_get_wall_time();
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
