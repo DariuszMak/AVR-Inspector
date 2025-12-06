@@ -7,8 +7,6 @@
 
 #include "i2c.h"//sprzętowa obsługa magistrali TWI (I2C)
 
-#define EEPROM_MAX_ADDRESS 255//UWAGA!!! Adres nie może być w tym przypadku większy niż 255, gdyż zmienne są jednobajtowe
-
 #define EEPROM_ADDRESS 0xAC
 
 /**
@@ -37,8 +35,6 @@ uint8_t EEPROM_read(uint8_t address);
  \param address adres komórki w układzie
 */
  uint16_t EEPROM_read_word(uint8_t address);
-
- void EEPROM_clear_all_memory(void);
 
 
 /*@}*/

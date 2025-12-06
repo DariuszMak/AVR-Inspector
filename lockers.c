@@ -60,7 +60,7 @@ uint16_t lockers_number_of_frames(void)
 
 uint8_t lockers_number_of_frames_exteral_EEPROM(void)
 {
-    return ((EEPROM_MAX_ADDRESS + 1) / SIZE_OF_FRAME);
+    return ((EXTERNAL_EEPROM_MAX_INDEX + 1) / SIZE_OF_FRAME);
 }
 
 uint16_t lockers_number_of_frames_internal_EEPROM(void)
@@ -138,7 +138,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
             if(lockers_convert_address_to_index_of_frame(temp_address) < lockers_number_of_frames_exteral_EEPROM())
             {
-                if((EEPROM_MAX_ADDRESS - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
+                if((EXTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1))//jeśli wiadomo, że się nie zmieści przy znanym adresie
                 {
                     temp_address = SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM();//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
@@ -206,7 +206,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             }*/
 
 
-            if((overflow_flag == 0) && ((EEPROM_MAX_ADDRESS - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))//jeśli wiadomo, że zmieści się na styk
+            if((overflow_flag == 0) && ((EXTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))//jeśli wiadomo, że zmieści się na styk
             {
                 buzzer_time(200);
                 temp_address = 0;
@@ -254,8 +254,13 @@ uint8_t locker_2_button(void)//przycisk fizycznie umieszczony na płytce
 
 void lockers_clear_all_memory(void)
 {
-    EEPROM_clear_all_memory();
     int16_t i = 0;
+    for(; i <= EXTERNAL_EEPROM_MAX_INDEX; ++i)
+    {
+        EEPROM_write((uint8_t) i, 0);
+    }
+
+    i = 0;
 
     for(; i <= INTERNAL_EEPROM_MAX_INDEX; ++i)
     {

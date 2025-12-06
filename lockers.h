@@ -13,7 +13,9 @@
 
 #define INTERNAL_EEPROM_MAX_INDEX 1023//jeśli ustawi się tą zmienną na -1, to wylączy się tę pamięć z użytku
 
-#define PCF8583_CELL 254
+#define EXTERNAL_EEPROM_MAX_INDEX 255//wartość ostatniej największej komórki zewnętrznej pamięci eeprom do wykorzystania
+
+#define PCF8583_CELL 254//komórka i sąsienia komórka (o adresie o jeden większym) jako adres
 
 #define SIZE_OF_FRAME 8//ilość biajtów pojedynczej strony danych
 

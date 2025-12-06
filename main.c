@@ -541,10 +541,9 @@ void wysw3( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
 void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
 {
+    if (u < 0) u = 0;
     check_step_value(0, u);
     LCD_EraseAll();
-
-    if (u < 0) u = 0;
 
     if(u == end_of_settings(0))
     {
@@ -1311,8 +1310,10 @@ void zczytaj_komende( void )
 
     if(refresh_screen == 1 )
     {
+        if(pilot_state == 1) pilot_off();
         refresh_screen = 0;
         wysw();
+        if(pilot_state == 1) pilot_on();
     }
 
     if ( start == 1 )//jeśli było się w jakimś podprogramie i właśnie przechodzimy do podprogramu głównego
@@ -1348,8 +1349,8 @@ void zczytaj_komende( void )
         {
             //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
             toggle_action();
-            pilot( command, t );//wywołanie funkcji pilot
             Ir_key_press_flag = 0;
+            pilot( command, t );//wywołanie funkcji pilot
             command = 0xff;
             address = 0xff;
         }
