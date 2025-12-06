@@ -16,6 +16,7 @@ uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dl
 //uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 int8_t backlight_of_lcd = 0;
 uint8_t reset_variable = 0;
+uint8_t pilot_button_pressed = 0;//zmienna pamiętająca naciśnięcie przycisku
 //uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
@@ -447,17 +448,25 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
     LCD_Clear();
 
 
-    if(number == 16)
+    if(number == 17)
     {
         LCD_WriteText("CZYSZCZENIE");
     }
-    else if(number == 14 || number == 15)
+    else if(number == 14 || number == 15 || number == 16)
     {
         LCD_WriteText("RAPORT");
+        LCD_GoTo(0,1);
+        if(number == 14)
+        {
+            LCD_WriteText("CZASOWY");
+        }
         if(number == 15)
         {
-            LCD_GoTo(0,1);
             LCD_WriteText("AWARYJNY");
+        }
+        else if(number == 16)
+        {
+            LCD_WriteText("TEMPERATURY");
         }
     }
 
@@ -556,10 +565,10 @@ void show_properties(uint8_t number)//funckja wyświetlająca komunikaty zawarte
             }
         }
     }
-    if( !(number == 8 || number == 4 || number == 16) || lockers_is_flag_bit(2) == 1) send_all_screen();
+    if( !(number == 8 || number == 4 || number == 3 || number == 17) || lockers_is_flag_bit(2) == 1) send_all_screen();
 
     delay_ms_var_double( 500 );
-    pilot_reset();
+    //pilot_reset();
     //LCD_set_appropiate_position(d);
     refresh_screen = 1;
     LCD_position = temp_position;
@@ -2027,7 +2036,7 @@ void czynnosc3( int com, int tog )
     {
         if( tog == 1)
         {
-            show_properties(16);
+            show_properties(17);
             lockers_clear_all_memory();
             //c = 0;
         }
@@ -2354,6 +2363,10 @@ void sczytaj_komende( void )
         refresh_screen = 0;
         wysw();
         if( lockers_is_flag_bit(2) == 1 && start_program != 1 && start != 1 ) send_all_screen();
+
+
+
+
         //printf("%d\n",LCD_position);
         //printf("%d\n",LCD_position);
     }
@@ -2376,10 +2389,93 @@ void sczytaj_komende( void )
         }
     }
 
+    if(pilot_button_pressed == 1)
+        {
+            pilot_button_pressed = 0;
+            pilot(100, 0);
+        }
+
+        if( Ir_key_press_flag )
+        {
+            if( !address )
+            {
+                //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
+                toggle_action();
+                //Ir_key_press_flag = 0;
+                pilot( command, t );//wywołanie funkcji pilot
+                pilot_reset();
+            }
+        }
+        else
+        {
+            temp_char = uart_getc();
+            if(start_program == 3 && temp_char != 0 && temp_char != 't' && temp_char != 'T')
+            {
+                if(temp_char == 'r') reset_variable = 1;
+                else pilot(-1, 0);
+            }
+            else
+            {
+                if(lockers_is_flag_bit(2) == 1)
+                {
+                    if(temp_char == 'e') pilot(59, 0);
+                    else if(temp_char == 'w') pilot(32, 0);
+                    else if(temp_char == 's') pilot(33, 0);
+                    else if(temp_char == 'd') pilot(16, 0);
+                    else if(temp_char == 'a') pilot(17, 0);
+                    else if(temp_char == 'q') pilot(14, 0);
+                    else if(temp_char == 'Q') pilot(14, 1);
+                    else if(temp_char == 'k') pilot(38, 0);
+                    else if(temp_char == 'v') pilot(100, 0);
+                    else if(temp_char == 'p') pilot(15, 0);
+                    else if(temp_char == 'c') pilot(12, 0);
+                    else if(temp_char == 'C') pilot(12, 1);
+                    else if(temp_char == '[') pilot(46, 0);
+                    else if(temp_char == ']') pilot(34, 0);
+                    else if(temp_char == '{') pilot(36, 0);
+                    else if(temp_char == '}') pilot(35, 0);
+                    else if(temp_char == '!') pilot(41, 0);
+                    else if(temp_char == '<') pilot(45, 0);
+                    else if(temp_char == '>') pilot(44, 0);
+                    else if(temp_char == '0') pilot(0, 0);
+                    else if(temp_char == '1') pilot(1, 0);
+                    else if(temp_char == '2') pilot(2, 0);
+                    else if(temp_char == '3') pilot(3, 0);
+                    else if(temp_char == '4') pilot(4, 0);
+                    else if(temp_char == '5') pilot(5, 0);
+                    else if(temp_char == '6') pilot(6, 0);
+                    else if(temp_char == '7') pilot(7, 0);
+                    else if(temp_char == '8') pilot(8, 0);
+                    else if(temp_char == '9') pilot(9, 0);
+                }
+
+                if(temp_char == 't')
+                {
+                    if(lockers_is_flag_bit(2) == 1)
+                    {
+                        lockers_flag_bit_off(2);
+
+                        // printf("\nTRYB RC5\n");
+                    }
+                    else
+                    {
+                        lockers_flag_bit_on(2);
+                        //printf("\nTRYB RC5 & TERMINAL\n");
+                        //refresh_screen = 1;
+                    }
+                    show_properties(2);
+                }
+                //else if(temp_char == 'R') lockers_print_all_memory();
+                //else if(temp_char == 'r') lockers_print_latest_data();
+            }
+        }
+
     if( interr == 1 )
     {
         overflow_timer_2 = 0;
         interr = 0;
+
+
 
         //lockers_print_amount_of_first_frames(20);
 
@@ -2504,7 +2600,7 @@ void sczytaj_komende( void )
                     {
                         backlight(2);
                         buzzer();
-                        if(lockers_is_flag_bit(1) == 1) printf("\nUWAGA!");
+                        //if(lockers_is_flag_bit(1) == 1) printf("\nUWAGA!");
                         lockers_print_temperature();
                         PCF8583_alarm_flag_off();
                         //PCF8583_alarm_flag_off();
@@ -2551,89 +2647,13 @@ void sczytaj_komende( void )
         switch_menu = u;
         refresh_screen = 1;// wyświetlenie ekranu
     }
-
     if (stop_button())
     {
         delay_ms_var(30);
         if (stop_button())
         {
-            pilot( 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
+            pilot_button_pressed = 1;//zmienna pamiętająca naciśnięcie przycisku
             delay_ms_var(100);
-        }
-    }
-
-    if( Ir_key_press_flag )
-    {
-        if( !address )
-        {
-            //TCCR1B &= ~( ( 1 << CS12 ) | ( 1 << CS11 ) | ( 1 << CS10 ) ); //wyłączenie Timera1 (prescaler na zero)
-            toggle_action();
-            //Ir_key_press_flag = 0;
-            pilot( command, t );//wywołanie funkcji pilot
-            pilot_reset();
-        }
-    }
-    else
-    {
-        temp_char = uart_getc();
-        if(start_program == 3 && temp_char != 0 && temp_char != 't' && temp_char != 'T')
-        {
-            if(temp_char == 'r') reset_variable = 1;
-            else pilot(-1, 0);
-        }
-        else
-        {
-            if(lockers_is_flag_bit(2) == 1)
-            {
-                if(temp_char == 'e') pilot(59, 0);
-                else if(temp_char == 'w') pilot(32, 0);
-                else if(temp_char == 's') pilot(33, 0);
-                else if(temp_char == 'd') pilot(16, 0);
-                else if(temp_char == 'a') pilot(17, 0);
-                else if(temp_char == 'q') pilot(14, 0);
-                else if(temp_char == 'Q') pilot(14, 1);
-                else if(temp_char == 'k') pilot(38, 0);
-                else if(temp_char == 'v') pilot(100, 0);
-                else if(temp_char == 'p') pilot(15, 0);
-                else if(temp_char == 'c') pilot(12, 0);
-                else if(temp_char == 'C') pilot(12, 1);
-                else if(temp_char == '[') pilot(46, 0);
-                else if(temp_char == ']') pilot(34, 0);
-                else if(temp_char == '{') pilot(36, 0);
-                else if(temp_char == '}') pilot(35, 0);
-                else if(temp_char == '!') pilot(41, 0);
-                else if(temp_char == '<') pilot(45, 0);
-                else if(temp_char == '>') pilot(44, 0);
-                else if(temp_char == '0') pilot(0, 0);
-                else if(temp_char == '1') pilot(1, 0);
-                else if(temp_char == '2') pilot(2, 0);
-                else if(temp_char == '3') pilot(3, 0);
-                else if(temp_char == '4') pilot(4, 0);
-                else if(temp_char == '5') pilot(5, 0);
-                else if(temp_char == '6') pilot(6, 0);
-                else if(temp_char == '7') pilot(7, 0);
-                else if(temp_char == '8') pilot(8, 0);
-                else if(temp_char == '9') pilot(9, 0);
-            }
-
-            if(temp_char == 't')
-            {
-                if(lockers_is_flag_bit(2) == 1)
-                {
-                    lockers_flag_bit_off(2);
-
-                    // printf("\nTRYB RC5\n");
-                }
-                else
-                {
-                    lockers_flag_bit_on(2);
-                    //printf("\nTRYB RC5 & TERMINAL\n");
-                    //refresh_screen = 1;
-                }
-                show_properties(2);
-            }
-            //else if(temp_char == 'R') lockers_print_all_memory();
-            //else if(temp_char == 'r') lockers_print_latest_data();
         }
     }
 }

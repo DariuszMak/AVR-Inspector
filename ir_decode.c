@@ -94,12 +94,12 @@ ISR( TIMER1_CAPT_vect )
 
                     if( IrPulseCount > 12 )
                     {
-                        //if ( Ir_key_press_flag == 0 )
-                        //{
-                        command = IrData & 0b0000000000111111;
-                        address = ( IrData & 0b0000011111000000 ) >> 6;
-                        toggle_bit = ( IrData & 0b0000100000000000 ) >> 11;
-                        //}
+                        if ( Ir_key_press_flag == 0 )
+                        {
+                            command = IrData & 0b0000000000111111;
+                            address = ( IrData & 0b0000011111000000 ) >> 6;
+                            toggle_bit = ( IrData & 0b0000100000000000 ) >> 11;
+                        }
                         frame_status = FRAME_RESTART;
                         Ir_key_press_flag = 1;
                     }

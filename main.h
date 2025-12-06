@@ -43,6 +43,7 @@ uint8_t start_program;//zmienna odpowiedzialna za poszczególne etapy podczas w�
 uint8_t temp_char;//zmienna pamiętająca pojedynczy znak z klawiatury
 uint8_t reset_variable;//zmienna pomocna przy sprawdzeniu zresetaownia urządzenia (po wpisaniu znaku na klawiaturze)
 uint8_t temp_position;//zmienna pomocna przy utrzymaniu tymczasowej pozycji na ekranie
+uint8_t pilot_button_pressed;//zmienna pamiętająca naciśnięcie przycisku
 //zmienne zarezerwowane dla podprogramu nr 2:
 
 //zmienne spełniające określone funkcje
