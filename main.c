@@ -159,6 +159,10 @@ int main( void )
 
     void correction_of_date(uint8_t check_with_year)//uwzględnianie dnia miesiąca względem roku
     {
+
+        if(miesiac < 1) miesiac = 12;
+        else if(miesiac > 12) miesiac = 1;
+
         uint8_t case_of_day = 0;
         if(miesiac == 1 || miesiac == 3 || miesiac == 5 || miesiac == 7 || miesiac == 8 || miesiac == 10 || miesiac == 12) case_of_day = 31;
         else if (miesiac == 4 || miesiac == 6 || miesiac == 9 || miesiac == 11) case_of_day = 30;
@@ -167,9 +171,6 @@ int main( void )
 
         if(dzien < 1) dzien = case_of_day;
         else if(dzien > case_of_day) dzien = 1;
-
-        if(miesiac < 1) miesiac = 12;
-        else if(miesiac > 12) miesiac = 1;
 
         if(rok < -9999) rok = 9999;
         else if(rok > 9999) rok = -9999;
@@ -443,27 +444,27 @@ int main( void )
             LCD_EraseAll();
             if(u < 0) u = lockers_number_of_frames();
             else if(u > lockers_number_of_frames()) u = 0;
-            if(u == 0)
+            if(u == 0)//przypadek na początku listy
             {
                 lockers_read_frame(u);
                 LCD_EraseUp();
-                show_list_of_frames(1, u);
+                show_list_of_frames(1, u + 1);
 
 
             }
-            else if (u >= lockers_number_of_frames())
+            else if (u == lockers_number_of_frames())//przypadek na końcu listy
             {
                 lockers_read_frame(u-1);
-                show_list_of_frames(0, u - 1);
+                show_list_of_frames(0, u);
                 LCD_EraseDown();
 
             }
-            else
+            else//przypadek w środku listy
             {
                 lockers_read_frame(u - 1);
-                show_list_of_frames(0, u - 1);
+                show_list_of_frames(0, u);
                 lockers_read_frame(u);
-                show_list_of_frames(1, u);
+                show_list_of_frames(1, u + 1);
             }
             break;
         }
