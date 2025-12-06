@@ -8,6 +8,18 @@
 // Kompilator : avr-gcc
 //-------------------------------------------------------------------------------------------------
 
+void LCD_position_decrease(void)
+{
+    if(LCD_position == 0) LCD_position = LCD_CHARSPERLINE - 1;
+    else --LCD_position;
+}
+
+void LCD_position_increase(void)
+{
+    if(LCD_position == LCD_CHARSPERLINE - 1) LCD_position = 0;
+    else ++LCD_position;
+}
+
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wystawiaj¹ca półbajt na magistralę danych
@@ -184,6 +196,7 @@ void LCD_Clear( void )
 {
     LCD_WriteCommand( HD44780_CLEAR );
     _delay_ms( 2 );
+    LCD_position = 0;
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -194,6 +207,7 @@ void LCD_Home( void )
 {
     LCD_WriteCommand( HD44780_HOME );
     _delay_ms( 2 );
+    LCD_position = 0;
 }
 //-------------------------------------------------------------------------------------------------
 //
@@ -244,6 +258,7 @@ void LCD_Initalize( void )
     LCD_BACKLIGHT_DIR	|= LCD_BACKLIGHT;
     LCD_BacklightOn();
 #endif
+    LCD_position = 0;
 }
 
 #if USE_LCD_Backlight == 1
@@ -309,7 +324,11 @@ void LCD_MoveRight ( unsigned int freq, unsigned int step, unsigned int way )
     int temp;
     for ( temp = 0; temp < step; ++temp )
     {
-        if ( way )LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT );
+        if ( way )
+        {
+            LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_RIGHT );
+                    LCD_position_decrease();
+        }
         else LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_RIGHT );
         if ( freq ) delay_ms_var( freq );
     }
@@ -326,7 +345,11 @@ void LCD_MoveLeft ( unsigned int freq, unsigned int step, unsigned int way )
     int temp;
     for ( temp = 0; temp < step; ++temp )
     {
-        if ( way )LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT );
+        if ( way )
+        {
+            LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_DISPLAY | HD44780_SHIFT_LEFT );
+            LCD_position_increase();
+        }
         else LCD_WriteCommand( HD44780_DISPLAY_CURSOR_SHIFT | HD44780_SHIFT_CURSOR | HD44780_SHIFT_LEFT );
         if ( freq ) delay_ms_var( freq );
     }

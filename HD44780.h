@@ -119,12 +119,17 @@
 
 #define HD44780_DDRAM_SET		    	0x80
 
+uint8_t LCD_position;//zmienna odpowiedzialna za zapamiętanie przesunięcia wyświetlacza
+
 //-------------------------------------------------------------------------------------------------
 //
 // Deklaracje funkcji
 //
 //-------------------------------------------------------------------------------------------------
 
+void LCD_position_decrease(void);
+
+void LCD_position_increase(void);
 
 void _LCD_OutNibble( unsigned char );
 #if USE_RW == 1

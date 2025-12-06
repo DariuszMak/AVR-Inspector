@@ -2117,7 +2117,13 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
+        uint8_t temp_position = LCD_position;
+        //printf("%d\n",LCD_position);
         send_all_screen();
+        LCD_Home();
+        if(temp_position < LCD_CHARSPERLINE / 2) LCD_MoveLeft ( 0, temp_position, 1 );
+        else LCD_MoveRight(0,  LCD_CHARSPERLINE - temp_position, 1);
+        //printf("%d\n",LCD_position);
     }
 
     if( interr == 1 )
