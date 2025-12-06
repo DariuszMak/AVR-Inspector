@@ -299,21 +299,25 @@ void LCD_Initalize(void)
 // Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_LCD_Int == 1
 void LCD_Int(int value)
 {
     char bufor[17];
     LCD_WriteText( itoa(value, bufor, 10));
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Funkcja wyświetlenia liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_LCD_Hex == 1
 void LCD_Hex(int value)
 {
     char bufor[17];
     LCD_WriteText( itoa(value, bufor, 16));
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Pomocnicze zmienne
@@ -322,12 +326,12 @@ void LCD_Hex(int value)
 
 const int czterdziesci = 40;
 
-
 //-------------------------------------------------------------------------------------------------
 //
 // Efekt przesuniêcia zawartoœci o okreœlonej czêstotliwoœci kroku oraz liczbie kroków
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_LCD_MoveRight == 1
 void LCD_MoveRight (unsigned int freq, unsigned int step, unsigned int way)
 {
     int temp;
@@ -338,11 +342,13 @@ void LCD_MoveRight (unsigned int freq, unsigned int step, unsigned int way)
         if (freq) delay_ms_var(freq);
     }
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Efekt przesuniêcia zawartoœci o ca³y ekran w prawo
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_LCD_MoveLeft == 1
 void LCD_MoveLeft (unsigned int freq, unsigned int step, unsigned int way)
 {
     int temp;
@@ -353,11 +359,13 @@ void LCD_MoveLeft (unsigned int freq, unsigned int step, unsigned int way)
         if (freq) delay_ms_var(freq);
     }
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Czyszczenie zawartoœci okna
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_LCD_Erase == 1
 void LCD_Erase (unsigned int row)
 {
     int temp;
@@ -379,11 +387,13 @@ void LCD_Erase (unsigned int row)
         }
     }
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Ró¿ne opcje wyœwielania
 //
 //-------------------------------------------------------------------------------------------------
+#if USE_LCD_Displaying == 1
 void LCD_Displaying (unsigned int option)
 {
     switch (option)
@@ -405,6 +415,7 @@ void LCD_Displaying (unsigned int option)
         break;
     }
 }
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.c

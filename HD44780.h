@@ -17,7 +17,14 @@
 // Można zmienić stosownie do potrzeb.
 //
 //-------------------------------------------------------------------------------------------------
-#define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
+#define USE_RW 1 // Tryb używania pinu RW (odczyt flagi zajętości i w ogóle odczyt) 0 - bez odczytu (wtedy MUSI ten pin być podpięty na stałe do VCC, albo: LCD_RW_DIR |= LCD_RW; ) / 1 - z odczytem
+
+#define USE_LCD_Int 1
+#define USE_LCD_Hex 1
+#define USE_LCD_MoveRight 1
+#define USE_LCD_MoveLeft 1
+#define USE_LCD_Erase 1
+#define USE_LCD_Displaying 1
 
 
 #if USE_RW == 1
@@ -107,8 +114,8 @@
 //-------------------------------------------------------------------------------------------------
 void delay_ms_var(uint16_t); // czekaj określoną ilość milisekund
 void delay_us_var(uint16_t); // czekaj określoną ilość mikrosekund
-void delay_ms_var_double(double);
-void delay_us_var_double(double);
+void delay_ms_var_double(double); // czekaj określoną ilość milisekund
+void delay_us_var_double(double); // czekaj określoną ilość mikrosekund
 
 void _LCD_OutNibble(unsigned char);
 #if USE_RW == 1
@@ -132,29 +139,44 @@ void LCD_Clear(void); // czyści wszystko sprzętowo
 void LCD_Home(void); // sprętowa funkcje powrotu ns początek (ekran i kursor)
 
 void LCD_Initalize(void); // Inicjalizacja wyświetlacza
+
+#if USE_LCD_Int == 1
 void LCD_Int(int); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie dziesiętnym)
+#endif
+
+#if USE_LCD_Hex == 1
 void LCD_Hex(int); // wyświetla liczby (pobiera liczbę całkowitą i wyświetla w systemie szesnastkowym)
+#endif
 
+#if USE_LCD_MoveRight == 1
 void LCD_MoveRight(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
-void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
-#define LCD_ShiftRightCursor() LCD_MoveRight(0,1,0) // jeden krok kursora w prawo
-#define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
-#define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
-#define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
 #define LCD_PageUpScreen() LCD_MoveRight(20,15,1) // przesunięcie o cały ekran w prawo
-#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesunięcie o cały ekran w lewo
+#define LCD_ShiftRightScreen() LCD_MoveRight(0,1,1) // jeden krok ekranu w prawo
+#define LCD_ShiftRightCursor() LCD_MoveRight(0,1,0) // jeden krok kursora w prawo
+#endif
 
+#if USE_LCD_MoveLeft == 1
+void LCD_MoveLeft(unsigned int, unsigned int, unsigned int); // częstotliwość kroku, ilość kroków, 0 - kursor / 1 - ekran
+#define LCD_ShiftLeftCursor() LCD_MoveLeft(0,1,0) // jeden krok kursora w lewo
+#define LCD_ShiftLeftScreen() LCD_MoveLeft(0,1,1) // jeden krok ekranu w lewo
+#define LCD_PageDownScreen() LCD_MoveLeft(20,15,1) // przesunięcie o cały ekran w lewo
+#endif
+
+#if USE_LCD_Erase == 1
 void LCD_Erase(unsigned int); // uzuoełnianie spacjami wyświetlacza 0 - dwa wiersze, 1 - górny wiersz, 2 - dolny wiersz
 #define LCD_EraseAll() LCD_Erase(0) // uzuoełnianie spacjami wyświetlacza - dwa wiersze
 #define LCD_EraseUp() LCD_Erase(1) // uzuoełnianie spacjami wyświetlacza 1 - górny wiersz,
 #define LCD_EraseDown() LCD_Erase(2) // uzuoełnianie spacjami wyświetlacza 2 - dolny wiersz
+#endif
 
+#if USE_LCD_Displaying == 1
 void LCD_Displaying(unsigned int);
 #define LCD_ScreenOn() LCD_Displaying(1) // zwykły tryb pracy wyświetlacza bez kursora
 #define LCD_ScreenOff() LCD_Displaying(2) // wyłączenie wyświetlacza (nic nie wyświetla, ale wciąż pracuje)
 #define LCD_Cursor() LCD_Displaying(3) // tryb pracy z kursorem
 #define LCD_Blink() LCD_Displaying(4) // tryb pracy z migającym prostokątem
 #define LCD_CursorBlink() LCD_Displaying(5) // tryb pracy z kursorem i z migającym prostokątem
+#endif
 //-------------------------------------------------------------------------------------------------
 //
 // Koniec pliku HD44780.h
