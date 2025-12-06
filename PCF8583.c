@@ -319,7 +319,6 @@ void PCF8583_get_alarm_time(uint8_t *hour, uint8_t *min, uint8_t *sec, uint8_t *
 */
 void PCF8583_set_alarm_time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t hsec, uint8_t day, uint8_t month, uint8_t timer, uint8_t AM_PM)
 {
-    AM_PM = 1;
     uint8_t type_of_alarm = PCF8583_recognise_type_of_alarm();
     struct time_frame time_f;
     time_f.hseconds=bin2bcd(hsec);
@@ -402,7 +401,8 @@ void PCF8583_12h_format(void)
 uint8_t PCF8583_is_12h_24h_format(void)
 {
     if((PCF8583_read(0x04) & 0b10000000) && (PCF8583_read(0x0C) & 0b10000000)) return 1;
-    else return 0;
+    else if(!(PCF8583_read(0x04) & 0b10000000) && !(PCF8583_read(0x0C) & 0b10000000)) return 0;
+    else return 255;
 }
 
 

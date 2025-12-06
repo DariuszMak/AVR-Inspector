@@ -876,8 +876,6 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
 
     if(u == end_of_settings())
     {
-        if(dzien % 2 == 0) rano_wieczor = 1;
-        else rano_wieczor = 0;
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
         refresh_screen = 0;
         LCD_Clear();
@@ -1721,16 +1719,16 @@ void sczytaj_komende( void )
 
     if( interr == 1 )
     {
-        /*RGB_Red = rand() % 255;
-        RGB_Green = rand() % 255;
-        RGB_Blue = rand() % 255;
-        */
+        RGB_Red = (rand() % 32) * 8;
+        RGB_Green = (rand() % 32) * 8;
+        RGB_Blue = (rand() % 32) * 8;
 
-        if(rano_wieczor == 0 )RGB_Red =  255;
+
+        /*if(rano_wieczor == 0 )RGB_Red =  255;
         else RGB_Red = 0;
         if(PCF8583_is_12h_24h_format() == 0) RGB_Blue = 255;
         else RGB_Blue = 0;
-        RGB_Green = 0;
+        RGB_Green = 0;*/
         //RGB_Blue = rand() % 255;
 
         overflow_timer_2 = 0;
@@ -1858,7 +1856,7 @@ int main( void )
     PCF8583_alarm_flag_off();
     PCF8583_timer_flag_off();
 
-    PCF8583_12h_format();
+    PCF8583_24h_format();
 
     RGB_init();
 
