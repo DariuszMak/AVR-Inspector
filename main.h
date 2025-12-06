@@ -32,6 +32,7 @@ uint16_t zwiekszanie; // zmienna potrzebna do zmiany wartości liczby na wyświe
 uint8_t moveStep;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
 uint8_t checking_lockers_state;//zmienna odpowiedzialna za sprawdzanie stanów wejść
+int8_t backlight_of_lcd;
 //zmienne zarezerwowane dla podprogramu nr 2:
 
 //zmienne spełniające określone funkcje
@@ -49,6 +50,8 @@ uint8_t refresh_screen;
 
 
 int main( void );
+
+void backlight(int8_t);
 
 void buzzer();//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
 

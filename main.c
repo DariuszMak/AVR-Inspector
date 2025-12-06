@@ -14,6 +14,7 @@ int8_t start = 1; // zmienna pomocna do stwierdzenia, czy jest się już w glown
 int8_t toggle = 2;//zmienna odpowiedzialna za świadomość dłuższego przytrzymania przycisku pilota (wartość 2 jest wartością początkową w celu późniejszego skalibrowania ze stanem pilota)
 uint8_t moveStep = 0;//zmienna do przesunięcia wyświetlanych partii danych (dla daty)
 uint8_t pilot_state = 0;//zmienna odpowiedzialna za działanie, bądź niedziałanie timera od odczytu pilota
+int8_t backlight_of_lcd = -1;
 //uint8_t checking_lockers_state = 0;//zmienna odpowiedzialna za sprawdzanie stanów wejść
 //zmienne zarezerwowane dla podprogramu nr 2:
 uint8_t pozycja = 0;//zminna dodatkowa (pomocnicza) pamiętająca wylosowaną pozycję cyfry na wyświetlaczu alfanumerycznym
@@ -24,6 +25,12 @@ int8_t	cyfra = 0; // zmienna przechowująca wartość wyświetlaną póżniej na
 
 
 
+void backlight(int8_t state)
+{
+    if(state == 0) backlight_of_lcd = 0;
+    else if(state == 1) backlight_of_lcd = -1;
+    else if(state == 2) backlight_of_lcd = 40;
+}
 
 
 
@@ -665,7 +672,7 @@ void czynnosc0( int com, int tog )
             lockers_beginning_actions();
             //TCCR2 |= ( 1 << CS20 ) | ( 1 << CS21 ) | ( 1 << CS22 ); // preskaler 1024, timer do odświeżania
 //                checking_lockers_state = 1;
-            refreshing_interrupt_on();
+
             u = PCF8583_recognise_type_of_alarm();
             czynnosc( 100, tog );
             //refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
@@ -939,12 +946,12 @@ void czynnosc2( int com, int tog )
         if(pilot_state == 1)
         {
             pilot_state = 0;
-            LCD_BacklightOff();
+            if ( backlight_of_lcd != 0 ) backlight(2);
         }
         else if(pilot_state == 0)
         {
             pilot_state = 1;
-            LCD_BacklightOn();
+            backlight(1);
         }
     }
     refresh_screen = 1;
@@ -1084,7 +1091,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         czynnosc6(com, tog);
     }
 
-
 //komendy wspólne dla wszystkich podprogramów
 
     if ( com == 38 )
@@ -1099,6 +1105,20 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
         LCD_PageDownScreen();
         refresh_screen = 1;
     }
+    if( com == 15 )
+    {
+        if( tog == 0)
+        {
+            if( backlight_of_lcd == -1 ) backlight(0);
+            else backlight(1);
+        }
+        if( tog == 1)
+        {
+            buzzer_time(10);
+            backlight(2);
+        }
+
+    }
     if ( com == 46 )
     {
         LCD_ShiftRightScreen();
@@ -1110,7 +1130,6 @@ void czynnosc( int com, int tog ) //funkcja odpowiedzialna za wywołanie odpowie
     if ( com == 36 )
     {
         LCD_PageUpScreen();
-
     }
     if ( com == 35 )
     {
@@ -1153,12 +1172,22 @@ void pilot( int com, int tog )//
 
 void zczytaj_komende( void )
 {
-    if( interr == 1 && menu == 2 )
+    if( interr == 1  )
     {
         interr = 0;
         cnt = 0;
-        lockers_check_events();
-        wysw();
+
+        if( menu == 2 )
+        {
+            lockers_check_events();
+            wysw();
+        }
+
+        if(backlight_of_lcd > 0) --backlight_of_lcd;
+        if(backlight_of_lcd == 0) LCD_BacklightOff();
+        else LCD_BacklightOn();
+
+
     }
 
     if(refresh_screen == 1 )
@@ -1178,7 +1207,7 @@ void zczytaj_komende( void )
         switch_menu = 0;
         zwiekszanie = 1;
 //        checking_lockers_state = 0;
-        refreshing_interrupt_off();
+//        refreshing_interrupt_off();
         pilot(59,0);
         switch_menu = u;
         refresh_screen = 1;// wyświetlenie ekranu
@@ -1238,6 +1267,7 @@ int main( void )
     DDRD |= ( 1 << PD7 );// PORTD7 jako wyjście do buzzera
     ds18b20_temperature();//zmierzenie temperatury
     random_generator_init();//włączenie losowaniacyfr
+    refreshing_interrupt_on();
     ir_init();//inicjalizacja odbioru sygnału z pilota
 
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia

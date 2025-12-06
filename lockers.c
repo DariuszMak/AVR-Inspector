@@ -216,14 +216,13 @@ void lockers_print_all_memory(void)
 void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
     //delay_ms_var(400);
-
     uint8_t i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
         if(save_info_table[i])
         {
             buzzer();
-            delay_ms_var(50);
+            delay_ms_var(5);
             PCF8583_get_wall_time();
 
             uint16_t temp_address = PCF8583_read_word(PCF8583_CELL);//pobranie ostatniego adresu
@@ -303,14 +302,14 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 
             if((overflow_flag == 0) && ((EXTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))//jeśli wiadomo, że zmieści się na styk
             {
-                buzzer_time(200);
+                buzzer_time(100);
                 temp_address = 0;
                 overflow_flag = 1;
             }
 
             if((overflow_flag == 1) && ((INTERNAL_EEPROM_MAX_INDEX - (int16_t)temp_address) < (SIZE_OF_FRAME - 1)))
             {
-                buzzer_time(1000);
+                buzzer_time(500);
                 temp_address = 0;
                 overflow_flag = 0;
                 lockers_print_all_memory();
@@ -323,8 +322,7 @@ void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
             else PCF8583_write_word(PCF8583_CELL, temp_address + SIZE_OF_FRAME * lockers_number_of_frames_exteral_EEPROM());
         }
     }
-
-
+    backlight(2);
 }
 
 uint8_t locker_1_button(void)//przycisk fizycznie umieszczony na płytce
