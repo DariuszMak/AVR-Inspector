@@ -10,6 +10,7 @@
 
 #define PCF8583_A0 1//gdy pin A0 jest zwarty do GND należy wpisać zero (będzie adres 0xA0), a jeśli jest zwarty z VCC należy wpisać jeden (będzie adres 0xA2)
 
+#define buffer 1
 
 #ifndef PCF8583_A0
 #error " Nie zdefiniowałeś stanu lini A0 układu. użyj #define PCF8583_A0  0(1)"
@@ -31,6 +32,11 @@ int8_t godz, min, sek, hsek;
 
 int8_t dzien,dzien_tygodnia, miesiac;
 int16_t rok;
+
+#if buffer == 1
+void PCF8583_write_buf( uint8_t adr, uint8_t len, uint8_t *buf );
+void PCF8583_read_buf( uint8_t adr, uint8_t len, uint8_t *buf);
+#endif // buffer
 
 
 /**-------------------------------------------------------------------------------------------------

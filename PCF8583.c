@@ -52,11 +52,37 @@ uint8_t PCF8583_read(uint8_t address)
     i2cWrite(a);
     i2cWrite(address);
     i2cStart();
-    i2cWrite(a | 1);
+    i2cWrite(a + 1);
     a = i2cRead(NOACK);
     i2cStop();
     return a;
 }
+
+#if buffer == 1
+
+void PCF8583_write_buf(uint8_t adr, uint8_t len, uint8_t *buf )
+{
+    i2cStart();
+    i2cWrite((PCF8583_A0 << 1) | PCF8583_ADDRESS);
+    i2cWrite(adr);
+    while (len--) i2cWrite(*buf++);
+    i2cStop();
+}
+
+void PCF8583_read_buf(uint8_t adr, uint8_t len, uint8_t *buf)
+{
+    uint8_t a;
+    a = (PCF8583_A0 << 1) | PCF8583_ADDRESS;
+    i2cStart();
+    i2cWrite(a);
+    i2cWrite(adr);
+    i2cStart();
+    i2cWrite(a + 1);
+    while (len--) *buf++ = i2cRead( len ? ACK : NOACK );
+    i2cStop();
+}
+
+#endif // buffer
 
 
 /**
@@ -227,10 +253,12 @@ void PCF8583_write_month_dayOfWeek(uint8_t address,uint8_t month,uint8_t day_of_
 void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 {
     PCF8583_hold_on();
-    *hsec=PCF8583_read_bcd(1);
-    *sec=PCF8583_read_bcd(2);
-    *min=PCF8583_read_bcd(3);
-    *hour=PCF8583_read_bcd(4);
+    uint8_t bufor[4];
+    PCF8583_read_buf(0x01, 4, bufor );
+    *hsec=bcd2bin(bufor[0]);
+    *sec=bcd2bin(bufor[1]);
+    *min=bcd2bin(bufor[2]);
+    *hour=bcd2bin(bufor[3]);
     PCF8583_hold_off();
 }
 
@@ -244,10 +272,12 @@ void PCF8583_get_time(int8_t *hour,int8_t *min,int8_t *sec,int8_t *hsec)
 void PCF8583_set_time(uint8_t hour,uint8_t min,uint8_t sec,uint8_t hsec)
 {
     PCF8583_stop();
-    PCF8583_write_bcd(1,hsec);
-    PCF8583_write_bcd(2,sec);
-    PCF8583_write_bcd(3,min);
-    PCF8583_write_bcd(4,hour);
+    uint8_t bufor[4];
+    bufor[0]=bin2bcd(hsec);
+    bufor[1]=bin2bcd(sec);
+    bufor[2]=bin2bcd(min);
+    bufor[3]=bin2bcd(hour);
+    PCF8583_write_buf(0x01, 4, bufor);
     PCF8583_start();
 }
 
