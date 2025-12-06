@@ -1,5 +1,16 @@
 #include "lockers.h"
 
+struct frame
+{
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+
+    uint8_t day;
+    uint8_t month;
+    uint16_t year;
+    uint8_t information;
+} frame; //8
 
 void lockers_init()
 {
@@ -16,7 +27,6 @@ void lockers_init()
         states_table[i] = (uint8_t) lockers_state_of_single_button(i);//przypisanie wartości początkowych
     }
     lockers_find_latest_data();
-
 }
 
 int lockers_state_of_single_button( int index )//zwraca stan danego przycisku względem numeru indeksu
@@ -36,7 +46,6 @@ void lockers_check_events()
         state = (uint8_t)lockers_state_of_single_button(i);//jednorazowe złapanie stanu przycisku
         if( state != states_table[i] )//jeśli stan przycisku różni się od poprzednich wartości, należy wypełnić tabelę
         {
-            buzzer();
 
             action = 1;//akcja będzie podjęta
             if (state) save_info_table[i] = 2;//szafka zamknięta
@@ -45,7 +54,6 @@ void lockers_check_events()
         else save_info_table[i] = 0; //nie zapisuj żadnej informacji dla tej szufladki
         states_table[i] = state;
     }
-
     if(action) lockers_save_events();
 }
 
@@ -61,17 +69,21 @@ void lockers_find_latest_data(void)
     PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, 0);
 }
 
-void lockers_save_events(void)
+void lockers_save_events(void)//funkcja zapisująca do pamięci EEPROM dane
 {
-    uint8_t temp_address = PCF8583_read(PCF8583_SAVED_ADDRESS_CELL);
+    delay_ms_var(1000);
+    uint8_t temp_address = PCF8583_read(PCF8583_SAVED_ADDRESS_CELL);//pobranie adresu z zegara RTC
 
-    if((EEPROM_ADDRESS - temp_address) < SIZE_OF_FRAME) temp_address = 0;
+    if((EEPROM_ADDRESS - temp_address) < SIZE_OF_FRAME) temp_address = 0;//jeśli następna bramka się nie zmieści, trzeba ją przesunąć
 
     int i = 0;
     for( ; i < AMOUNT_OF_LOCKERS; ++i)
     {
+
         if(save_info_table[i])
         {
+              buzzer();
+                    delay_ms_var(50);
             PCF8583_get_wall_time();
             EEPROM_write(temp_address,sek);
             ++temp_address;
@@ -93,7 +105,6 @@ void lockers_save_events(void)
         }
     }
     PCF8583_write(PCF8583_SAVED_ADDRESS_CELL, temp_address);
-    delay_ms_var(1000);
 }
 
 

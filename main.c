@@ -14,9 +14,6 @@
 #include "EEPROM.h"
 #include "i2c.h"
 #include "termometer.h"
-#define _delay_ms delay_ms_var_double
-#define _delay_us delay_ms_var_double
-
 
 //Program glowny:
 
@@ -50,14 +47,14 @@ int main( void )
     void buzzer()//funkcja odpowiedzialna za sygnał dźwiękowy (trwa jedną milisekundę)
     {
         PORTD |= ( 1 << PD7 );
-        _delay_ms( 1 );
+        delay_ms_var_double( 1 );
         PORTD &= ~( 1 << PD7 );
     }
 
     void buzzer_time( double time )//funkcja odpowiedzialna za sygnał dźwiękowy (trwa podaną liczbę milisekund)
     {
         PORTD |= ( 1 << PD7 );
-        _delay_ms( time );
+        delay_ms_var_double( time );
         PORTD &= ~( 1 << PD7 );
     }
 
@@ -80,7 +77,7 @@ int main( void )
             LCD_GoTo( t, 1 );
             LCD_Int( number );
         }
-        _delay_ms( 500 );
+        delay_ms_var_double( 500 );
     }
 
     void wybor( int number ) // funkcja wyświetlająca podczas wchodenia w dany podprogram numeru podprogramu
@@ -90,10 +87,10 @@ int main( void )
         LCD_Int( number );
         for ( t = 0; t < 5; ++t )
         {
-            _delay_ms( 10 );
+            delay_ms_var_double( 10 );
             buzzer();
         }
-        _delay_ms( 500 );
+        delay_ms_var_double( 500 );
         LCD_Clear();
     }
 
@@ -175,7 +172,7 @@ int main( void )
                             if ( s == 2 ) cy3 = 11;
                             if ( s == 3 ) cy4 = 11;
                             buzzer();
-                            _delay_ms(100);
+                            delay_ms_var_double(100);
                         }
                     }
                     u = 0;
@@ -347,9 +344,9 @@ int main( void )
                 free( original_text );
 
                 buzzer();
-                _delay_ms(10);
+                delay_ms_var_double(10);
                 buzzer();
-                _delay_ms(10);
+                delay_ms_var_double(10);
                 buzzer();
 
                 break;
@@ -358,33 +355,33 @@ int main( void )
                 LCD_Blink();
                 LCD_GoTo( 9, 1 );
                 LCD_WriteText( "Witaj!" );
-                _delay_ms( 500 );
+                delay_ms_var_double( 500 );
                 LCD_Home();
                 LCD_WriteText( "LCD HD44780" );
-                _delay_ms( 500 );
+                delay_ms_var_double( 500 );
 
                 LCD_ShiftRightScreen();
-                _delay_ms( 700 );
+                delay_ms_var_double( 700 );
 
                 LCD_ScreenOff();
-                _delay_ms( 700 );
+                delay_ms_var_double( 700 );
                 LCD_ScreenOn();
-                _delay_ms( 700 );
+                delay_ms_var_double( 700 );
 
                 LCD_ScreenOff();
-                _delay_ms( 700 );
+                delay_ms_var_double( 700 );
                 LCD_CursorBlink();
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 LCD_Blink() ;
                 LCD_ShiftRightCursor();
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 LCD_ShiftLeftCursor();
                 LCD_Cursor();
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 LCD_CursorBlink() ;
                 LCD_GoTo( 0, 1 );
                 LCD_WriteText( "Czytam:" );
-                _delay_ms( 1500 );
+                delay_ms_var_double( 1500 );
 
                 LCD_GoTo( 9, 1 );
 
@@ -397,22 +394,22 @@ int main( void )
                     for( t = 0; t < rozmiar; ++t )
                     {
                         LCD_WriteData( i[t] );
-                        _delay_ms( 50 );
+                        delay_ms_var_double( 50 );
                     }
                 }
 
                 for( t = 0; t < rozmiar; ++t )
                 {
                     i[t] = LCD_ReadData();
-                    _delay_ms( 100 );
+                    delay_ms_var_double( 100 );
                 }
 
                 LCD_ShiftLeftScreen();
-                _delay_ms( 1500 );
+                delay_ms_var_double( 1500 );
 
                 LCD_Cursor();
                 LCD_EraseAll();
-                _delay_ms( 1500 );
+                delay_ms_var_double( 1500 );
                 LCD_GoTo( 0, 1 );
                 pisz();
                 LCD_Blink();
@@ -427,17 +424,17 @@ int main( void )
                 free( i );
 
                 LCD_Cursor();
-                _delay_ms( 1500 );
+                delay_ms_var_double( 1500 );
                 LCD_PageUpScreen ();
                 LCD_PageDownScreen();
                 LCD_EraseUp();
                 LCD_Blink();
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 LCD_PageDownScreen();
                 LCD_PageUpScreen();
                 LCD_Cursor();
                 LCD_EraseDown();
-                _delay_ms( 500 );
+                delay_ms_var_double( 500 );
 
                 LCD_Clear();
                 LCD_ScreenOn();
@@ -463,11 +460,11 @@ int main( void )
                     buzzer_time(0.4);
                     ++t;
                     wysw ( *men );
-                    _delay_ms(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
+                    delay_ms_var_double(750/t+10);//rozpędzanie kostki im dalej, tym szybciej
                 }
                 while (stop_button() && t != 250);//przerwanie rozpędzania po puszczeniu przyciksu lub po przekroczniu zakresu
 
-                _delay_ms(200);
+                delay_ms_var_double(200);
                 PCF8583_get_wall_time();
                 for(w = 0; w < hsek; ++w)
                 {
@@ -480,7 +477,7 @@ int main( void )
 
                     for(w = 1; w <= u; ++w)//przekulnięcia kostki w danej próbie
                     {
-                        _delay_ms((1+2500/t)/(7-w));//specjalny interwał zwalniający
+                        delay_ms_var_double((1+2500/t)/(7-w));//specjalny interwał zwalniający
                         pozycja = rand() % rozmiar;//wylosowanie pozycji na wyświetlaczu;
                         cyfry = w;
                         wysw ( *men );
@@ -489,7 +486,7 @@ int main( void )
                     --t;
                 }
                 t++;//przywrócenie efektu z ostatniej tury
-                if( w < 7 )_delay_ms((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
+                if( w < 7 )delay_ms_var_double((1+2500/t)/(7-w));//jeszcze jedno opóźnienie
                 u = -1;//tryb wyświetlania
                 wysw( *men );
                 //cy1 = 8;
@@ -497,19 +494,19 @@ int main( void )
                 break;
             case 59:
                 /*d_led_Int ( 9000 );
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 d_led_Int ( 8765 );
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 d_led_Int ( 4321 );
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 d_led_Int ( 0 );
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 d_led_Int ( -123 );
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 d_led_Int ( -3 );
-                _delay_ms( 1000 );
+                delay_ms_var_double( 1000 );
                 d_led_Int ( -1000 );
-                _delay_ms( 1000 );*/
+                delay_ms_var_double( 1000 );*/
                 cyfry = 0;
                 pozycja = 0;
                 u = -1;
@@ -627,7 +624,7 @@ int main( void )
             LCD_WriteText( "Na poczatek" );
             LCD_GoTo( 0, 1 );
             LCD_WriteText( "ekranu..." );
-            _delay_ms( 250 );
+            delay_ms_var_double( 250 );
             LCD_PageUpScreen();
             LCD_PageDownScreen();
             LCD_Clear();
@@ -733,9 +730,9 @@ int main( void )
     {
         if ( stop_button())
         {
-            _delay_ms(30);
+            delay_ms_var_double(30);
             if (stop_button()) pilot( &menu, 100, 0 );//wywołanie funkcji pilot przez naciśnięcie przycisku
-            _delay_ms(100);
+            delay_ms_var_double(100);
         }
 
         if( Ir_key_press_flag )

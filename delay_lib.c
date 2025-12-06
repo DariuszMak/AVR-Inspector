@@ -5,7 +5,6 @@ void delay_ms_var( uint16_t count )
     while( count-- )
     {
         _delay_ms( 1 );
-
     }
 }
 

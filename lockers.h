@@ -27,6 +27,8 @@
 
 void lockers_init();
 
+struct frame;
+
 uint8_t states_table[AMOUNT_OF_LOCKERS];
 uint8_t save_info_table[AMOUNT_OF_LOCKERS];
 
