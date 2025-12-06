@@ -194,8 +194,8 @@ void show_frame( int8_t number)
         LCD_Int(number);
         LCD_WriteText(" ");
         t = frame.information / 100;
-        if(t == 1) LCD_WriteText("OTWARTA");
-        else if(t == 2) LCD_WriteText("ZAMKNIETA");
+        if(t == 1) LCD_WriteText("OTWARCIE");
+        else if(t == 2) LCD_WriteText("ZAMKNIECIE");
     }
 }
 
@@ -344,7 +344,6 @@ void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogr
         }
         LCD_GoTo(12, 0);
         LCD_Double(ds18b20_temperature(),1);
-
 
         //LCD_Int( pwm1 );
         //LCD_Int( pwm2 );
@@ -1058,6 +1057,7 @@ int main( void )
     ir_init();//inicjalizacja odbioru sygnału z pilota
     d_led_init();//inicjalizacja wyświetlacza alfanumerycznego
     lockers_init();//inicjalizacja przycisku wejściowego oraz wejścia i wyjcia
+    PCF8583_alarm_monthly();
     //PCF8583_alarm_monthly();
 
     sei();//włącza przerwania
