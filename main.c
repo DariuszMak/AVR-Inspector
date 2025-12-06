@@ -716,6 +716,8 @@ void setting_information()
             }
         }
     }
+    //LCD_GoTo(0, 1);
+    //LCD_Int(u);
     if(lockers_is_flag_bit(2) == 1) send_all_screen();
     delay_ms_var(400);
     pilot_reset();
@@ -756,7 +758,6 @@ void set_appropriate_values_of_time()
                         else if(u == 2) sek += temp;
                         else if(u == 3) hsek += temp;
                     }
-
 
                     if(c == 0 || c == 3)
                     {
@@ -1327,7 +1328,7 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         w = 0;
         if (u < 0) u = 0;
-        if(u != end_of_settings())setting_information();
+        setting_information();
     }
 
     check_step_value();
@@ -1339,6 +1340,8 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         s = 0;
     }
 
+    LCD_Clear();
+
     if(u == end_of_settings())
     {
         PCF8583_set_time(godz,min,sek,hsek,dzien,dzien_tygodnia,miesiac,rok,timer,rano_wieczor);
@@ -1346,15 +1349,15 @@ void wysw4( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         w = 1;
         start = 1;
     }
+    else
+    {
+        correction_of_time();
 
-    LCD_Clear();
+        correction_of_date();
 
-    correction_of_time();
-
-    correction_of_date();
-
-    moveStep = 0;
-    show_time_format();
+        moveStep = 0;
+        show_time_format();
+    }
 }
 
 void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -1368,7 +1371,7 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             u -= 1;
         }
-        else if( u >= -1 && u != end_of_settings() ) setting_information();
+        else if( u >= -1 ) setting_information();
     }
 
     check_step_value();
@@ -1417,12 +1420,15 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                         PCF8583_alarm_flag_off();
                     }
                 }
-                correction_of_time();
+                else
+                {
+                    correction_of_time();
 
-                correction_of_date();
+                    correction_of_date();
 
-                moveStep = 0;
-                show_alarm_format(c);
+                    moveStep = 0;
+                    show_alarm_format(c);
+                }
             }
         }
         else if( e == 1)
@@ -1452,9 +1458,12 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                         PCF8583_timer_alarm_on();
                     }
                 }
-                correction_of_date();
-                moveStep = 0;
-                show_timer_alarm_format();
+                else
+                {
+                    correction_of_date();
+                    moveStep = 0;
+                    show_timer_alarm_format();
+                }
             }
         }
     }
@@ -1472,7 +1481,7 @@ void wysw6( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         {
             u -= 1;
         }
-        else if( u >= -1 && u != end_of_settings() ) setting_information();
+        else if( u >= -1 ) setting_information();
     }
 
     check_step_value();
@@ -1565,7 +1574,7 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
     {
         w = 0;
         if (u < 0) u = 0;
-        if(u != end_of_settings()) setting_information();
+        /*if(u != end_of_settings())*/ setting_information();
     }
 
     check_step_value();
@@ -1585,12 +1594,14 @@ void wysw7( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
         w = 1;
         start = 1;
     }
+    else
+    {
+        correction_of_temperature();
 
-    correction_of_temperature();
+        moveStep = 0;
 
-    moveStep = 0;
-
-    show_double(maximum_temperature,2);
+        show_double(maximum_temperature,2);
+    }
 }
 
 void wysw( void ) // funkcja wyświetlająca - interfejs dla każdego z podprogramów
@@ -1678,7 +1689,6 @@ void czynnosc0( int com, int tog )
             //lockers_find_latest_data();
             c = 0;
             refresh_screen = 1;//niepotrzebne, gdy mają być wywoływane jakieś przyciski
-
         }
         else if ( menu == 4 )
         {
@@ -2011,6 +2021,7 @@ void czynnosc4( int com, int tog )
     if ( com == 59 )
     {
         u = end_of_settings();
+        w = 1;
     }
     if ( com == 14 )
     {
@@ -2047,6 +2058,7 @@ void czynnosc5( int com, int tog )
     if ( com == 59 )
     {
         u = end_of_settings();
+        w = 1;
     }
     if ( com == 14 )
     {
@@ -2086,6 +2098,7 @@ void czynnosc6( int com, int tog )
     if ( com == 59 )
     {
         u = end_of_settings();
+        w = 1;
     }
     if ( com == 14 )
     {
@@ -2098,7 +2111,6 @@ void czynnosc6( int com, int tog )
             }
         }
     }
-
     refresh_screen = 1;
 }
 
@@ -2125,6 +2137,7 @@ void czynnosc7( int com, int tog )
     if ( com == 59 )
     {
         u = end_of_settings();
+        w = 1;
     }
     if ( com == 14 )
     {
@@ -2287,7 +2300,7 @@ void sczytaj_komende( void )
     {
         refresh_screen = 0;
         wysw();
-        if(lockers_is_flag_bit(2) == 1 && start_program != 1) send_all_screen();
+        if( lockers_is_flag_bit(2) == 1 && start_program != 1 && start != 1 ) send_all_screen();
         //printf("%d\n",LCD_position);
         //printf("%d\n",LCD_position);
     }
@@ -2462,14 +2475,14 @@ void sczytaj_komende( void )
     {
         start = 0;//informacja, że zaraz będziemy "chwilę" w menu głównym
         LCD_ScreenOn();
-        if(menu >= 4 && menu <= 7)
+        /*if(menu >= 4 && menu <= 7)
         {
             if(u == end_of_settings())
             {
                 setting_information();
             }
             //u = -2;
-        }
+        }*/
         u = menu;
         menu = 0;
         switch_menu = menu;
@@ -2603,6 +2616,7 @@ int main( void )
 
     PCF8583_24h_format();
     //PCF8583_write_word(PCF8583_TAIL, 1500);
+    PCF8583_write(0x0E,0xFF);
 
     RGB_init();
 
