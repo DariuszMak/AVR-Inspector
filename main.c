@@ -983,14 +983,16 @@ void wysw5( void )// funkcja wyświetlająca - interfejs dla każdego z podprogr
                 {
                     start = 1;
                     w = 1;
+
+                    PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
                     if(c == 0)
                     {
                         PCF8583_timer_alarm_off();
-
+                        PCF8583_timer_flag_off();
                     }
                     else if(c == 1)
                     {
-                        PCF8583_set_alarm_time(godz,min,sek,hsek,dzien,miesiac,timer);
+
                         PCF8583_timer_alarm_on();
                     }
                 }
@@ -1724,18 +1726,23 @@ void sczytaj_komende( void )
         {
             buzzer();
             backlight(2);
-            printf("Oczekiwanie... ");
-            lockers_print_date_of_report();
+
         }
         else
         {
 #if SAFETY_BIT == 1
 
-            if(lockers_is_safety_bit() == 1 && start_program == 0)
+            if(start_program == 0)
             {
-                printf("Dane niekompletne!!!\n");
-                lockers_print_latest_data();
-                lockers_safety_bit_off();
+                printf("Koniec oczekiwania... ");
+                lockers_print_date_of_report();
+
+                if(lockers_is_safety_bit() == 1 )
+                {
+                    printf("Dane niekompletne!!!\n");
+                    lockers_print_latest_data();
+                    lockers_safety_bit_off();
+                }
             }
 #endif
             start_program = 2;
@@ -1833,6 +1840,9 @@ int main( void )
 
     i2cSetBitrate(100);//inicjalizacja i2c - utawienie częstotliwości w kHz
     PCF8583_init();//inicjlalizacja wyświetlacza
+
+    PCF8583_alarm_flag_off();
+    PCF8583_timer_flag_off();
 
     //PCF8583_write_word(PCF8583_HEAD, 3000);
 
